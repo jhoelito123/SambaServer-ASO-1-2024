@@ -10,25 +10,6 @@ import version1_support
 
 _bgcolor = '#d9d9d9'
 _fgcolor = '#000000'
-_tabfg1 = 'black' 
-_tabfg2 = 'white' 
-_bgmode = 'light' 
-_tabbg1 = '#d9d9d9' 
-_tabbg2 = 'gray40' 
-
-_style_code_ran = 0
-def _style_code():
-    global _style_code_ran
-    if _style_code_ran: return        
-    try: version1_support.root.tk.call('source',
-                os.path.join(_location, 'themes', 'default.tcl'))
-    except: pass
-    style = ttk.Style()
-    style.theme_use('default')
-    style.configure('.', font = "TkDefaultFont")
-    if sys.platform == "win32":
-       style.theme_use('winnative')    
-    _style_code_ran = 1
 
 class Toplevel1:
     def __init__(self, top=None):
@@ -39,9 +20,9 @@ class Toplevel1:
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
-        top.title("Toplevel 0")
+        top.title("Configuración de servicio Samba")
         top.configure(background="#d9d9d9")
-        top.configure(highlightbackground="#d9d9d9")
+        top.configure(highlightbackground="#ffdf33")
         top.configure(highlightcolor="#000000")
 
         self.top = top
@@ -72,11 +53,10 @@ class Toplevel1:
         self.botonAccept.configure(highlightbackground="#d9d9d9")
         self.botonAccept.configure(highlightcolor="#000000")
         self.botonAccept.configure(text='''Aceptar''')
-
+        
         self.menubar = tk.Menu(top,font="TkMenuFont",bg=_bgcolor,fg=_fgcolor)
         top.configure(menu = self.menubar)
 
-        _style_code()
         self.navigator = ttk.Notebook(self.top)
         self.navigator.place(relx=0.017, rely=0.022, relheight=0.853
                 , relwidth=0.953)
