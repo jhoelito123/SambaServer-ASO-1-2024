@@ -9,6 +9,14 @@ _location = os.path.dirname(__file__)
 _bgcolor = '#d9d9d9'
 _fgcolor = '#000000'
 
+nameResource = "mis_archivos"
+resource = [
+    ["comment", "Chimichangas"],
+    ["path", "/etc/casa"],
+    ["readOnly", NO],
+    ["create mask", 777]
+]
+
 class Toplevel1:
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
@@ -54,7 +62,7 @@ class Toplevel1:
         self.nameResource.configure(foreground="#000000")
         self.nameResource.configure(highlightbackground="#d9d9d9")
         self.nameResource.configure(highlightcolor="#000000")
-        self.nameResource.configure(text='''users''')
+        self.nameResource.configure(text=nameResource) #global variable dependiendo
 
         self.butonBack = tk.Button(self.top)
         self.butonBack.place(relx=0.75, rely=0.911, height=26, width=67)
@@ -72,13 +80,17 @@ class Toplevel1:
         self.Listbox1.place(relx=0.033, rely=0.068, relheight=0.506
                 , relwidth=0.94)
         self.Listbox1.configure(background="white")
-        self.Listbox1.configure(disabledforeground="#a3a3a3")
-        self.Listbox1.configure(font="TkFixedFont")
+        self.Listbox1.configure(font="-family {Consolas} -size 12")
         self.Listbox1.configure(foreground="#000000")
         self.Listbox1.configure(highlightbackground="#d9d9d9")
         self.Listbox1.configure(highlightcolor="#000000")
-        self.Listbox1.configure(selectbackground="#d9d9d9")
+        self.Listbox1.configure(selectbackground="#feffda")
         self.Listbox1.configure(selectforeground="black")
+        self.Listbox1.insert(tk.END, "{:<20}{}".format("variable", "valor"))
+
+        # Insertar los datos de resource en la Listbox
+        for item in resource:
+                self.Listbox1.insert(tk.END, "{:<20}{}".format(item[0], item[1]))
 
         self.butonSave = tk.Button(self.top)
         self.butonSave.place(relx=0.87, rely=0.911, height=26, width=67)
@@ -115,6 +127,7 @@ class Toplevel1:
         self.botonEdit.configure(highlightbackground="#d9d9d9")
         self.botonEdit.configure(highlightcolor="#000000")
         self.botonEdit.configure(text='''Editar''')
+        self.botonEdit.configure(command=lambda: analiceEdit(self.Listbox1))
 
         self.botonQuit = tk.Button(self.top)
         self.botonQuit.place(relx=0.27, rely=0.587, height=26, width=57)
@@ -127,6 +140,26 @@ class Toplevel1:
         self.botonQuit.configure(highlightbackground="#d9d9d9")
         self.botonQuit.configure(highlightcolor="#000000")
         self.botonQuit.configure(text='''Quitar''')
+
+def analiceEdit(listbox):
+    selected_index = listbox.curselection()
+    if selected_index:
+        selected_item_text = listbox.get(selected_index[0])
+        variable = selected_item_text.split()[0]
+        if variable == "comment":
+            # Acción para el caso de "comment"
+            print("Editar comentario")
+        elif variable == "path":
+            # Acción para el caso de "path"
+            print("Editar ruta")
+        elif variable == "readOnly":
+            # Acción para el caso de "readOnly"
+            print("Editar permisos de lectura/escritura")
+        else:
+            # Acción para otros casos
+            print("Editar otra propiedad")
+    else:
+        print("Ningún elemento seleccionado")
 
 class topRO:
     def __init__(self, top=None):
@@ -777,7 +810,7 @@ class topUmask:
         self.acceptUM.configure(highlightcolor="#000000")
         self.acceptUM.configure(text='''Aceptar''')
 
-def main(*args):
+def main():
     '''Main entry point for the application.'''
     global root
     root = tk.Tk()
@@ -785,21 +818,6 @@ def main(*args):
     global _top1, _w1
     _top1 = root
     _w1 = Toplevel1(_top1)
-    global _top2, _w2
-    _top2 = tk.Toplevel(root)
-    _w2 = topRO(_top2)
-    global _top3, _w3
-    _top3 = tk.Toplevel(root)
-    _w3 = topComment(_top3)
-    global _top4, _w4
-    _top4 = tk.Toplevel(root)
-    _w4 = topPath(_top4)
-    global _top5, _w5
-    _top5 = tk.Toplevel(root)
-    _w5 = newResource(_top5)
-    global _top6, _w6
-    _top6 = tk.Toplevel(root)
-    _w6 = topUmask(_top6)
     root.mainloop()
 
 if __name__ == '__main__':
