@@ -6,8 +6,6 @@ import os.path
 
 _location = os.path.dirname(__file__)
 
-import otraCopy_support
-
 _bgcolor = '#d9d9d9'
 _fgcolor = '#000000'
 
@@ -503,7 +501,15 @@ class topUmask:
         top.configure(highlightcolor="#000000")
 
         self.top = top
-        self.che57 = tk.IntVar()
+        self.cheOR = tk.IntVar()
+        self.cheOW = tk.IntVar()
+        self.cheOX = tk.IntVar()
+        self.cheGR = tk.IntVar()
+        self.cheGW = tk.IntVar()
+        self.cheGX = tk.IntVar()
+        self.cheUR = tk.IntVar()
+        self.cheUW = tk.IntVar()
+        self.cheUX = tk.IntVar()
 
         self.textGroup = tk.Label(self.top)
         self.textGroup.place(relx=0.059, rely=0.442, height=24, width=47)
@@ -547,7 +553,7 @@ class topUmask:
         self.checkOR.configure(highlightbackground="#d9d9d9")
         self.checkOR.configure(highlightcolor="#000000")
         self.checkOR.configure(justify='left')
-        self.checkOR.configure(variable=self.che57)
+        self.checkOR.configure(variable=self.cheOR)
 
         self.checkOW = tk.Checkbutton(self.top)
         self.checkOW.place(relx=0.441, rely=0.575, relheight=0.075
@@ -563,7 +569,7 @@ class topUmask:
         self.checkOW.configure(highlightbackground="#d9d9d9")
         self.checkOW.configure(highlightcolor="#000000")
         self.checkOW.configure(justify='left')
-        self.checkOW.configure(variable=self.che57)
+        self.checkOW.configure(variable=self.cheOW)
 
         self.checkOX = tk.Checkbutton(self.top)
         self.checkOX.place(relx=0.529, rely=0.575, relheight=0.075
@@ -579,7 +585,7 @@ class topUmask:
         self.checkOX.configure(highlightbackground="#d9d9d9")
         self.checkOX.configure(highlightcolor="#000000")
         self.checkOX.configure(justify='left')
-        self.checkOX.configure(variable=self.che57)
+        self.checkOX.configure(variable=self.cheOX)
 
         self.checkGR = tk.Checkbutton(self.top)
         self.checkGR.place(relx=0.353, rely=0.442, relheight=0.075
@@ -595,7 +601,7 @@ class topUmask:
         self.checkGR.configure(highlightbackground="#d9d9d9")
         self.checkGR.configure(highlightcolor="#000000")
         self.checkGR.configure(justify='left')
-        self.checkGR.configure(variable=self.che57)
+        self.checkGR.configure(variable=self.cheGR)
 
         self.checkGW = tk.Checkbutton(self.top)
         self.checkGW.place(relx=0.441, rely=0.442, relheight=0.075
@@ -611,7 +617,7 @@ class topUmask:
         self.checkGW.configure(highlightbackground="#d9d9d9")
         self.checkGW.configure(highlightcolor="#000000")
         self.checkGW.configure(justify='left')
-        self.checkGW.configure(variable=self.che57)
+        self.checkGW.configure(variable=self.cheGW)
 
         self.checkGX = tk.Checkbutton(self.top)
         self.checkGX.place(relx=0.529, rely=0.442, relheight=0.075
@@ -627,7 +633,7 @@ class topUmask:
         self.checkGX.configure(highlightbackground="#d9d9d9")
         self.checkGX.configure(highlightcolor="#000000")
         self.checkGX.configure(justify='left')
-        self.checkGX.configure(variable=self.che57)
+        self.checkGX.configure(variable=self.cheGX)
 
         self.checkUW = tk.Checkbutton(self.top)
         self.checkUW.place(relx=0.441, rely=0.31, relheight=0.075
@@ -643,7 +649,7 @@ class topUmask:
         self.checkUW.configure(highlightbackground="#d9d9d9")
         self.checkUW.configure(highlightcolor="#000000")
         self.checkUW.configure(justify='left')
-        self.checkUW.configure(variable=self.che57)
+        self.checkUW.configure(variable=self.cheUW)
 
         self.checkUX = tk.Checkbutton(self.top)
         self.checkUX.place(relx=0.529, rely=0.31, relheight=0.075
@@ -659,7 +665,7 @@ class topUmask:
         self.checkUX.configure(highlightbackground="#d9d9d9")
         self.checkUX.configure(highlightcolor="#000000")
         self.checkUX.configure(justify='left')
-        self.checkUX.configure(variable=self.che57)
+        self.checkUX.configure(variable=self.cheUX)
 
         self.checkUR = tk.Checkbutton(self.top)
         self.checkUR.place(relx=0.353, rely=0.31, relheight=0.075
@@ -675,7 +681,7 @@ class topUmask:
         self.checkUR.configure(highlightbackground="#d9d9d9")
         self.checkUR.configure(highlightcolor="#000000")
         self.checkUR.configure(justify='left')
-        self.checkUR.configure(variable=self.che57)
+        self.checkUR.configure(variable=self.cheUR)
 
         self.textUser = tk.Label(self.top)
         self.textUser.place(relx=0.059, rely=0.31, height=24, width=48)
@@ -771,8 +777,30 @@ class topUmask:
         self.acceptUM.configure(highlightcolor="#000000")
         self.acceptUM.configure(text='''Aceptar''')
 
-def start_up():
-    otraCopy_support.main()
+def main(*args):
+    '''Main entry point for the application.'''
+    global root
+    root = tk.Tk()
+    root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
+    global _top1, _w1
+    _top1 = root
+    _w1 = Toplevel1(_top1)
+    global _top2, _w2
+    _top2 = tk.Toplevel(root)
+    _w2 = topRO(_top2)
+    global _top3, _w3
+    _top3 = tk.Toplevel(root)
+    _w3 = topComment(_top3)
+    global _top4, _w4
+    _top4 = tk.Toplevel(root)
+    _w4 = topPath(_top4)
+    global _top5, _w5
+    _top5 = tk.Toplevel(root)
+    _w5 = newResource(_top5)
+    global _top6, _w6
+    _top6 = tk.Toplevel(root)
+    _w6 = topUmask(_top6)
+    root.mainloop()
 
 if __name__ == '__main__':
-    otraCopy_support.main()
+    main()

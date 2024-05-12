@@ -6,11 +6,8 @@ import os.path
 
 _location = os.path.dirname(__file__)
 
-import version1_support
-
 _bgcolor = '#d9d9d9'
 _fgcolor = '#000000'
-
 
 class Toplevel1:
     def __init__(self, top=None):
@@ -21,7 +18,7 @@ class Toplevel1:
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
-        top.title("Cpnfiguración servicio Samba")
+        top.title("Configuración servicio Samba")
         top.configure(background="#d9d9d9")
         top.configure(highlightbackground="#d9d9d9")
         top.configure(highlightcolor="#000000")
@@ -329,30 +326,10 @@ class Toplevel1:
         self.botonAccept.configure(highlightcolor="#000000")
         self.botonAccept.configure(text='''Aceptar''')
 
-        self.labelLogo = tk.Label(self.top)
-        self.labelLogo.place(relx=0.022, rely=0.895, height=58, width=122)
-        self.labelLogo.configure(activebackground="#d9d9d9")
-        self.labelLogo.configure(activeforeground="black")
-        self.labelLogo.configure(anchor='w')
-        self.labelLogo.configure(background="#d9d9d9")
-        self.labelLogo.configure(compound='left')
-        self.labelLogo.configure(disabledforeground="#a3a3a3")
-        self.labelLogo.configure(font="-family {Segoe UI} -size 9")
-        self.labelLogo.configure(foreground="#000000")
-        self.labelLogo.configure(highlightbackground="#d9d9d9")
-        self.labelLogo.configure(highlightcolor="#000000")
-        photo_location = os.path.join(_location,"LogoSamba.png")
-        global _img0
-        _img0 = tk.PhotoImage(file=photo_location)
-        self.labelLogo.configure(image=_img0)
-
-# The following code is added to facilitate the Scrolled widgets you specified.
 class AutoScroll(object):
     '''Configure the scrollbars for a widget.'''
     def __init__(self, master):
-        #  Rozen. Added the try-except clauses so that this class
-        #  could be used for scrolled entry widget for which vertical
-        #  scrolling is not supported. 5/7/14.
+
         try:
             vsb = ttk.Scrollbar(master, orient='vertical', command=self.yview)
         except:
@@ -457,8 +434,17 @@ def _on_shiftmouse(event, widget):
             widget.xview_scroll(-1, 'units')
         elif event.num == 5:
             widget.xview_scroll(1, 'units')
-def start_up():
-    version1_support.main()
+
+def start_up_Interface():
+    '''Main entry point for the application.'''
+    global root
+    root = tk.Tk()
+    root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
+    # Creates a toplevel widget.
+    global _top1, _w1
+    _top1 = root
+    _w1 = Toplevel1(_top1)
+    root.mainloop()
 
 if __name__ == '__main__':
-    version1_support.main()
+    start_up_Interface()
