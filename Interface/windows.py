@@ -127,7 +127,7 @@ class Toplevel1:
         self.botonEdit.configure(highlightbackground="#d9d9d9")
         self.botonEdit.configure(highlightcolor="#000000")
         self.botonEdit.configure(text='''Editar''')
-        self.botonEdit.configure(command=lambda: analiceEdit(self.Listbox1))
+        self.botonEdit.configure(command=lambda: analiceEdit(self.Listbox1,self))
 
         self.botonQuit = tk.Button(self.top)
         self.botonQuit.place(relx=0.27, rely=0.587, height=26, width=57)
@@ -141,16 +141,20 @@ class Toplevel1:
         self.botonQuit.configure(highlightcolor="#000000")
         self.botonQuit.configure(text='''Quitar''')
 
-def analiceEdit(listbox):
+def analiceEdit(listbox,self):
     selected_index = listbox.curselection()
     if selected_index:
         selected_item_text = listbox.get(selected_index[0])
         variable = selected_item_text.split()[0]
         if variable == "comment":
-            # Acción para el caso de "comment"
+            current_comment = selected_item_text.split()[1]  # Obtener el comentario actual
+            self.edit_comment_window = tk.Toplevel(self.top)
+            top_comment_instance = topComment(self.edit_comment_window, initial_comment=current_comment)
             print("Editar comentario")
         elif variable == "path":
-            # Acción para el caso de "path"
+            current_path = selected_item_text.split()[1]
+            self.edit_path_window = tk.Toplevel(self.top)
+            top_path_instance = topPath(self.edit_path_window,initial_path = current_path)
             print("Editar ruta")
         elif variable == "readOnly":
             # Acción para el caso de "readOnly"
@@ -234,11 +238,15 @@ class topRO:
         self.labelRO.configure(text='''Read Only?''')
 
 class topComment:
-    def __init__(self, top=None):
-        '''This class configures and populates the toplevel window.
-           top is the toplevel containing window.'''
+    def __init__(self, top=None, initial_comment=""):
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
 
-        top.geometry("250x116+1587+35")
+        # Calcular las coordenadas para centrar la ventana
+        x = (screen_width - 250) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 116) // 2  # La altura de la ventana es 116
+
+        top.geometry(f"250x116+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -249,20 +257,15 @@ class topComment:
 
         self.top = top
 
-        self.cancelComment = tk.Button(self.top)
-        self.cancelComment.place(relx=0.4, rely=0.69, height=26, width=57)
-        self.cancelComment.configure(activebackground="#d9d9d9")
-        self.cancelComment.configure(activeforeground="black")
-        self.cancelComment.configure(background="#d9d9d9")
-        self.cancelComment.configure(disabledforeground="#a3a3a3")
-        self.cancelComment.configure(font="-family {Comic Sans MS} -size 9")
-        self.cancelComment.configure(foreground="#000000")
-        self.cancelComment.configure(highlightbackground="#d9d9d9")
-        self.cancelComment.configure(highlightcolor="#000000")
-        self.cancelComment.configure(text='''Cancelar''')
-
-        self.entryComment = tk.Entry(self.top)
+        def update_comment(self):
+                new_comment = self.entryComment.get()
+                # Aquí puedes agregar la lógica para guardar el comentario actualizado
+                print("Comentario actualizado:", new_comment)
+                self.top.destroy()
+        
+        self.entryComment = tk.Entry(top)
         self.entryComment.place(relx=0.12, rely=0.345, height=20, relwidth=0.776)
+        self.entryComment.insert(0, initial_comment)
 
         self.entryComment.configure(background="white")
         self.entryComment.configure(disabledforeground="#a3a3a3")
@@ -299,9 +302,23 @@ class topComment:
         self.acceptComment.configure(highlightbackground="#d9d9d9")
         self.acceptComment.configure(highlightcolor="#000000")
         self.acceptComment.configure(text='''Aceptar''')
+        self.acceptComment.configure(command=lambda: update_comment(self))
+        
+        self.cancelComment = tk.Button(self.top)
+        self.cancelComment.place(relx=0.4, rely=0.69, height=26, width=57)
+        self.cancelComment.configure(activebackground="#d9d9d9")
+        self.cancelComment.configure(activeforeground="black")
+        self.cancelComment.configure(background="#d9d9d9")
+        self.cancelComment.configure(disabledforeground="#a3a3a3")
+        self.cancelComment.configure(font="-family {Comic Sans MS} -size 9")
+        self.cancelComment.configure(foreground="#000000")
+        self.cancelComment.configure(highlightbackground="#d9d9d9")
+        self.cancelComment.configure(highlightcolor="#000000")
+        self.cancelComment.configure(text='''Cancelar''')
+        self.cancelComment.configure(command=self.top.destroy)
 
 class topPath:
-    def __init__(self, top=None):
+    def __init__(self, top=None,initial_path=""):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
 
@@ -316,6 +333,12 @@ class topPath:
 
         self.top = top
 
+        def update_path(self):
+                new_path = self.entryPath.get()
+                # Aquí puedes agregar la lógica para guardar el comentario actualizado
+                print("Comentario actualizado:", new_path)
+                self.top.destroy()
+        
         self.acceptPath = tk.Button(self.top)
         self.acceptPath.place(relx=0.68, rely=0.69, height=26, width=57)
         self.acceptPath.configure(activebackground="#d9d9d9")
@@ -327,6 +350,7 @@ class topPath:
         self.acceptPath.configure(highlightbackground="#d9d9d9")
         self.acceptPath.configure(highlightcolor="#000000")
         self.acceptPath.configure(text='''Aceptar''')
+        self.acceptPath.configure(command=lambda: update_path(self))
 
         self.entryPath = tk.Entry(self.top)
         self.entryPath.place(relx=0.083, rely=0.345, height=20, relwidth=0.805)
@@ -339,6 +363,7 @@ class topPath:
         self.entryPath.configure(insertbackground="#000000")
         self.entryPath.configure(selectbackground="#d9d9d9")
         self.entryPath.configure(selectforeground="black")
+        self.entryPath.insert(0, initial_path)
 
         self.cancelPath = tk.Button(self.top)
         self.cancelPath.place(relx=0.398, rely=0.69, height=26, width=57)
@@ -351,6 +376,7 @@ class topPath:
         self.cancelPath.configure(highlightbackground="#d9d9d9")
         self.cancelPath.configure(highlightcolor="#000000")
         self.cancelPath.configure(text='''Cancelar''')
+        self.cancelPath.configure(command=top.destroy)
 
         self.labelP = tk.Label(self.top)
         self.labelP.place(relx=0.415, rely=0.086, height=20, width=42)
