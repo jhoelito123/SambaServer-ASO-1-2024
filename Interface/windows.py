@@ -157,7 +157,9 @@ def analiceEdit(listbox,self):
             top_path_instance = topPath(self.edit_path_window,initial_path = current_path)
             print("Editar ruta")
         elif variable == "readOnly":
-            # Acción para el caso de "readOnly"
+            current_ro = selected_item_text.split()[1]
+            self.edit_ro = tk.Toplevel(self.top)
+            top_ro_instance = topRO(self.edit_ro,initial_ro=current_ro)
             print("Editar permisos de lectura/escritura")
         else:
             # Acción para otros casos
