@@ -13,8 +13,8 @@ nameResource = "mis_archivos"
 resource = [
     ["comment", "Chimichangas"],
     ["path", "/etc/casa"],
-    ["readOnly", NO],
-    ["create mask", 777]
+    ["readOnly", YES],
+    ["createMask", 353]
 ]
 
 class Toplevel1:
@@ -161,18 +161,19 @@ def analiceEdit(listbox,self):
             self.edit_ro = tk.Toplevel(self.top)
             top_ro_instance = topRO(self.edit_ro,initial_ro=current_ro)
             print("Editar permisos de lectura/escritura")
-        else:
-            # Acción para otros casos
+        elif variable == "createMask":
             print("Editar otra propiedad")
+            currentMask = selected_item_text.split()[1]
+            self.editMask = tk.Toplevel(self.top)
+            top_mask = topUmask(self.editMask,initialMask=currentMask)    
+        else:
+            print("Caso aparte")
     else:
         print("Ningún elemento seleccionado")
 
 class topRO:
-    def __init__(self, top=None):
-        '''This class configures and populates the toplevel window.
-           top is the toplevel containing window.'''
-
-        top.geometry("331x116+1242+32")
+    def __init__(self, top=None,initial_ro=""):
+        top.geometry("331x116+850+202")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -182,8 +183,17 @@ class topRO:
         top.configure(highlightcolor="#000000")
 
         self.top = top
-        self.che51 = tk.IntVar()
+        self.che51 = tk.BooleanVar(value=True if int(initial_ro) == 1 else False)
 
+        def update_RO(self):
+                if self.che51.get():
+                        ro_status = "YES"
+                else:
+                        ro_status = "NO"
+                # Aquí puedes agregar la lógica para guardar el estado actualizado
+                print("Read Only actualizado:", ro_status)
+                self.top.destroy()
+        
         self.checkReadOnly = tk.Checkbutton(self.top)
         self.checkReadOnly.place(relx=0.393, rely=0.319, relheight=0.198
                 , relwidth=0.184)
@@ -212,6 +222,7 @@ class topRO:
         self.acceptRO.configure(highlightbackground="#d9d9d9")
         self.acceptRO.configure(highlightcolor="#000000")
         self.acceptRO.configure(text='''Aceptar''')
+        self.acceptRO.configure(command=lambda: update_RO(self))
 
         self.cancelRO = tk.Button(self.top)
         self.cancelRO.place(relx=0.574, rely=0.69, height=26, width=57)
@@ -224,6 +235,7 @@ class topRO:
         self.cancelRO.configure(highlightbackground="#d9d9d9")
         self.cancelRO.configure(highlightcolor="#000000")
         self.cancelRO.configure(text='''Cancelar''')
+        self.cancelRO.configure(command=self.top.destroy)
 
         self.labelRO = tk.Label(self.top)
         self.labelRO.place(relx=0.363, rely=0.078, height=20, width=94)
@@ -548,10 +560,13 @@ class newResource:
         self.labelNR.configure(text='''Nuevo recurso compartido''')
 
 class topUmask:
-    def __init__(self, top=None):
-        '''This class configures and populates the toplevel window.
-           top is the toplevel containing window.'''
-
+    def __init__(self, top=None,initialMask=""):
+        firstDigit = int(int(initialMask) /100)
+        secondDigit = int((int(initialMask) / 10)%10)
+        threeDigit = int(int(initialMask)%10) 
+        print(firstDigit)
+        print(secondDigit)
+        print(threeDigit)
         top.geometry("340x226+942+657")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -562,15 +577,36 @@ class topUmask:
         top.configure(highlightcolor="#000000")
 
         self.top = top
-        self.cheOR = tk.IntVar()
-        self.cheOW = tk.IntVar()
-        self.cheOX = tk.IntVar()
-        self.cheGR = tk.IntVar()
-        self.cheGW = tk.IntVar()
-        self.cheGX = tk.IntVar()
-        self.cheUR = tk.IntVar()
-        self.cheUW = tk.IntVar()
-        self.cheUX = tk.IntVar()
+        self.cheOR = tk.BooleanVar()
+        self.cheOW = tk.BooleanVar()
+        self.cheOX = tk.BooleanVar()
+        self.cheGR = tk.BooleanVar()
+        self.cheGW = tk.BooleanVar()
+        self.cheGX = tk.BooleanVar()
+        self.cheUR = tk.BooleanVar()
+        self.cheUW = tk.BooleanVar()
+        self.cheUX = tk.BooleanVar()
+        
+        if firstDigit >= 4:
+            self.cheUR.set(True)
+        if firstDigit % 4 >= 2:
+            self.cheUW.set(True)
+        if firstDigit % 2 >= 1:
+            self.cheUX.set(True)
+            
+        if secondDigit >= 4:
+            self.cheGR.set(True)
+        if secondDigit % 4 >= 2:
+            self.cheGW.set(True)
+        if secondDigit % 2 >= 1:
+            self.cheGX.set(True)
+
+        if threeDigit >= 4:
+            self.cheOR.set(True)
+        if threeDigit % 4 >= 2:
+            self.cheOW.set(True)
+        if threeDigit % 2 >= 1:
+            self.cheOX.set(True)
 
         self.textGroup = tk.Label(self.top)
         self.textGroup.place(relx=0.059, rely=0.442, height=24, width=47)
@@ -743,7 +779,7 @@ class topUmask:
         self.checkUR.configure(highlightcolor="#000000")
         self.checkUR.configure(justify='left')
         self.checkUR.configure(variable=self.cheUR)
-
+        
         self.textUser = tk.Label(self.top)
         self.textUser.place(relx=0.059, rely=0.31, height=24, width=48)
         self.textUser.configure(activebackground="#d9d9d9")
@@ -825,6 +861,7 @@ class topUmask:
         self.cancelUM.configure(highlightbackground="#d9d9d9")
         self.cancelUM.configure(highlightcolor="#000000")
         self.cancelUM.configure(text='''Cancelar''')
+        self.cancelUM.configure(command=self.top.destroy)
 
         self.acceptUM = tk.Button(self.top)
         self.acceptUM.place(relx=0.794, rely=0.796, height=26, width=57)
