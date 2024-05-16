@@ -7,7 +7,7 @@ import os.path
 _location = os.path.dirname(__file__)
 
 class intro:
-    def __init__(self, top=None):
+    def __init__(self, top=None, navigate_callback=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
 
@@ -21,7 +21,8 @@ class intro:
         top.configure(highlightcolor="#000000")
 
         self.top = top
-
+        self.navigate_callback = navigate_callback
+        
         self.titleApp = tk.Label(self.top)
         self.titleApp.place(relx=0.015, rely=0.059, height=61, width=654)
         self.titleApp.configure(activebackground="#d9d9d9")
@@ -48,7 +49,7 @@ class intro:
         self.logoSUSE.configure(foreground="#000000")
         self.logoSUSE.configure(highlightbackground="#d9d9d9")
         self.logoSUSE.configure(highlightcolor="#000000")
-        photo_location = os.path.join(_location,"src/suse logo.png")
+        photo_location = os.path.join(_location,"src/suseLogo.png")
         global _img0
         _img0 = tk.PhotoImage(file=photo_location)
         self.logoSUSE.configure(image=_img0)
@@ -234,14 +235,16 @@ class intro:
         self.Button1.configure(highlightbackground="#d9d9d9")
         self.Button1.configure(highlightcolor="#000000")
         self.Button1.configure(text='''Enter''')
+        self.Button1.configure(command=self.navigate_callback)
 
-root = tk.Tk()
 
-def start_up():
-    '''Inicializa la aplicación.'''
+
+def start_up(parent,navigate_callback):
+    root = tk.Toplevel(parent)
     root.deiconify()
     root.protocol('WM_DELETE_WINDOW', root.destroy)
-    _w1 = intro(root)
+    _w1 = intro(root,navigate_callback)
+    _w1 = root
     root.mainloop()
 
 if __name__ == '__main__':

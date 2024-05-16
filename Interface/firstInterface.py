@@ -10,10 +10,7 @@ _bgcolor = '#d9d9d9'
 _fgcolor = '#000000'
 
 class Toplevel1:
-    def __init__(self, top=None):
-        '''This class configures and populates the toplevel window.
-           top is the toplevel containing window.'''
-
+    def __init__(self, top=None, navigate_callback=None):
         top.geometry("915x581+402+99")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -24,6 +21,7 @@ class Toplevel1:
         top.configure(highlightcolor="#000000")
 
         self.top = top
+        self.navigate_callback = navigate_callback
         self.che63 = tk.IntVar()
         self.che69 = tk.IntVar()
         self.che64 = tk.IntVar()
@@ -313,6 +311,7 @@ class Toplevel1:
         self.botonCancel.configure(highlightbackground="#d9d9d9")
         self.botonCancel.configure(highlightcolor="#000000")
         self.botonCancel.configure(text='''Cancelar''')
+        self.botonCancel.configure(command=self.navigate_callback)
 
         self.botonAccept = tk.Button(self.top)
         self.botonAccept.place(relx=0.897, rely=0.905, height=26, width=67)
@@ -435,15 +434,14 @@ def _on_shiftmouse(event, widget):
         elif event.num == 5:
             widget.xview_scroll(1, 'units')
 
-def start_up_Interface():
-    '''Main entry point for the application.'''
+def start_up_Interface(parent,navigate_callback):
     global root
-    root = tk.Tk()
+    root = tk.Toplevel(parent)
     root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
     # Creates a toplevel widget.
     global _top1, _w1
     _top1 = root
-    _w1 = Toplevel1(_top1)
+    _w1 = Toplevel1(_top1,navigate_callback)
     root.mainloop()
 
 if __name__ == '__main__':

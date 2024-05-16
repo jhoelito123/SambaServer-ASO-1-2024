@@ -14,7 +14,7 @@ resource = [
     ["comment", "Chimichangas"],
     ["path", "/etc/casa"],
     ["readOnly", YES],
-    ["createMask", 353]
+    ["createMask", 352]
 ]
 
 class Toplevel1:
@@ -86,7 +86,7 @@ class Toplevel1:
         self.Listbox1.configure(highlightcolor="#000000")
         self.Listbox1.configure(selectbackground="#feffda")
         self.Listbox1.configure(selectforeground="black")
-        self.Listbox1.insert(tk.END, "{:<20}{}".format("variable", "valor"))
+        self.Listbox1.insert(tk.END, "{:<20}{}".format("- -variable- -", "- -valor- -"))
 
         # Insertar los datos de resource en la Listbox
         for item in resource:
