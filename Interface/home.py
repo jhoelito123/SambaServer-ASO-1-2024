@@ -238,14 +238,14 @@ class intro:
         self.Button1.configure(command=self.navigate_callback)
 
 
-
-def start_up(parent,navigate_callback):
-    root = tk.Toplevel(parent)
-    root.deiconify()
-    root.protocol('WM_DELETE_WINDOW', root.destroy)
-    _w1 = intro(root,navigate_callback)
-    _w1 = root
-    root.mainloop()
+#PA QUE TANTAS VENTANAS y el otro bucle (igual me estoy equivocando :v)
+def start_up(parent=None,navigate_callback=None):
+    # root = tk.Toplevel(parent)
+    # root.deiconify()
+    # root.protocol('WM_DELETE_WINDOW', root.destroy)
+    _w1 = intro(parent,navigate_callback)
+    # _w1 = root
+    # root.mainloop()
 
 if __name__ == '__main__':
     start_up()

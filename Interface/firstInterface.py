@@ -434,15 +434,15 @@ def _on_shiftmouse(event, widget):
         elif event.num == 5:
             widget.xview_scroll(1, 'units')
 
-def start_up_Interface(parent,navigate_callback):
-    global root
-    root = tk.Toplevel(parent)
-    root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
+def start_up_Interface(parent=None,navigate_callback=None):
+    # root = tk.Toplevel(parent)
+    # root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
+    
     # Creates a toplevel widget.
-    global _top1, _w1
-    _top1 = root
-    _w1 = Toplevel1(_top1,navigate_callback)
-    root.mainloop()
+    # global _top1, _w1
+    # _top1 = root
+    _w1 = Toplevel1(parent,navigate_callback)
+    # root.mainloop()
 
 if __name__ == '__main__':
     start_up_Interface()
