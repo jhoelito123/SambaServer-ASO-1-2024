@@ -238,7 +238,7 @@ class intro:
         self.Button1.configure(command=self.navigate_callback)
 
 
-#PA QUE TANTAS VENTANAS (igual me estoy equivocando :v)
+#PA QUE TANTAS VENTANAS y el otro bucle (igual me estoy equivocando :v)
 def start_up(parent=None,navigate_callback=None):
     # root = tk.Toplevel(parent)
     # root.deiconify()
