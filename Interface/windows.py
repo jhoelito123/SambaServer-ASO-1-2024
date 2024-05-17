@@ -14,14 +14,22 @@ resource = [
     ["comment", "Chimichangas"],
     ["path", "/etc/casa"],
     ["readOnly", YES],
-    ["createMask", 353]
+    ["createMask", 777]
 ]
+
+resource2 = {
+    'comment': "chimichangas",
+    'path': "/etc/casa",
+    'readOnly': 'YES',
+    'createMask': 777,
+}
 
 class Toplevel1:
     def __init__(self, top=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
 
+        #VENTANA DE ESTA INTERFAZ
         top.geometry("667x528+564+92")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -49,7 +57,7 @@ class Toplevel1:
 
         self.menubar = tk.Menu(top,font="TkMenuFont",bg=_bgcolor,fg=_fgcolor)
         top.configure(menu = self.menubar)
-
+        
         self.nameResource = tk.Label(self.top)
         self.nameResource.place(relx=0.54, rely=0.0, height=25, width=271)
         self.nameResource.configure(activebackground="#d9d9d9")
@@ -86,12 +94,12 @@ class Toplevel1:
         self.Listbox1.configure(highlightcolor="#000000")
         self.Listbox1.configure(selectbackground="#feffda")
         self.Listbox1.configure(selectforeground="black")
-        self.Listbox1.insert(tk.END, "{:<20}{}".format("variable", "valor"))
+        self.Listbox1.insert(tk.END, "{:<20}{}".format("- -variable- -", "- -valor- -"))
 
         # Insertar los datos de resource en la Listbox
-        for item in resource:
-                self.Listbox1.insert(tk.END, "{:<20}{}".format(item[0], item[1]))
-
+        updateListBox(self.Listbox1)
+                
+        # Botones para agregar, editar y quitar    
         self.butonSave = tk.Button(self.top)
         self.butonSave.place(relx=0.87, rely=0.911, height=26, width=67)
         self.butonSave.configure(activebackground="#d9d9d9")
@@ -140,39 +148,46 @@ class Toplevel1:
         self.botonQuit.configure(highlightbackground="#d9d9d9")
         self.botonQuit.configure(highlightcolor="#000000")
         self.botonQuit.configure(text='''Quitar''')
-
+        
+def updateListBox(listbox):
+    listbox.delete(0, tk.END)
+    for clave, valor in resource2.items():
+        listbox.insert(tk.END, "{:<20}{}".format(clave, valor))
+                    
+#EVENTOS DEL LOS BOTONES AGREGAR, EDITAR, QUITAR        
 def analiceEdit(listbox,self):
     selected_index = listbox.curselection()
     if selected_index:
         selected_item_text = listbox.get(selected_index[0])
         variable = selected_item_text.split()[0]
+        
         if variable == "comment":
             current_comment = selected_item_text.split()[1]  # Obtener el comentario actual
             self.edit_comment_window = tk.Toplevel(self.top)
-            top_comment_instance = topComment(self.edit_comment_window, initial_comment=current_comment)
+            top_comment_instance = topComment(self.edit_comment_window, initial_comment=current_comment, listbox=listbox)
             print("Editar comentario")
         elif variable == "path":
             current_path = selected_item_text.split()[1]
             self.edit_path_window = tk.Toplevel(self.top)
-            top_path_instance = topPath(self.edit_path_window,initial_path = current_path)
+            top_path_instance = topPath(self.edit_path_window,initial_path = current_path, listbox=listbox)
             print("Editar ruta")
         elif variable == "readOnly":
             current_ro = selected_item_text.split()[1]
             self.edit_ro = tk.Toplevel(self.top)
-            top_ro_instance = topRO(self.edit_ro,initial_ro=current_ro)
+            top_ro_instance = topRO(self.edit_ro,initial_ro=current_ro, listbox=listbox)
             print("Editar permisos de lectura/escritura")
         elif variable == "createMask":
             print("Editar otra propiedad")
             currentMask = selected_item_text.split()[1]
             self.editMask = tk.Toplevel(self.top)
-            top_mask = topUmask(self.editMask,initialMask=currentMask)    
+            top_mask = topUmask(self.editMask,initialMask=currentMask, listbox=listbox)    
         else:
             print("Caso aparte")
     else:
         print("Ningún elemento seleccionado")
 
 class topRO:
-    def __init__(self, top=None,initial_ro=""):
+    def __init__(self, top=None,initial_ro="", listbox=None):
         top.geometry("331x116+850+202")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -183,7 +198,8 @@ class topRO:
         top.configure(highlightcolor="#000000")
 
         self.top = top
-        self.che51 = tk.BooleanVar(value=True if int(initial_ro) == 1 else False)
+        self.listbox=listbox
+        self.che51 = tk.BooleanVar(value=True if initial_ro=='YES' else False)
 
         def update_RO(self):
                 if self.che51.get():
@@ -192,6 +208,8 @@ class topRO:
                         ro_status = "NO"
                 # Aquí puedes agregar la lógica para guardar el estado actualizado
                 print("Read Only actualizado:", ro_status)
+                resource2['readOnly'] = ro_status
+                updateListBox(self.listbox)
                 self.top.destroy()
         
         self.checkReadOnly = tk.Checkbutton(self.top)
@@ -252,7 +270,7 @@ class topRO:
         self.labelRO.configure(text='''Read Only?''')
 
 class topComment:
-    def __init__(self, top=None, initial_comment=""):
+    def __init__(self, top=None, initial_comment="", listbox=None):
         screen_width = root.winfo_screenwidth()
         screen_height = root.winfo_screenheight()
 
@@ -270,11 +288,14 @@ class topComment:
         top.configure(highlightcolor="#000000")
 
         self.top = top
-
+        self.listbox = listbox
+        
         def update_comment(self):
                 new_comment = self.entryComment.get()
                 # Aquí puedes agregar la lógica para guardar el comentario actualizado
                 print("Comentario actualizado:", new_comment)
+                resource2['comment'] = new_comment
+                updateListBox(self.listbox)
                 self.top.destroy()
         
         self.entryComment = tk.Entry(top)
@@ -332,7 +353,7 @@ class topComment:
         self.cancelComment.configure(command=self.top.destroy)
 
 class topPath:
-    def __init__(self, top=None,initial_path=""):
+    def __init__(self, top=None,initial_path="", listbox=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
 
@@ -346,12 +367,15 @@ class topPath:
         top.configure(highlightcolor="#000000")
 
         self.top = top
+        self.listbox = listbox
 
         def update_path(self):
-                new_path = self.entryPath.get()
-                # Aquí puedes agregar la lógica para guardar el comentario actualizado
-                print("Comentario actualizado:", new_path)
-                self.top.destroy()
+            new_path = self.entryPath.get()
+            # Aquí puedes agregar la lógica para guardar el comentario actualizado
+            print("Comentario actualizado:", new_path)
+            resource2['path'] = new_path
+            updateListBox(self.listbox)
+            self.top.destroy()
         
         self.acceptPath = tk.Button(self.top)
         self.acceptPath.place(relx=0.68, rely=0.69, height=26, width=57)
@@ -560,7 +584,7 @@ class newResource:
         self.labelNR.configure(text='''Nuevo recurso compartido''')
 
 class topUmask:
-    def __init__(self, top=None,initialMask=""):
+    def __init__(self, top=None,initialMask="", listbox=None):
         firstDigit = int(int(initialMask) /100)
         secondDigit = int((int(initialMask) / 10)%10)
         threeDigit = int(int(initialMask)%10) 
@@ -577,6 +601,7 @@ class topUmask:
         top.configure(highlightcolor="#000000")
 
         self.top = top
+        self.listbox = listbox
         self.cheOR = tk.BooleanVar()
         self.cheOW = tk.BooleanVar()
         self.cheOX = tk.BooleanVar()
@@ -586,6 +611,8 @@ class topUmask:
         self.cheUR = tk.BooleanVar()
         self.cheUW = tk.BooleanVar()
         self.cheUX = tk.BooleanVar()
+        
+        #Creo que se estan manjenado mal xd
         
         if firstDigit >= 4:
             self.cheUR.set(True)
@@ -607,6 +634,28 @@ class topUmask:
             self.cheOW.set(True)
         if threeDigit % 2 >= 1:
             self.cheOX.set(True)
+            
+        def updateMask(self):
+            firstDigit = 0
+            secondDigit = 0
+            threeDigit = 0
+            
+            if self.cheUR.get(): firstDigit += 4
+            if self.cheUW.get(): firstDigit += 2
+            if self.cheUX.get(): firstDigit += 1
+            
+            if self.cheGR.get(): secondDigit += 4
+            if self.cheGW.get(): secondDigit += 2
+            if self.cheGX.get(): secondDigit += 1
+            
+            if self.cheOR.get(): threeDigit += 4
+            if self.cheOW.get(): threeDigit += 2
+            if self.cheOX.get(): threeDigit += 1
+                        
+            resource2["createMask"] = f'{firstDigit}{secondDigit}{threeDigit}'
+            
+            updateListBox(self.listbox)
+            self.top.destroy()
 
         self.textGroup = tk.Label(self.top)
         self.textGroup.place(relx=0.059, rely=0.442, height=24, width=47)
@@ -651,6 +700,7 @@ class topUmask:
         self.checkOR.configure(highlightcolor="#000000")
         self.checkOR.configure(justify='left')
         self.checkOR.configure(variable=self.cheOR)
+        if(self.cheOR.get()): self.checkOR.select()
 
         self.checkOW = tk.Checkbutton(self.top)
         self.checkOW.place(relx=0.441, rely=0.575, relheight=0.075
@@ -667,6 +717,7 @@ class topUmask:
         self.checkOW.configure(highlightcolor="#000000")
         self.checkOW.configure(justify='left')
         self.checkOW.configure(variable=self.cheOW)
+        if(self.cheOW.get()): self.checkOW.select()
 
         self.checkOX = tk.Checkbutton(self.top)
         self.checkOX.place(relx=0.529, rely=0.575, relheight=0.075
@@ -683,6 +734,9 @@ class topUmask:
         self.checkOX.configure(highlightcolor="#000000")
         self.checkOX.configure(justify='left')
         self.checkOX.configure(variable=self.cheOX)
+        self.checkOX.configure(command= lambda: print(self.cheOX.get()))
+        if(self.cheOX.get()): self.checkOX.select()
+        
 
         self.checkGR = tk.Checkbutton(self.top)
         self.checkGR.place(relx=0.353, rely=0.442, relheight=0.075
@@ -699,6 +753,7 @@ class topUmask:
         self.checkGR.configure(highlightcolor="#000000")
         self.checkGR.configure(justify='left')
         self.checkGR.configure(variable=self.cheGR)
+        if(self.cheGR.get()): self.checkGR.select()
 
         self.checkGW = tk.Checkbutton(self.top)
         self.checkGW.place(relx=0.441, rely=0.442, relheight=0.075
@@ -715,6 +770,7 @@ class topUmask:
         self.checkGW.configure(highlightcolor="#000000")
         self.checkGW.configure(justify='left')
         self.checkGW.configure(variable=self.cheGW)
+        if(self.cheGW.get()): self.checkGW.select()
 
         self.checkGX = tk.Checkbutton(self.top)
         self.checkGX.place(relx=0.529, rely=0.442, relheight=0.075
@@ -731,6 +787,7 @@ class topUmask:
         self.checkGX.configure(highlightcolor="#000000")
         self.checkGX.configure(justify='left')
         self.checkGX.configure(variable=self.cheGX)
+        if(self.cheGW.get()): self.checkGW.select()
 
         self.checkUW = tk.Checkbutton(self.top)
         self.checkUW.place(relx=0.441, rely=0.31, relheight=0.075
@@ -747,6 +804,7 @@ class topUmask:
         self.checkUW.configure(highlightcolor="#000000")
         self.checkUW.configure(justify='left')
         self.checkUW.configure(variable=self.cheUW)
+        if(self.cheUW.get()): self.checkUW.select()
 
         self.checkUX = tk.Checkbutton(self.top)
         self.checkUX.place(relx=0.529, rely=0.31, relheight=0.075
@@ -763,6 +821,7 @@ class topUmask:
         self.checkUX.configure(highlightcolor="#000000")
         self.checkUX.configure(justify='left')
         self.checkUX.configure(variable=self.cheUX)
+        if(self.cheUX.get()): self.checkUX.select()
 
         self.checkUR = tk.Checkbutton(self.top)
         self.checkUR.place(relx=0.353, rely=0.31, relheight=0.075
@@ -779,6 +838,7 @@ class topUmask:
         self.checkUR.configure(highlightcolor="#000000")
         self.checkUR.configure(justify='left')
         self.checkUR.configure(variable=self.cheUR)
+        if(self.cheUR.get()): self.checkUR.select()
         
         self.textUser = tk.Label(self.top)
         self.textUser.place(relx=0.059, rely=0.31, height=24, width=48)
@@ -862,7 +922,7 @@ class topUmask:
         self.cancelUM.configure(highlightcolor="#000000")
         self.cancelUM.configure(text='''Cancelar''')
         self.cancelUM.configure(command=self.top.destroy)
-
+            
         self.acceptUM = tk.Button(self.top)
         self.acceptUM.place(relx=0.794, rely=0.796, height=26, width=57)
         self.acceptUM.configure(activebackground="#d9d9d9")
@@ -874,6 +934,8 @@ class topUmask:
         self.acceptUM.configure(highlightbackground="#d9d9d9")
         self.acceptUM.configure(highlightcolor="#000000")
         self.acceptUM.configure(text='''Aceptar''')
+        self.acceptUM.configure(command=lambda: updateMask(self))
+    
 
 def main():
     '''Main entry point for the application.'''
