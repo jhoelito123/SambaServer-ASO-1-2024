@@ -246,9 +246,10 @@ class Toplevel1:
         self.listActual.configure(foreground="black")
         self.listActual.configure(highlightbackground="#d9d9d9")
         self.listActual.configure(highlightcolor="#d9d9d9")
-        self.listActual.configure(selectbackground="#d9d9d9")
+        self.listActual.configure(selectbackground="#feffda")
         self.listActual.configure(selectforeground="black")
-
+        load_shared_resources(self.listActual)
+        
         self.frameWorkGroup = tk.Frame(self.navigator_t3)
         self.frameWorkGroup.place(relx=0.022, rely=0.102, relheight=0.399
                 , relwidth=0.926)
@@ -324,6 +325,55 @@ class Toplevel1:
         self.botonAccept.configure(highlightbackground="#d9d9d9")
         self.botonAccept.configure(highlightcolor="#000000")
         self.botonAccept.configure(text='''Aceptar''')
+
+def read_smb_conf(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+            lines = [line.strip() for line in lines]
+        return lines
+    except FileNotFoundError:
+        print(f"Error: The file at {file_path} was not found.")
+        return []
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return []
+
+def extract_shared_resources(lines):
+    resources = []
+    current_resource = {}
+    for line in lines:
+        line = line.strip()
+        if line.startswith("[") and line.endswith("]"):
+            if current_resource:
+                resources.append(current_resource)
+                current_resource = {}
+            current_resource["Nombre"] = line[1:-1]
+        elif "=" in line:
+            key, value = line.split("=", 1)
+            current_resource[key.strip()] = value.strip()
+    if current_resource:
+        resources.append(current_resource)
+    return resources
+
+def load_shared_resources(self):
+            file_path = "D:/ASO/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
+            lines = read_smb_conf(file_path)
+            resources = extract_shared_resources(lines)
+            
+            for resource in resources:
+                read_only = resource.get("read only", "No especificado")
+                nombre = resource.get("Nombre", "No especificado")
+                path = resource.get("path", "No especificado")
+                comentario = resource.get("comment", "No especificado")
+                
+                formatted_line = "{:<20} {:<13} {:<27} {:<20}".format(
+                    read_only,
+                    nombre,
+                    path,
+                    comentario
+                )
+                self.insert(tk.END, formatted_line)
 
 class AutoScroll(object):
     '''Configure the scrollbars for a widget.'''
