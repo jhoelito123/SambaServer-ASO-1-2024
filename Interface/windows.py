@@ -10,22 +10,14 @@ _bgcolor = '#d9d9d9'
 _fgcolor = '#000000'
 
 nameResource = "mis_archivos"
-resource = [
-    ["comment", "Chimichangas"],
-    ["path", "/etc/casa"],
-    ["readOnly", YES],
-    ["createMask", 777]
-]
+resourceStatic = [
+] 
 
-resource2 = {
-    'comment': "chimichangas",
-    'path': "/etc/casa",
-    'readOnly': 'YES',
-    'createMask': 777,
+resourceConfig = {
 }
 
 class Toplevel1:
-    def __init__(self, top=None,navigate_callback=None, update_resource_callback=None):
+    def __init__(self, top=None, resource=None, navigate_callback=None, update_resource_callback=None):
         #VENTANA DE ESTA INTERFAZ
         top.geometry("667x528+564+92")
         top.minsize(120, 1)
@@ -35,10 +27,16 @@ class Toplevel1:
         top.configure(background="#d9d9d9")
         top.configure(highlightbackground="#d9d9d9")
         top.configure(highlightcolor="#000000")
-
+        
+        global resourceStatic, resourceConfig
+        self.resource = resource  #recurso pasado
         self.top = top
         self.navigate_callback = navigate_callback
         self.update_resource_callback = update_resource_callback
+        print('Recurso elegido:',self.resource)
+        resourceStatic = self.resource
+        resourceConfig = self.resource
+        print('guarda?',resourceStatic)
         
         self.labelTextTitle = tk.Label(self.top)
         self.labelTextTitle.place(relx=0.25, rely=0.0, height=25, width=205)
@@ -151,7 +149,8 @@ class Toplevel1:
         
 def updateListBox(listbox):
     listbox.delete(0, tk.END)
-    for clave, valor in resource2.items():
+    print(resourceConfig)
+    for clave, valor in resourceConfig.items():
         listbox.insert(tk.END, "{:<20}{}".format(clave, valor))
                     
 #EVENTOS DEL LOS BOTONES AGREGAR, EDITAR, QUITAR        
@@ -208,7 +207,7 @@ class topRO:
                         ro_status = "NO"
                 # Aquí puedes agregar la lógica para guardar el estado actualizado
                 print("Read Only actualizado:", ro_status)
-                resource2['readOnly'] = ro_status
+                resourceConfig['readOnly'] = ro_status
                 updateListBox(self.listbox)
                 self.top.destroy()
         
@@ -294,7 +293,7 @@ class topComment:
                 new_comment = self.entryComment.get()
                 # Aquí puedes agregar la lógica para guardar el comentario actualizado
                 print("Comentario actualizado:", new_comment)
-                resource2['comment'] = new_comment
+                resourceConfig['comment'] = new_comment
                 updateListBox(self.listbox)
                 self.top.destroy()
         
@@ -373,7 +372,7 @@ class topPath:
             new_path = self.entryPath.get()
             # Aquí puedes agregar la lógica para guardar el comentario actualizado
             print("Comentario actualizado:", new_path)
-            resource2['path'] = new_path
+            resourceConfig['path'] = new_path
             updateListBox(self.listbox)
             self.top.destroy()
         
@@ -650,7 +649,7 @@ class topUmask:
             if self.cheOW.get(): threeDigit += 2
             if self.cheOX.get(): threeDigit += 1
                         
-            resource2["createMask"] = f'{firstDigit}{secondDigit}{threeDigit}'
+            resourceConfig["createMask"] = f'{firstDigit}{secondDigit}{threeDigit}'
             
             updateListBox(self.listbox)
             self.top.destroy()

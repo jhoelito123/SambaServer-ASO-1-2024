@@ -361,11 +361,11 @@ def extract_shared_resources(lines):
         resources.append(current_resource)
     return resources
 
+file_path = "D:/ASO/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
+lines = read_smb_conf(file_path)
+resources = extract_shared_resources(lines)
+
 def load_shared_resources(self):
-            file_path = "D:/ASO/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
-            lines = read_smb_conf(file_path)
-            resources = extract_shared_resources(lines)
-            
             for resource in resources:
                 read_only = resource.get("read only", "No especificado")
                 nombre = resource.get("Nombre", "No especificado")
@@ -380,11 +380,14 @@ def load_shared_resources(self):
                 )
                 self.insert(tk.END, formatted_line)
 
-def edit(self,show_windows_callback):
-        selected_index = self.listActual.curselection()
-        if selected_index:
-            selected_resource = self.listActual.get(selected_index)
-            show_windows_callback(selected_resource)
+def edit(self, show_windows_callback):
+    selected_index = self.listActual.curselection()
+    if selected_index:
+        index = selected_index[0]  # Obtener el índice del recurso seleccionado
+        selected_resource = resources[index]  # Obtener el recurso completo usando el índice
+        print(selected_resource)
+        show_windows_callback(selected_resource)
+            
 
 class AutoScroll(object):
     '''Configure the scrollbars for a widget.'''
