@@ -25,10 +25,7 @@ resource2 = {
 }
 
 class Toplevel1:
-    def __init__(self, top=None):
-        '''This class configures and populates the toplevel window.
-           top is the toplevel containing window.'''
-
+    def __init__(self, top=None,navigate_callback=None, update_resource_callback=None):
         #VENTANA DE ESTA INTERFAZ
         top.geometry("667x528+564+92")
         top.minsize(120, 1)
@@ -40,7 +37,9 @@ class Toplevel1:
         top.configure(highlightcolor="#000000")
 
         self.top = top
-
+        self.navigate_callback = navigate_callback
+        self.update_resource_callback = update_resource_callback
+        
         self.labelTextTitle = tk.Label(self.top)
         self.labelTextTitle.place(relx=0.25, rely=0.0, height=25, width=205)
         self.labelTextTitle.configure(activebackground="#d9d9d9")
@@ -83,6 +82,7 @@ class Toplevel1:
         self.butonBack.configure(highlightbackground="#d9d9d9")
         self.butonBack.configure(highlightcolor="#000000")
         self.butonBack.configure(text='''Atrás''')
+        self.butonBack.configure(command=self.navigate_callback)
 
         self.Listbox1 = tk.Listbox(self.top)
         self.Listbox1.place(relx=0.033, rely=0.068, relheight=0.506
@@ -95,7 +95,7 @@ class Toplevel1:
         self.Listbox1.configure(selectbackground="#feffda")
         self.Listbox1.configure(selectforeground="black")
         self.Listbox1.insert(tk.END, "{:<20}{}".format("- -variable- -", "- -valor- -"))
-
+        
         # Insertar los datos de resource en la Listbox
         updateListBox(self.Listbox1)
                 
@@ -271,8 +271,8 @@ class topRO:
 
 class topComment:
     def __init__(self, top=None, initial_comment="", listbox=None):
-        screen_width = root.winfo_screenwidth()
-        screen_height = root.winfo_screenheight()
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
 
         # Calcular las coordenadas para centrar la ventana
         x = (screen_width - 250) // 2  # El ancho de la ventana es 250
@@ -432,8 +432,6 @@ class topPath:
 
 class newResource:
     def __init__(self, top=None):
-        '''This class configures and populates the toplevel window.
-           top is the toplevel containing window.'''
 
         top.geometry("328x312+560+663")
         top.minsize(120, 1)
@@ -937,15 +935,8 @@ class topUmask:
         self.acceptUM.configure(command=lambda: updateMask(self))
     
 
-def main():
-    '''Main entry point for the application.'''
-    global root
-    root = tk.Tk()
-    root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
-    global _top1, _w1
-    _top1 = root
-    _w1 = Toplevel1(_top1)
-    root.mainloop()
+def start_up_windows(parent=None,navigate_callback=None, update_resource_callback=None):
+    _w1 = Toplevel1(parent,navigate_callback,update_resource_callback)
 
 if __name__ == '__main__':
-    main()
+    start_up_windows()

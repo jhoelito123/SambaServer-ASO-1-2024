@@ -10,7 +10,7 @@ _bgcolor = '#d9d9d9'
 _fgcolor = '#000000'
 
 class Toplevel1:
-    def __init__(self, top=None, navigate_callback=None):
+    def __init__(self, top=None, navigate_callback=None,show_windows_callback=None):
         top.geometry("915x581+402+99")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -22,6 +22,8 @@ class Toplevel1:
 
         self.top = top
         self.navigate_callback = navigate_callback
+        self.show_windows_callback = show_windows_callback
+        
         self.che63 = tk.IntVar()
         self.che69 = tk.IntVar()
         self.che64 = tk.IntVar()
@@ -198,6 +200,20 @@ class Toplevel1:
         self.botonAdd.configure(highlightcolor="#000000")
         self.botonAdd.configure(text='''Agregar''')
 
+        self.listActual = ScrolledListBox(self.navigator_t2)
+        self.listActual.place(relx=0.023, rely=0.062, relheight=0.348
+                , relwidth=0.938)
+        self.listActual.configure(background="white")
+        self.listActual.configure(cursor="xterm")
+        self.listActual.configure(disabledforeground="#a3a3a3")
+        self.listActual.configure(font="TkFixedFont")
+        self.listActual.configure(foreground="black")
+        self.listActual.configure(highlightbackground="#d9d9d9")
+        self.listActual.configure(highlightcolor="#d9d9d9")
+        self.listActual.configure(selectbackground="#feffda")
+        self.listActual.configure(selectforeground="black")
+        load_shared_resources(self.listActual)
+        
         self.botonEdit = tk.Button(self.navigator_t2)
         self.botonEdit.place(relx=0.101, rely=0.433, height=26, width=57)
         self.botonEdit.configure(activebackground="#d9d9d9")
@@ -209,6 +225,7 @@ class Toplevel1:
         self.botonEdit.configure(highlightbackground="#d9d9d9")
         self.botonEdit.configure(highlightcolor="#000000")
         self.botonEdit.configure(text='''Editar''')
+        self.botonEdit.configure(command=lambda: edit(self, self.show_windows_callback))
 
         self.botonDel = tk.Button(self.navigator_t2)
         self.botonDel.place(relx=0.18, rely=0.433, height=26, width=57)
@@ -236,19 +253,7 @@ class Toplevel1:
         self.Label2.configure(highlightcolor="#000000")
         self.Label2.configure(text='''Recursos compartidos''')
 
-        self.listActual = ScrolledListBox(self.navigator_t2)
-        self.listActual.place(relx=0.023, rely=0.062, relheight=0.348
-                , relwidth=0.938)
-        self.listActual.configure(background="white")
-        self.listActual.configure(cursor="xterm")
-        self.listActual.configure(disabledforeground="#a3a3a3")
-        self.listActual.configure(font="TkFixedFont")
-        self.listActual.configure(foreground="black")
-        self.listActual.configure(highlightbackground="#d9d9d9")
-        self.listActual.configure(highlightcolor="#d9d9d9")
-        self.listActual.configure(selectbackground="#feffda")
-        self.listActual.configure(selectforeground="black")
-        load_shared_resources(self.listActual)
+        
         
         self.frameWorkGroup = tk.Frame(self.navigator_t3)
         self.frameWorkGroup.place(relx=0.022, rely=0.102, relheight=0.399
@@ -375,6 +380,12 @@ def load_shared_resources(self):
                 )
                 self.insert(tk.END, formatted_line)
 
+def edit(self,show_windows_callback):
+        selected_index = self.listActual.curselection()
+        if selected_index:
+            selected_resource = self.listActual.get(selected_index)
+            show_windows_callback(selected_resource)
+
 class AutoScroll(object):
     '''Configure the scrollbars for a widget.'''
     def __init__(self, master):
@@ -484,15 +495,8 @@ def _on_shiftmouse(event, widget):
         elif event.num == 5:
             widget.xview_scroll(1, 'units')
 
-def start_up_Interface(parent=None,navigate_callback=None):
-    # root = tk.Toplevel(parent)
-    # root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
-    
-    # Creates a toplevel widget.
-    # global _top1, _w1
-    # _top1 = root
-    _w1 = Toplevel1(parent,navigate_callback)
-    # root.mainloop()
+def start_up_Interface(parent=None, navigate_callback=None, show_windows_callback=None):
+    _w1 = Toplevel1(parent, navigate_callback, show_windows_callback)
 
 if __name__ == '__main__':
     start_up_Interface()
