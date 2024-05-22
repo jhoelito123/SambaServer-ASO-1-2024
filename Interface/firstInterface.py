@@ -7,7 +7,6 @@ _location = os.path.dirname(__file__)
 
 colorDef = '#d9d9d9'
 _fgcolor = '#feffda'
-colorDef = "#d9d9d9"
 title_config = {
     "background": colorDef,
     "font": ("Courier New", 15, "bold"),
@@ -50,6 +49,10 @@ class Toplevel1:
         self.navigator.add(self.navigator_t3, padding=3)
         self.navigator.tab(2, text='''Identidad''', compound="left",underline='''-1''', )
         self.navigator_t3.configure(background=colorDef)
+        self.navigator_t4 = tk.Frame(self.navigator)
+        self.navigator.add(self.navigator_t4, padding=3)
+        self.navigator.tab(3, text='''Usuarios''', compound="left" ,underline='''-1''', )
+        self.navigator_t4.configure(background=colorDef)
 
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
@@ -176,6 +179,109 @@ class Toplevel1:
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center')
 
+class newResource:
+    def __init__(self, top=None):
+        top.geometry("328x312+560+663")
+        top.minsize(120, 1)
+        top.maxsize(1924, 1061)
+        top.resizable(1,  1)
+        top.title("Add new Resource")
+        top.configure(background="#d9d9d9")
+        top.configure(highlightbackground="#d9d9d9")
+        top.configure(highlightcolor="#000000")
+
+        self.top = top
+        self.che67 = tk.IntVar()
+
+        self.acceptNR = tk.Button(self.top)
+        self.acceptNR.place(relx=0.762, rely=0.859, height=26, width=57)
+        self.acceptNR.configure(activebackground="#d9d9d9")
+        self.acceptNR.configure(background="#b3af46")
+        self.acceptNR.configure(font="-family {Comic Sans MS} -size 9")
+        self.acceptNR.configure(foreground="#000000")
+        self.acceptNR.configure(text='''Aceptar''')
+
+        self.cancelNR = tk.Button(self.top)
+        self.cancelNR.place(relx=0.549, rely=0.859, height=26, width=57)
+        self.cancelNR.configure(activebackground="#d9d9d9")
+        self.cancelNR.configure(background="#d9d9d9")
+        self.cancelNR.configure(font="-family {Comic Sans MS} -size 9")
+        self.cancelNR.configure(foreground="#000000")
+        self.cancelNR.configure(text='''Cancelar''')
+
+        self.entryPathNR = tk.Entry(self.top)
+        self.entryPathNR.place(relx=0.183, rely=0.628, height=20, relwidth=0.591)
+
+        self.entryPathNR.configure(background="white")
+        self.entryPathNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
+        self.entryPathNR.configure(foreground="#000000")
+        self.entryPathNR.configure(insertbackground="#000000")
+        self.entryPathNR.configure(selectbackground="#d9d9d9")
+
+        self.labelPathNR = tk.Label(self.top)
+        self.labelPathNR.place(relx=0.396, rely=0.529, height=24, width=42)
+        self.labelPathNR.configure(anchor='w')
+        self.labelPathNR.configure(background="#d9d9d9")
+        self.labelPathNR.configure(compound='left')
+        self.labelPathNR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+        self.labelPathNR.configure(foreground="#000000")
+        self.labelPathNR.configure(text='''Path''')
+
+        self.entryCommentNR = tk.Entry(self.top)
+        self.entryCommentNR.place(relx=0.183, rely=0.429, height=20, relwidth=0.591)
+        self.entryCommentNR.configure(background="white")
+        self.entryCommentNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
+        self.entryCommentNR.configure(foreground="#000000")
+        self.entryCommentNR.configure(insertbackground="#000000")
+        self.entryCommentNR.configure(selectbackground="#d9d9d9")
+
+        self.labelComment = tk.Label(self.top)
+        self.labelComment.place(relx=0.366, rely=0.33, height=25, width=72)
+        self.labelComment.configure(anchor='w')
+        self.labelComment.configure(background="#d9d9d9")
+        self.labelComment.configure(compound='left')
+        self.labelComment.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+        self.labelComment.configure(foreground="#000000")
+        self.labelComment.configure(text='''Comment''')
+
+        self.entryNameNR = tk.Entry(self.top)
+        self.entryNameNR.place(relx=0.183, rely=0.231, height=20, relwidth=0.591)
+
+        self.entryNameNR.configure(background="white")
+        self.entryNameNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
+        self.entryNameNR.configure(foreground="#000000")
+        self.entryNameNR.configure(insertbackground="#000000")
+        self.entryNameNR.configure(selectbackground="#d9d9d9")
+
+        self.labelNameNR = tk.Label(self.top)
+        self.labelNameNR.place(relx=0.396, rely=0.163, height=14, width=52)
+        self.labelNameNR.configure(anchor='w')
+        self.labelNameNR.configure(background="#d9d9d9")
+        self.labelNameNR.configure(compound='left')
+        self.labelNameNR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+        self.labelNameNR.configure(foreground="#000000")
+        self.labelNameNR.configure(text='''Name''')
+
+        self.chechRO_NR = tk.Checkbutton(self.top)
+        self.chechRO_NR.place(relx=0.305, rely=0.728, relheight=0.09, relwidth=0.338)
+        self.chechRO_NR.configure(anchor='w')
+        self.chechRO_NR.configure(background="#d9d9d9")
+        self.chechRO_NR.configure(compound='left')
+        self.chechRO_NR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+        self.chechRO_NR.configure(foreground="#000000")
+        self.chechRO_NR.configure(justify='left')
+        self.chechRO_NR.configure(text='''Read Only''')
+        self.chechRO_NR.configure(variable=self.che67)
+
+        self.labelNR = tk.Label(self.top)
+        self.labelNR.place(relx=0.152, rely=0.032, height=25, width=224)
+        self.labelNR.configure(anchor='w')
+        self.labelNR.configure(background="#d9d9d9")
+        self.labelNR.configure(compound='left')
+        self.labelNR.configure(font="-family {Comic Sans MS} -size 13 -weight bold -slant italic")
+        self.labelNR.configure(foreground="#000000")
+        self.labelNR.configure(text='''Nuevo recurso compartido''')
+
 def read_smb_conf(file_path):
     try:
         with open(file_path, 'r') as file:
@@ -212,8 +318,11 @@ resources = extract_shared_resources(lines)
 
 def load_shared_resources(self):
             for resource in resources:
-                read_only = resource.get("read only", "No especificado")
                 nombre = resource.get("Nombre", "No especificado")
+                if nombre.lower() == "global": #no deberia aparecer [global]
+                    continue
+                
+                read_only = resource.get("read only", "No especificado")
                 path = resource.get("path", "No especificado")
                 comentario = resource.get("comment", "No especificado")
                 
@@ -229,7 +338,7 @@ def edit(self, show_windows_callback):
     selected_index = self.listActual.curselection()
     if selected_index:
         index = selected_index[0]  # Obtener el índice del recurso seleccionado
-        selected_resource = resources[index]  # Obtener el recurso completo usando el índice
+        selected_resource = resources[index+1]  # Obtener el recurso completo usando el índice
         print(selected_resource)
         show_windows_callback(selected_resource)
             
