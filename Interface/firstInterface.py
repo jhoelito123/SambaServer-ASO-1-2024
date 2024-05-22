@@ -54,6 +54,32 @@ class Toplevel1:
         self.navigator.tab(3, text='''Usuarios''', compound="left" ,underline='''-1''', )
         self.navigator_t4.configure(background=colorDef)
 
+        #for new navigator Users
+        self.labelUsers = tk.Label(self.navigator_t4)
+        self.labelUsers.place(relx=0.046, rely=0.02, height=31, width=294)
+        self.labelUsers.configure(**title_config)
+        self.labelUsers.configure(text='''Usuarios Registrados''')
+
+        self.listUsers = tk.Listbox(self.navigator_t4)
+        self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
+        self.listUsers.configure(background="white")
+        self.listUsers.configure(font="TkFixedFont")
+        self.listUsers.configure(foreground="#000000")
+        self.listUsers.configure(selectbackground="#feffda")
+        self.listUsers.configure(selectforeground="black")
+
+        self.butModUser = tk.Button(self.navigator_t4)
+        self.butModUser.place(relx=0.526, rely=0.296, height=26, width=147)
+        self.butModUser.configure(**title_config,activebackground=_fgcolor)
+        self.butModUser.configure(font="-family {Consolas} -size 10")
+        self.butModUser.configure(text='''Modificar contraseña''',anchor='center')
+
+        self.buttDelUser = tk.Button(self.navigator_t4)
+        self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=147)
+        self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
+        self.buttDelUser.configure(font="-family {Consolas} -size 10")
+        self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
+        
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
         self.cuadroInicial.configure(relief='groove',borderwidth="2",background=colorDef)
@@ -113,10 +139,14 @@ class Toplevel1:
         self.botonAdd.configure(**title_config,activebackground=_fgcolor)
         self.botonAdd.configure(font="-family {Consolas} -size 10")
         self.botonAdd.configure(text='''Agregar''',anchor='center')
+        self.botonAdd.configure(command=lambda: open_new_resource_window(self))
+        
+        def open_new_resource_window(self):
+            new_window = tk.Toplevel(self.top)
+            new_resource_window = newResource(top=new_window, parent=self)
 
         self.listActual = ScrolledListBox(self.navigator_t2)
-        self.listActual.place(relx=0.023, rely=0.062, relheight=0.348
-                , relwidth=0.938)
+        self.listActual.place(relx=0.023, rely=0.062, relheight=0.348, relwidth=0.938)
         self.listActual.configure(background="white")
         self.listActual.configure(cursor="xterm")
         self.listActual.configure(font="TkFixedFont")
@@ -137,6 +167,7 @@ class Toplevel1:
         self.botonDel.configure(**title_config, activebackground=_fgcolor)
         self.botonDel.configure(font="-family {Consolas} -size 10")
         self.botonDel.configure(text='''Quitar''',anchor='center')
+        self.botonDel.configure(command=self.remove_selected_item)
 
         self.Label2 = tk.Label(self.navigator_t2)
         self.Label2.place(relx=0.023, rely=0.021, height=18, width=248)
@@ -178,109 +209,108 @@ class Toplevel1:
         self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center')
+    
+    def add_new_resource(self, resource):
+            formatted_line = "{:<20} {:<13} {:<27} {:<20}".format(
+                resource["read only"],
+                resource["Nombre"],
+                resource["path"],
+                resource["comment"]
+            )
+            self.listActual.insert(tk.END, formatted_line)
+            # agregar el recurso a una lista global
+            resources.append(resource)
+    
+    def remove_selected_item(self):
+        selected_index = self.listActual.curselection()
+        if selected_index:
+            self.listActual.delete(selected_index)            
+
 
 class newResource:
-    def __init__(self, top=None):
-        top.geometry("328x312+560+663")
+    def __init__(self, top=None, parent=None):
+        top.geometry("328x312+850+202")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
         top.title("Add new Resource")
         top.configure(background="#d9d9d9")
-        top.configure(highlightbackground="#d9d9d9")
-        top.configure(highlightcolor="#000000")
 
         self.top = top
+        self.parent = parent
         self.che67 = tk.IntVar()
 
         self.acceptNR = tk.Button(self.top)
         self.acceptNR.place(relx=0.762, rely=0.859, height=26, width=57)
-        self.acceptNR.configure(activebackground="#d9d9d9")
-        self.acceptNR.configure(background="#b3af46")
+        self.acceptNR.configure(activebackground=_fgcolor,background="#b3af46")
         self.acceptNR.configure(font="-family {Comic Sans MS} -size 9")
-        self.acceptNR.configure(foreground="#000000")
-        self.acceptNR.configure(text='''Aceptar''')
-
+        self.acceptNR.configure(foreground="#000000",text='''Aceptar''',command=lambda: on_accept(self))
+        
         self.cancelNR = tk.Button(self.top)
         self.cancelNR.place(relx=0.549, rely=0.859, height=26, width=57)
-        self.cancelNR.configure(activebackground="#d9d9d9")
-        self.cancelNR.configure(background="#d9d9d9")
+        self.cancelNR.configure(activebackground=_fgcolor,**title_config)
         self.cancelNR.configure(font="-family {Comic Sans MS} -size 9")
-        self.cancelNR.configure(foreground="#000000")
-        self.cancelNR.configure(text='''Cancelar''')
+        self.cancelNR.configure(text='''Cancelar''',command=self.top.destroy)
 
         self.entryPathNR = tk.Entry(self.top)
         self.entryPathNR.place(relx=0.183, rely=0.628, height=20, relwidth=0.591)
 
-        self.entryPathNR.configure(background="white")
+        self.entryPathNR.configure(background="white",foreground="#000000")
         self.entryPathNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
-        self.entryPathNR.configure(foreground="#000000")
-        self.entryPathNR.configure(insertbackground="#000000")
-        self.entryPathNR.configure(selectbackground="#d9d9d9")
+        self.entryPathNR.configure(insertbackground="#000000",selectbackground="#d9d9d9")
 
         self.labelPathNR = tk.Label(self.top)
         self.labelPathNR.place(relx=0.396, rely=0.529, height=24, width=42)
-        self.labelPathNR.configure(anchor='w')
-        self.labelPathNR.configure(background="#d9d9d9")
-        self.labelPathNR.configure(compound='left')
+        self.labelPathNR.configure(anchor='w',background="#d9d9d9")
+        self.labelPathNR.configure(compound='left',text='''Path''',foreground="#000000")
         self.labelPathNR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
-        self.labelPathNR.configure(foreground="#000000")
-        self.labelPathNR.configure(text='''Path''')
 
         self.entryCommentNR = tk.Entry(self.top)
         self.entryCommentNR.place(relx=0.183, rely=0.429, height=20, relwidth=0.591)
-        self.entryCommentNR.configure(background="white")
+        self.entryCommentNR.configure(background="white",foreground="#000000")
         self.entryCommentNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
-        self.entryCommentNR.configure(foreground="#000000")
-        self.entryCommentNR.configure(insertbackground="#000000")
-        self.entryCommentNR.configure(selectbackground="#d9d9d9")
+        self.entryCommentNR.configure(insertbackground="#000000",selectbackground="#d9d9d9")
 
         self.labelComment = tk.Label(self.top)
         self.labelComment.place(relx=0.366, rely=0.33, height=25, width=72)
-        self.labelComment.configure(anchor='w')
-        self.labelComment.configure(background="#d9d9d9")
-        self.labelComment.configure(compound='left')
+        self.labelComment.configure(anchor='w',background="#d9d9d9",compound='left')
         self.labelComment.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
-        self.labelComment.configure(foreground="#000000")
-        self.labelComment.configure(text='''Comment''')
+        self.labelComment.configure(foreground="#000000",text='''Comment''')
 
         self.entryNameNR = tk.Entry(self.top)
         self.entryNameNR.place(relx=0.183, rely=0.231, height=20, relwidth=0.591)
 
-        self.entryNameNR.configure(background="white")
+        self.entryNameNR.configure(background="white",foreground="#000000")
         self.entryNameNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
-        self.entryNameNR.configure(foreground="#000000")
-        self.entryNameNR.configure(insertbackground="#000000")
-        self.entryNameNR.configure(selectbackground="#d9d9d9")
+        self.entryNameNR.configure(insertbackground="#000000",selectbackground="#d9d9d9")
 
         self.labelNameNR = tk.Label(self.top)
         self.labelNameNR.place(relx=0.396, rely=0.163, height=14, width=52)
-        self.labelNameNR.configure(anchor='w')
-        self.labelNameNR.configure(background="#d9d9d9")
-        self.labelNameNR.configure(compound='left')
+        self.labelNameNR.configure(anchor='w',background="#d9d9d9",compound='left')
         self.labelNameNR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
-        self.labelNameNR.configure(foreground="#000000")
-        self.labelNameNR.configure(text='''Name''')
+        self.labelNameNR.configure(foreground="#000000",text='''Name''')
 
         self.chechRO_NR = tk.Checkbutton(self.top)
         self.chechRO_NR.place(relx=0.305, rely=0.728, relheight=0.09, relwidth=0.338)
-        self.chechRO_NR.configure(anchor='w')
-        self.chechRO_NR.configure(background="#d9d9d9")
-        self.chechRO_NR.configure(compound='left')
+        self.chechRO_NR.configure(anchor='w',background="#d9d9d9",compound='left')
         self.chechRO_NR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
-        self.chechRO_NR.configure(foreground="#000000")
-        self.chechRO_NR.configure(justify='left')
-        self.chechRO_NR.configure(text='''Read Only''')
-        self.chechRO_NR.configure(variable=self.che67)
+        self.chechRO_NR.configure(foreground="#000000",justify='left')
+        self.chechRO_NR.configure(text='''Read Only''',variable=self.che67)
 
         self.labelNR = tk.Label(self.top)
         self.labelNR.place(relx=0.152, rely=0.032, height=25, width=224)
-        self.labelNR.configure(anchor='w')
-        self.labelNR.configure(background="#d9d9d9")
-        self.labelNR.configure(compound='left')
+        self.labelNR.configure(anchor='w',background="#d9d9d9",compound='left')
         self.labelNR.configure(font="-family {Comic Sans MS} -size 13 -weight bold -slant italic")
-        self.labelNR.configure(foreground="#000000")
-        self.labelNR.configure(text='''Nuevo recurso compartido''')
+        self.labelNR.configure(foreground="#000000",text='''Nuevo recurso compartido''')
+        def on_accept(self):
+            new_resource = {
+                "Nombre": self.entryNameNR.get(),
+                "path": self.entryPathNR.get(),
+                "comment": self.entryCommentNR.get(),
+                "read only": "Yes" if self.che67.get() else "No"
+            }
+            self.parent.add_new_resource(new_resource)
+            self.top.destroy()
 
 def read_smb_conf(file_path):
     try:
