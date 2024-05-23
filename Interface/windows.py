@@ -49,6 +49,8 @@ class Toplevel1:
         resourceConfig = self.resource
         allElements = list(resource.keys()) #obtenemos todas las llaves del diccionario
         
+        print("el recurso pasado es: ", resource)
+        
         self.labelTextTitle = tk.Label(self.top)
         self.labelTextTitle.place(relx=0.25, rely=0.0, height=25, width=205)
         self.labelTextTitle.configure(**title_config)
@@ -137,38 +139,39 @@ def updateListBox(listbox):
         if clave.lower() == "nombre":
             nameResource = valor
         else:
-            listbox.insert(tk.END, "{:<20}{}".format(clave, valor))
+            listbox.insert(tk.END, "{:<20}{}".format(clave+":", valor))
                     
 #EVENTOS DEL LOS BOTONES AGREGAR, EDITAR, QUITAR        
 def analiceEdit(listbox,self):
     selected_index = listbox.curselection()
     if selected_index:
         selected_item_text = listbox.get(selected_index[0])
-        variable = selected_item_text.split()[0]
-        
-        if variable == "comment":
-            current_comment = selected_item_text.split()[1]  # Obtener el comentario actual
+        item_text = selected_item_text.strip().split(":") ##Dividimos en 2 partes, la primero es la clave y la segunda el valor 
+        variable = item_text[0]
+                
+        if variable == "comment":            
+            current_comment = item_text[1].strip()  # Obtener el comentario actual
             self.edit_comment_window = tk.Toplevel(self.top)
             top_comment_instance = topComment(self.edit_comment_window, initial_comment=current_comment, listbox=listbox)
             print("Editar comentario")
         elif variable == "path":
-            current_path = selected_item_text.split()[1]
+            current_path = item_text[1].strip()
             self.edit_path_window = tk.Toplevel(self.top)
             top_path_instance = topPath(self.edit_path_window,initial_path = current_path, listbox=listbox)
             print("Editar ruta")
         elif variable == 'read only':
-            current_ro = selected_item_text.split()[1]
+            current_ro = item_text[1].strip()
             self.edit_ro = tk.Toplevel(self.top)
             top_ro_instance = topRO(self.edit_ro,initial_ro=current_ro, listbox=listbox)
             print("Editar permisos de lectura/escritura")
         elif variable == 'inherit acls':
-            current_inherit = selected_item_text.split()[1]
+            current_inherit = item_text[1].strip()
             self.edit_Inherit = tk.Toplevel(self.top)
             top_inherit_instance = topInherit(self.edit_Inherit,initial_Inherit=current_inherit, listbox=listbox)
             print("Editar inherit")
         elif variable == "create mask":
             print("Editar otra la mask")
-            currentMask = selected_item_text.split()[1]
+            currentMask = item_text[1].strip()
             self.editMask = tk.Toplevel(self.top)
             top_mask = topUmask(self.editMask,initialMask=currentMask, listbox=listbox)    
         else:
@@ -191,12 +194,12 @@ class topRO:
 
         def update_RO(self):
                 if self.che51.get():
-                        ro_status = "YES"
+                        ro_status = "Yes"
                 else:
-                        ro_status = "NO"
+                        ro_status = "No"
                 # Aquí puedes agregar la lógica para guardar el estado actualizado
                 print("Read Only actualizado:", ro_status)
-                resourceConfig['readOnly'] = ro_status
+                resourceConfig['read only'] = ro_status
                 updateListBox(self.listbox)
                 self.top.destroy()
         
@@ -235,16 +238,16 @@ class topInherit:
 
         self.top = top
         self.listbox=listbox
-        self.che51 = tk.BooleanVar(value=True if initial_Inherit=='YES' else False)
+        self.che51 = tk.BooleanVar(value=True if initial_Inherit=='Yes' else False)
 
         def update_RO(self):
                 if self.che51.get():
-                        ro_status = "YES"
+                        ro_status = "Yes"
                 else:
-                        ro_status = "NO"
+                        ro_status = "No"
                 # Aquí puedes agregar la lógica para guardar el estado actualizado
                 print("Inherit ACL actualizado:", ro_status)
-                resourceConfig['InheritAcls'] = ro_status
+                resourceConfig['inherit acls'] = ro_status
                 updateListBox(self.listbox)
                 self.top.destroy()
         
@@ -372,7 +375,7 @@ class topUmask:
         firstDigit = int(int(initialMask) /100)
         secondDigit = int((int(initialMask) / 10)%10)
         threeDigit = int(int(initialMask)%10) 
-        top.geometry("340x226+942+657")
+        top.geometry("340x226+312+348")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -433,7 +436,7 @@ class topUmask:
             if self.cheOW.get(): threeDigit += 2
             if self.cheOX.get(): threeDigit += 1
                         
-            resourceConfig["createMask"] = f'{firstDigit}{secondDigit}{threeDigit}'
+            resourceConfig["create mask"] = f'0{firstDigit}{secondDigit}{threeDigit}'
             
             updateListBox(self.listbox)
             self.top.destroy()
@@ -564,6 +567,7 @@ class topUmask:
     
 
 def start_up_windows(parent=None,navigate_callback=None, update_resource_callback=None):
+    
     _w1 = Toplevel1(parent,navigate_callback,update_resource_callback)
 
 if __name__ == '__main__':
