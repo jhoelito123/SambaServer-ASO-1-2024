@@ -367,7 +367,7 @@ def extract_shared_resources(lines):
         resources.append(current_resource)
     return resources
 
-file_path = "D:/ASO/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
+file_path = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
 lines = read_smb_conf(file_path)
 resources = extract_shared_resources(lines)
 
@@ -394,7 +394,7 @@ def edit(self, show_windows_callback):
     if selected_index:
         index = selected_index[0]  # Obtener el índice del recurso seleccionado
         selected_resource = resources[index+1]  # Obtener el recurso completo usando el índice
-        print(selected_resource)
+        print("el recurso seleccionado para editar es: ", selected_resource)
         show_windows_callback(selected_resource)
             
 
