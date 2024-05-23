@@ -190,7 +190,7 @@ class topRO:
 
         self.top = top
         self.listbox=listbox
-        self.che51 = tk.BooleanVar(value=True if initial_ro=='YES' else False)
+        self.che51 = tk.BooleanVar(value=True if initial_ro=='Yes' else False)
 
         def update_RO(self):
                 if self.che51.get():
