@@ -45,7 +45,7 @@ class Toplevel1:
         self.top = top
         self.navigate_callback = navigate_callback
         self.update_resource_callback = update_resource_callback
-        resourceStatic = self.resource
+        resourceStatic = self.resource.copy()
         resourceConfig = self.resource
         allElements = list(resource.keys()) #obtenemos todas las llaves del diccionario
         
@@ -61,7 +61,7 @@ class Toplevel1:
         self.butonBack.place(relx=0.75, rely=0.911, height=26, width=67)
         self.butonBack.configure(activebackground=_fgcolor, background=_bgcolor)
         self.butonBack.configure(font="-family {Consolas} -size 10")
-        self.butonBack.configure(text='''Atrás''')
+        self.butonBack.configure(text='''Atrás''', command=self.revert_and_navigate)
 
         self.Listbox1 = tk.Listbox(self.top)
         self.Listbox1.place(relx=0.033, rely=0.068, relheight=0.506, relwidth=0.94)
@@ -86,7 +86,7 @@ class Toplevel1:
         self.butonSave.configure(activebackground=_fgcolor, background="#b3af46")
         self.butonSave.configure(font="-family {Consolas} -size 10")
         self.butonSave.configure(text='''Aceptar''')
-        self.butonSave.configure(command=self.navigate_callback)
+        self.butonSave.configure(command=self.save_and_navigate)
 
         self.botonAdd = tk.Button(self.top)
         self.botonAdd.place(relx=0.045, rely=0.587, height=26, width=67)
@@ -107,6 +107,20 @@ class Toplevel1:
         self.botonQuit.configure(font="-family {Consolas} -size 10")
         self.botonQuit.configure(text='''Quitar''', command=self.remove_selected)
     
+    def save_and_navigate(self):
+        # navegar de vuelta a la ventana anterior
+        if self.navigate_callback:
+            self.navigate_callback()
+    
+    def revert_and_navigate(self): 
+        global resourceStatic, resourceConfig
+        # Revertir los cambios copiando los valores de resourceStatic
+        self.resource.clear()
+        self.resource.update(resourceStatic)
+        resourceConfig.clear()
+        resourceConfig.update(resourceStatic)
+        if self.navigate_callback:
+            self.navigate_callback()
     
     def remove_selected(self):
         selected_index = self.Listbox1.curselection()
@@ -124,10 +138,10 @@ class Toplevel1:
 
         else:
             print("No se ha seleccionado ningún elemento para eliminar.")
-
         
 def updateListBox(listbox):
     listbox.delete(0, tk.END)
+    #for testing elements
     """listbox.insert(tk.END, "{:<20}{}".format("- -variable- -", "- -valor- -"))
     listbox.insert(tk.END, "{:<20}{}".format("createMask", 753))
     listbox.insert(tk.END, "{:<20}{}".format("readOnly", NO))

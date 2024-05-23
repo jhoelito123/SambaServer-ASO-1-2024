@@ -241,18 +241,16 @@ class Toplevel1:
                 break
         else:
             print("No se encontró el recurso global.")
+
     def fill_entry_with_current_workgroup(self):
-        # Buscar el valor actual del workgroup en los recursos
         current_workgroup = None
         for resource in resources:
             if resource['Nombre'] == 'global':
                 current_workgroup = resource.get('workgroup', '')
                 break
 
-        # Establecer el valor actual del workgroup en el Entry
         self.entryWorkGroup.delete(0, tk.END)  # Limpiar el Entry
-        self.entryWorkGroup.insert(0, current_workgroup)
-
+        self.entryWorkGroup.insert(0, current_workgroup) #Llenarlo
 
 class newResource:
     def __init__(self, top=None, parent=None):
