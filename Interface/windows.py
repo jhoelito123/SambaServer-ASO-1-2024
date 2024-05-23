@@ -22,7 +22,8 @@ miniButton = {
     "anchor": "center",
 }
 
-nameResource = "mis_archivos"
+allElements = []
+nameResource = ""
 resourceStatic = [
 ] 
 
@@ -39,13 +40,14 @@ class Toplevel1:
         top.title("Editar Recurso")
         top.configure(background="#d9d9d9")
 
-        global resourceStatic, resourceConfig
+        global resourceStatic, resourceConfig, allElements
         self.resource = resource  #recurso pasado
         self.top = top
         self.navigate_callback = navigate_callback
         self.update_resource_callback = update_resource_callback
         resourceStatic = self.resource
         resourceConfig = self.resource
+        allElements = list(resource.keys()) #obtenemos todas las llaves del diccionario
         
         self.labelTextTitle = tk.Label(self.top)
         self.labelTextTitle.place(relx=0.25, rely=0.0, height=25, width=205)
@@ -103,14 +105,33 @@ class Toplevel1:
         self.botonQuit.place(relx=0.27, rely=0.587, height=26, width=57)
         self.botonQuit.configure(activebackground=_fgcolor, background=_bgcolor)
         self.botonQuit.configure(font="-family {Consolas} -size 10")
-        self.botonQuit.configure(text='''Quitar''')
+        self.botonQuit.configure(text='''Quitar''', command=self.remove_selected)
+    
+    
+    def remove_selected(self):
+        selected_index = self.Listbox1.curselection()
+        if selected_index:
+            selected_item_text = self.Listbox1.get(selected_index[0])
+            variable = selected_item_text.split()[0]
+            # Verificar si la clave está en la lista global
+            if variable in allElements:
+                self.Listbox1.delete(selected_index[0])
+                del resourceConfig[variable]
+                allElements.remove(variable)
+                print(f"Se ha eliminado el elemento {variable} correctamente.")
+            else:
+                print(f"El elemento {variable} no se puede eliminar.")
+
+        else:
+            print("No se ha seleccionado ningún elemento para eliminar.")
+
         
 def updateListBox(listbox):
     listbox.delete(0, tk.END)
-    listbox.insert(tk.END, "{:<20}{}".format("- -variable- -", "- -valor- -"))
+    """listbox.insert(tk.END, "{:<20}{}".format("- -variable- -", "- -valor- -"))
     listbox.insert(tk.END, "{:<20}{}".format("createMask", 753))
     listbox.insert(tk.END, "{:<20}{}".format("readOnly", NO))
-    
+    listbox.insert(tk.END, "{:<20}{}".format("InheritAcls", YES))"""
     global nameResource
     for clave, valor in resourceConfig.items():
         if clave.lower() == "nombre":
@@ -135,13 +156,18 @@ def analiceEdit(listbox,self):
             self.edit_path_window = tk.Toplevel(self.top)
             top_path_instance = topPath(self.edit_path_window,initial_path = current_path, listbox=listbox)
             print("Editar ruta")
-        elif variable == 'readOnly':
+        elif variable == 'read only':
             current_ro = selected_item_text.split()[1]
             self.edit_ro = tk.Toplevel(self.top)
             top_ro_instance = topRO(self.edit_ro,initial_ro=current_ro, listbox=listbox)
             print("Editar permisos de lectura/escritura")
-        elif variable == "createMask":
-            print("Editar otra propiedad")
+        elif variable == 'inherit acls':
+            current_inherit = selected_item_text.split()[1]
+            self.edit_Inherit = tk.Toplevel(self.top)
+            top_inherit_instance = topInherit(self.edit_Inherit,initial_Inherit=current_inherit, listbox=listbox)
+            print("Editar inherit")
+        elif variable == "create mask":
+            print("Editar otra la mask")
             currentMask = selected_item_text.split()[1]
             self.editMask = tk.Toplevel(self.top)
             top_mask = topUmask(self.editMask,initialMask=currentMask, listbox=listbox)    
@@ -196,6 +222,54 @@ class topRO:
         self.labelRO = tk.Label(self.top)
         self.labelRO.place(relx=0.363, rely=0.078, height=20, width=94)
         self.labelRO.configure(**title_config,text='''Read Only?''')
+        self.labelRO.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+
+class topInherit:
+    def __init__(self, top=None,initial_Inherit="", listbox=None):
+        top.geometry("331x116+850+202")
+        top.minsize(120, 1)
+        top.maxsize(1924, 1061)
+        top.resizable(1,  1)
+        top.title("Inherit acls")
+        top.configure(background=_bgcolor)
+
+        self.top = top
+        self.listbox=listbox
+        self.che51 = tk.BooleanVar(value=True if initial_Inherit=='YES' else False)
+
+        def update_RO(self):
+                if self.che51.get():
+                        ro_status = "YES"
+                else:
+                        ro_status = "NO"
+                # Aquí puedes agregar la lógica para guardar el estado actualizado
+                print("Inherit ACL actualizado:", ro_status)
+                resourceConfig['InheritAcls'] = ro_status
+                updateListBox(self.listbox)
+                self.top.destroy()
+        
+        self.checkReadOnly = tk.Checkbutton(self.top)
+        self.checkReadOnly.place(relx=0.393, rely=0.319, relheight=0.198, relwidth=0.184)
+        self.checkReadOnly.configure(activebackground=_bgcolor,background=_bgcolor)
+        self.checkReadOnly.configure(anchor='w',compound='left',foreground="#000000")
+        self.checkReadOnly.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
+        self.checkReadOnly.configure(justify='left',text='''YES''')
+        self.checkReadOnly.configure(variable=self.che51)
+
+        self.acceptRO = tk.Button(self.top)
+        self.acceptRO.place(relx=0.785, rely=0.69, height=26, width=57)
+        self.acceptRO.configure(**miniButton,text='''Aceptar''')
+        self.acceptRO.configure(command=lambda: update_RO(self))
+
+        self.cancelRO = tk.Button(self.top)
+        self.cancelRO.place(relx=0.574, rely=0.69, height=26, width=63)
+        self.cancelRO.configure(**miniButton,text='''Cancelar''')
+        self.cancelRO.configure(background=_bgcolor)
+        self.cancelRO.configure(command=self.top.destroy)
+
+        self.labelRO = tk.Label(self.top)
+        self.labelRO.place(relx=0.363, rely=0.078, height=20, width=114)
+        self.labelRO.configure(**title_config,text='''Inherit acls?''')
         self.labelRO.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
 
 class topComment:

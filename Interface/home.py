@@ -34,7 +34,7 @@ class intro:
         self.titleApp.configure(text='''Configuración de Servicio Samba''')
         
         self.logoSUSE = tk.Label(self.top)
-        self.logoSUSE.place(relx=0.044, rely=0.178, height=161, width=273)
+        self.logoSUSE.place(relx=0.044, rely=0.208, height=201, width=273)
         self.logoSUSE.configure(**label_config)
         photo_location = os.path.join(_location,"src/suseLogo.png")
         global _img0
@@ -42,7 +42,7 @@ class intro:
         self.logoSUSE.configure(image=_img0)
 
         self.logoSAMBA = tk.Label(self.top)
-        self.logoSAMBA.place(relx=0.602, rely=0.208, height=111, width=220)
+        self.logoSAMBA.place(relx=0.602, rely=0.238, height=111, width=220)
         self.logoSAMBA.configure(**label_config)
         photo_location = os.path.join(_location,"src/Samba medium.png")
         global _img1
@@ -50,7 +50,7 @@ class intro:
         self.logoSAMBA.configure(image=_img1)
 
         self.cruz = tk.Label(self.top)
-        self.cruz.place(relx=0.485, rely=0.238, height=81, width=45)
+        self.cruz.place(relx=0.485, rely=0.268, height=81, width=45)
         self.cruz.configure(**label_config)
         self.cruz.configure(font="-family {Segoe UI} -size 36 -weight bold")
         self.cruz.configure(text='''X''')
@@ -79,13 +79,13 @@ class intro:
         self.armando.configure(text='''Armando Gaspar Mamani''')
 
         self.label1 = tk.Label(self.top)
-        self.label1.place(relx=0.25, rely=0.416, height=51, width=365)
+        self.label1.place(relx=0.25, rely=0.516, height=51, width=365)
         self.label1.configure(**label_config)
         self.label1.configure(font="-family {Comic Sans MS} -size 15")
         self.label1.configure(text='''Ingrese el usuario root de este Equipo''')
 
         self.label2 = tk.Label(self.top)
-        self.label2.place(relx=0.191, rely=0.475, height=51, width=455)
+        self.label2.place(relx=0.191, rely=0.575, height=51, width=455)
         self.label2.configure(**label_config)
         self.label2.configure(font="-family {Comic Sans MS} -size 15")
         self.label2.configure(text='''para acceder a la configuración de este servicio:''')
@@ -98,22 +98,22 @@ class intro:
         self.entryPass.configure(selectforeground="black")
         self.entryPass.configure(show="*")
 
-        self.entryUser = tk.Entry(self.top)
+        """self.entryUser = tk.Entry(self.top)
         self.entryUser.place(relx=0.264, rely=0.624, height=20, relwidth=0.52)
         self.entryUser.configure(background="white")
         self.entryUser.configure(font="-family {Comic Sans MS} -size 10")
         self.entryUser.configure(foreground="black")
-        self.entryUser.configure(selectforeground="black")
+        self.entryUser.configure(selectforeground="black")"""
 
         self.labelPass = tk.Label(self.top)
         self.labelPass.place(relx=0.103, rely=0.684, height=21, width=84)
         self.labelPass.configure(**label_config)
         self.labelPass.configure(text='''Password:''')
 
-        self.labelUser = tk.Label(self.top)
+        """self.labelUser = tk.Label(self.top)
         self.labelUser.place(relx=0.117, rely=0.624, height=21, width=64)
         self.labelUser.configure(**label_config)
-        self.labelUser.configure(text='''User:''')
+        self.labelUser.configure(text='''User:''')"""
 
         self.Button1 = tk.Button(self.top)
         self.Button1.place(relx=0.47, rely=0.743, height=36, width=77)

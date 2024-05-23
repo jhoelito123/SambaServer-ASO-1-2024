@@ -69,13 +69,13 @@ class Toplevel1:
         self.listUsers.configure(selectforeground="black")
 
         self.butModUser = tk.Button(self.navigator_t4)
-        self.butModUser.place(relx=0.526, rely=0.296, height=26, width=147)
+        self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
         self.butModUser.configure(**title_config,activebackground=_fgcolor)
         self.butModUser.configure(font="-family {Consolas} -size 10")
         self.butModUser.configure(text='''Modificar contraseña''',anchor='center')
 
         self.buttDelUser = tk.Button(self.navigator_t4)
-        self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=147)
+        self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
         self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
@@ -91,7 +91,7 @@ class Toplevel1:
         self.textEstado.configure(text='''Estado actual:''')
 
         self.statusService = tk.Label(self.cuadroInicial)
-        self.statusService.place(relx=0.219, rely=0.154, height=21, width=72)
+        self.statusService.place(relx=0.219, rely=0.154, height=21, width=82)
         self.statusService.configure(**title_config)
         self.statusService.configure(font="-family {Consolas} -size 11")
         self.statusService.configure(text='''Inactivo''')
@@ -102,12 +102,15 @@ class Toplevel1:
         self.textLaterConfig.configure(font="-family {Courier New} -size 12 -weight bold")
         self.textLaterConfig.configure(text='''Después de configurar:''')
 
-        self.estadoActual = tk.Checkbutton(self.cuadroInicial)
+        self.selected_option = tk.StringVar(self.cuadroInicial)
+        self.selected_option.set("Seleccione una opción")  # Establece un valor predeterminado
+
+        options = ["Reiniciar Servicio", "Detener", "Mantener estado actual", "Bloque 4"]
+
+        self.estadoActual = tk.OptionMenu(self.cuadroInicial, self.selected_option, *options)
         self.estadoActual.place(relx=0.046, rely=0.338, relheight=0.092, relwidth=0.23)
-        self.estadoActual.configure(**title_config, activebackground="#d9d9d9")
         self.estadoActual.configure(font="-family {Consolas} -size 10")
-        self.estadoActual.configure(text='''Mantener estado actual''')
-        self.estadoActual.configure(variable=self.che63)
+
 
         self.startServiceCheck = tk.Checkbutton(self.cuadroInicial)
         self.startServiceCheck.place(relx=0.046, rely=0.521, relheight=0.096, relwidth=0.105)
@@ -126,13 +129,6 @@ class Toplevel1:
         self.tituloInicio.place(relx=0.313, rely=0.042, height=21, width=316)
         self.tituloInicio.configure(**title_config)
         self.tituloInicio.configure(text='''Configuración del Servicio''')
-
-        self.restart = tk.Checkbutton(self.cuadroInicial)
-        self.restart.place(relx=0.278, rely=0.338, relheight=0.092, relwidth=0.185)
-        self.restart.configure(**title_config, activebackground="#d9d9d9")
-        self.restart.configure(font="-family {Consolas} -size 10")
-        self.restart.configure(text='''Reiniciar servicio''')
-        self.restart.configure(variable=self.che64)
 
         self.botonAdd = tk.Button(self.navigator_t2)
         self.botonAdd.place(relx=0.023, rely=0.433, height=26, width=57)
@@ -179,10 +175,15 @@ class Toplevel1:
         self.frameWorkGroup.configure(relief='groove',borderwidth="2",background=colorDef)
 
         self.labelWorkgroup = tk.Label(self.frameWorkGroup)
-        self.labelWorkgroup.place(relx=0.012, rely=0.053, height=20, width=159)
+        self.labelWorkgroup.place(relx=0.012, rely=0.053, height=20, width=209)
         self.labelWorkgroup.configure(**title_config)
         self.labelWorkgroup.configure(font="-family {Consolas} -size 11")
         self.labelWorkgroup.configure(text='''Nombre de WorkGroup:''')
+        
+        self.buttonOK = tk.Button(self.frameWorkGroup, text="OK")
+        self.buttonOK.place(relx=0.474, rely=0.186, height=20, width=57)
+        self.buttonOK.configure(activebackground=_fgcolor,font="-family {Consolas} -size 11")
+        self.buttonOK.configure(background="#d9d9d9", foreground="#000000", command=self.update_workgroup)
 
         self.entryWorkGroup = tk.Entry(self.frameWorkGroup)
         self.entryWorkGroup.place(relx=0.012, rely=0.186, height=20 , relwidth=0.452)
@@ -191,6 +192,8 @@ class Toplevel1:
         self.entryWorkGroup.configure(foreground="#000000",insertbackground="#000000")
         self.entryWorkGroup.configure(selectbackground="#d9d9d9", selectforeground="black")
 
+        self.fill_entry_with_current_workgroup()
+        
         self.Label3 = tk.Label(self.navigator_t3)
         self.Label3.place(relx=0.348, rely=0.04, height=21, width=248)
         self.Label3.configure(**title_config)
@@ -224,7 +227,31 @@ class Toplevel1:
     def remove_selected_item(self):
         selected_index = self.listActual.curselection()
         if selected_index:
-            self.listActual.delete(selected_index)            
+            self.listActual.delete(selected_index)
+            del resources[selected_index[0] + 1]
+    
+    def update_workgroup(self):
+        # Obtener el valor actual del Entry
+        new_workgroup = self.entryWorkGroup.get()
+
+        for resource in resources:
+            if resource['Nombre'] == 'global':
+                resource['workgroup'] = new_workgroup
+                print('se ha cambiado')
+                break
+        else:
+            print("No se encontró el recurso global.")
+    def fill_entry_with_current_workgroup(self):
+        # Buscar el valor actual del workgroup en los recursos
+        current_workgroup = None
+        for resource in resources:
+            if resource['Nombre'] == 'global':
+                current_workgroup = resource.get('workgroup', '')
+                break
+
+        # Establecer el valor actual del workgroup en el Entry
+        self.entryWorkGroup.delete(0, tk.END)  # Limpiar el Entry
+        self.entryWorkGroup.insert(0, current_workgroup)
 
 
 class newResource:

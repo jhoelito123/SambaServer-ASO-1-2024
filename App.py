@@ -24,7 +24,6 @@ class App:
         self.current_window = tk.Toplevel(self.root)
         self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
         start_interface(self.current_window, self.show_home, self.show_windows)
-
     
     def show_windows(self, resource):
         if self.current_window:
