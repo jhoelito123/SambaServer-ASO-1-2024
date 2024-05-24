@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.constants import *
 import os.path
-
+from tkinter import messagebox
 _location = os.path.dirname(__file__)
 
 _bgcolor = '#d9d9d9'
@@ -47,9 +47,7 @@ class Toplevel1:
         self.update_resource_callback = update_resource_callback
         resourceStatic = self.resource.copy()
         resourceConfig = self.resource
-        allElements = list(resource.keys()) #obtenemos todas las llaves del diccionario
-        
-        print("el recurso pasado es: ", resource)
+        allElements = list(resource.keys()) #obtenemos todas las llaves del diccionario       
         
         self.labelTextTitle = tk.Label(self.top)
         self.labelTextTitle.place(relx=0.25, rely=0.0, height=25, width=205)
@@ -94,7 +92,7 @@ class Toplevel1:
         self.botonAdd.place(relx=0.045, rely=0.587, height=26, width=67)
         self.botonAdd.configure(activebackground=_fgcolor, background=_bgcolor)
         self.botonAdd.configure(font="-family {Consolas} -size 10")
-        self.botonAdd.configure(text='''Agregar''')
+        self.botonAdd.configure(text='''Agregar''',command=self.open_add_window)
 
         self.botonEdit = tk.Button(self.top)
         self.botonEdit.place(relx=0.165, rely=0.587, height=26, width=57)
@@ -128,7 +126,8 @@ class Toplevel1:
         selected_index = self.Listbox1.curselection()
         if selected_index:
             selected_item_text = self.Listbox1.get(selected_index[0])
-            variable = selected_item_text.split()[0]
+            variable = selected_item_text.split(":")[0].strip()
+            print(variable)
             # Verificar si la clave está en la lista global
             if variable in allElements:
                 self.Listbox1.delete(selected_index[0])
@@ -136,18 +135,66 @@ class Toplevel1:
                 allElements.remove(variable)
                 print(f"Se ha eliminado el elemento {variable} correctamente.")
             else:
+                print(allElements)
                 print(f"El elemento {variable} no se puede eliminar.")
 
         else:
             print("No se ha seleccionado ningún elemento para eliminar.")
-        
+    
+    def open_add_window(self):
+        self.add_window = tk.Toplevel(self.top)
+        self.add_window.title("Agregar nuevo elemento")
+        self.add_window.geometry("300x200")
+
+        # Centrar la ventana en la pantalla
+        self.add_window.update_idletasks()
+        width = self.add_window.winfo_width()
+        height = self.add_window.winfo_height()
+        x = (self.add_window.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.add_window.winfo_screenheight() // 2) - (height // 2)
+        self.add_window.geometry(f'{width}x{height}+{x}+{y}')    
+        missing_keys = self.get_missing_keys()
+        if not missing_keys:
+            messagebox.showinfo("Info", "No hay elementos faltantes para agregar.")
+            return
+
+        self.selected_key = tk.StringVar(self.add_window)
+        self.selected_key.set(missing_keys[0])
+        tk.Label(self.add_window, text="Seleccione el elemento a agregar:").pack(pady=10)
+        tk.OptionMenu(self.add_window, self.selected_key, *missing_keys).pack(pady=10)
+        # Configurar el botón "Crear"
+        tk.Button(self.add_window, text="Crear", background="#b3af46", command=self.create_and_edit_item).pack(pady=10)
+
+    def get_missing_keys(self):
+        required_keys = ["comment", "path", "read only", "inherit acls", "create mask"]
+        return [key for key in required_keys if key not in self.resource]
+
+    def create_and_edit_item(self):
+        key = self.selected_key.get()
+        if key:
+            self.resource[key] = ""  # Inicializa el valor vacío o un valor predeterminado
+            self.add_window.destroy()
+            self.update_listbox_and_resourceConfig([key])
+            self.select_and_edit_item(key)
+            
+    def update_listbox_and_resourceConfig(self, added_keys):
+        global allElements
+        for key in added_keys:
+            self.Listbox1.insert(tk.END, f"{key}: {self.resource[key]}")
+            resourceConfig[key] = self.resource[key]  # Actualiza resourceConfig
+            if key not in allElements:
+                allElements.append(key)
+    def select_and_edit_item(self, key):
+        for index in range(self.Listbox1.size()):
+            if self.Listbox1.get(index).startswith(key):
+                self.Listbox1.selection_clear(0, tk.END)  # Limpiar selección existente
+                self.Listbox1.selection_set(index)  # Seleccionar el nuevo elemento
+                self.Listbox1.activate(index)  # Activar el nuevo elemento
+                analiceEdit(self.Listbox1,self)
+                break
+      
 def updateListBox(listbox):
     listbox.delete(0, tk.END)
-    #for testing elements
-    """listbox.insert(tk.END, "{:<20}{}".format("- -variable- -", "- -valor- -"))
-    listbox.insert(tk.END, "{:<20}{}".format("createMask", 753))
-    listbox.insert(tk.END, "{:<20}{}".format("readOnly", NO))
-    listbox.insert(tk.END, "{:<20}{}".format("InheritAcls", YES))"""
     global nameResource
     for clave, valor in resourceConfig.items():
         if clave.lower() == "nombre":
@@ -155,7 +202,7 @@ def updateListBox(listbox):
         else:
             listbox.insert(tk.END, "{:<20}{}".format(clave+":", valor))
                     
-#EVENTOS DEL LOS BOTONES AGREGAR, EDITAR, QUITAR        
+#EVENTOS DEL EDITAR        
 def analiceEdit(listbox,self):
     selected_index = listbox.curselection()
     if selected_index:
@@ -190,6 +237,9 @@ def analiceEdit(listbox,self):
             top_mask = topUmask(self.editMask,initialMask=currentMask, listbox=listbox)    
         else:
             print("Caso aparte")
+            current = item_text[1].strip()
+            self.editOther = tk.Toplevel(self.top)
+            top_mask = other(self.editOther,initial_date=current, listbox=listbox,name=variable)
     else:
         print("Ningún elemento seleccionado")
 
@@ -386,9 +436,14 @@ class topPath:
 
 class topUmask:
     def __init__(self, top=None,initialMask="", listbox=None):
-        firstDigit = int(int(initialMask) /100)
-        secondDigit = int((int(initialMask) / 10)%10)
-        threeDigit = int(int(initialMask)%10) 
+        if initialMask:  # Verificar si initialMask no está vacío
+            firstDigit = int(int(initialMask) / 100)
+            secondDigit = int((int(initialMask) / 10) % 10)
+            threeDigit = int(int(initialMask) % 10)
+        else:
+            firstDigit = 0
+            secondDigit = 0
+            threeDigit = 0
         top.geometry("340x226+312+348")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -492,7 +547,6 @@ class topUmask:
         self.checkOX.configure(font="-family {Segoe UI} -size 10")
         self.checkOX.configure(foreground="#000000",justify='left')
         self.checkOX.configure(variable=self.cheOX)
-        self.checkOX.configure(command= lambda: print(self.cheOX.get()))
         if(self.cheOX.get()): self.checkOX.select()
         
 
@@ -578,7 +632,57 @@ class topUmask:
         self.acceptUM.place(relx=0.794, rely=0.796, height=26, width=57)
         self.acceptUM.configure(**miniButton,text='''Aceptar''')
         self.acceptUM.configure(command=lambda: updateMask(self))
-    
+
+class other:
+    def __init__(self, top=None, initial_date="", listbox=None,name=""):
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 250) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 116) // 2  # La altura de la ventana es 116
+
+        top.geometry(f"250x116+{x}+{y}")
+        top.minsize(120, 1)
+        top.maxsize(1924, 1061)
+        top.resizable(1,  1)
+        top.title("Changes")
+        top.configure(background="#d9d9d9")
+
+        self.top = top
+        self.listbox = listbox
+        
+        def update_comment(self):
+                new_comment = self.entryComment.get()
+                # Aquí puedes agregar la lógica para guardar el comentario actualizado
+                print("Dato actualizado:", new_comment)
+                resourceConfig[name] = new_comment
+                updateListBox(self.listbox)
+                self.top.destroy()
+        
+        self.entryComment = tk.Entry(top)
+        self.entryComment.place(relx=0.12, rely=0.345, height=20, relwidth=0.776)
+        self.entryComment.insert(0, initial_date)
+
+        self.entryComment.configure(background="white")
+        self.entryComment.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
+        self.entryComment.configure(foreground="#000000")
+        self.entryComment.configure(insertbackground="#000000")
+        self.entryComment.configure(selectbackground="#d9d9d9")
+
+        self.labelComment = tk.Label(self.top)
+        self.labelComment.place(relx=0.36, rely=0.086, height=20, width=74)
+        self.labelComment.configure(**title_config,text=name)
+        self.labelComment.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+
+        self.acceptComment = tk.Button(self.top)
+        self.acceptComment.place(relx=0.68, rely=0.69, height=26, width=57)
+        self.acceptComment.configure(**miniButton,text='''Aceptar''')
+        self.acceptComment.configure(command=lambda: update_comment(self))
+        
+        self.cancelComment = tk.Button(self.top)
+        self.cancelComment.place(relx=0.4, rely=0.69, height=26, width=63)
+        self.cancelComment.configure(**miniButton,text='''Cancelar''')
+        self.cancelComment.configure(background=_bgcolor)
+        self.cancelComment.configure(command=self.top.destroy)    
 
 def start_up_windows(parent=None,navigate_callback=None, update_resource_callback=None):
     
