@@ -3,328 +3,375 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.constants import *
 import os.path
-
 _location = os.path.dirname(__file__)
 
-_bgcolor = '#d9d9d9'
-_fgcolor = '#000000'
+colorDef = '#d9d9d9'
+_fgcolor = '#feffda'
+title_config = {
+    "background": colorDef,
+    "font": ("Courier New", 15, "bold"),
+    "foreground": "black",
+    "anchor": "w",
+}
 
 class Toplevel1:
-    def __init__(self, top=None):
-        '''This class configures and populates the toplevel window.
-           top is the toplevel containing window.'''
-
+    def __init__(self, top=None, navigate_callback=None,show_windows_callback=None):
         top.geometry("915x581+402+99")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
         top.title("Configuración servicio Samba")
-        top.configure(background="#d9d9d9")
-        top.configure(highlightbackground="#d9d9d9")
-        top.configure(highlightcolor="#000000")
+        top.configure(background=colorDef)
 
         self.top = top
+        self.navigate_callback = navigate_callback
+        self.show_windows_callback = show_windows_callback
+        
         self.che63 = tk.IntVar()
         self.che69 = tk.IntVar()
         self.che64 = tk.IntVar()
 
-        self.menubar = tk.Menu(top,font="TkMenuFont",bg=_bgcolor,fg=_fgcolor)
+        self.menubar = tk.Menu(top,font="-family {Consolas}",bg=_fgcolor,fg=_fgcolor)
         top.configure(menu = self.menubar)
 
         self.navigator = ttk.Notebook(self.top)
-        self.navigator.place(relx=0.017, rely=0.022, relheight=0.852
-                , relwidth=0.953)
+        self.navigator.place(relx=0.017, rely=0.022, relheight=0.852, relwidth=0.953)
         self.navigator_t1 = tk.Frame(self.navigator)
         self.navigator.add(self.navigator_t1, padding=3)
-        self.navigator.tab(0, text='''Inicio''', compound="left"
-                ,underline='''-1''', )
+        self.navigator.tab(0, text='''Inicio''', compound="left",underline='''-1''', )
         self.navigator_t1.configure(borderwidth="5")
-        self.navigator_t1.configure(background="#d9d9d9")
-        self.navigator_t1.configure(highlightbackground="#d9d9d9")
-        self.navigator_t1.configure(highlightcolor="#000000")
+        self.navigator_t1.configure(background=colorDef)
         self.navigator_t2 = tk.Frame(self.navigator)
         self.navigator.add(self.navigator_t2, padding=3)
-        self.navigator.tab(1, text='''Recursos compartidos''', compound="left"
-                ,underline='''-1''', )
-        self.navigator_t2.configure(background="#d9d9d9")
-        self.navigator_t2.configure(highlightbackground="#d9d9d9")
-        self.navigator_t2.configure(highlightcolor="#000000")
+        self.navigator.tab(1, text='''Recursos compartidos''', compound="left" ,underline='''-1''', )
+        self.navigator_t2.configure(background=colorDef)
         self.navigator_t3 = tk.Frame(self.navigator)
         self.navigator.add(self.navigator_t3, padding=3)
-        self.navigator.tab(2, text='''Identidad''', compound="left"
-                ,underline='''-1''', )
-        self.navigator_t3.configure(background="#d9d9d9")
-        self.navigator_t3.configure(highlightbackground="#d9d9d9")
-        self.navigator_t3.configure(highlightcolor="#000000")
+        self.navigator.tab(2, text='''Identidad''', compound="left",underline='''-1''', )
+        self.navigator_t3.configure(background=colorDef)
+        self.navigator_t4 = tk.Frame(self.navigator)
+        self.navigator.add(self.navigator_t4, padding=3)
+        self.navigator.tab(3, text='''Usuarios''', compound="left" ,underline='''-1''', )
+        self.navigator_t4.configure(background=colorDef)
 
+        #for new navigator Users
+        self.labelUsers = tk.Label(self.navigator_t4)
+        self.labelUsers.place(relx=0.046, rely=0.02, height=31, width=294)
+        self.labelUsers.configure(**title_config)
+        self.labelUsers.configure(text='''Usuarios Registrados''')
+
+        self.listUsers = tk.Listbox(self.navigator_t4)
+        self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
+        self.listUsers.configure(background="white")
+        self.listUsers.configure(font="TkFixedFont")
+        self.listUsers.configure(foreground="#000000")
+        self.listUsers.configure(selectbackground="#feffda")
+        self.listUsers.configure(selectforeground="black")
+
+        self.butModUser = tk.Button(self.navigator_t4)
+        self.butModUser.place(relx=0.526, rely=0.296, height=26, width=147)
+        self.butModUser.configure(**title_config,activebackground=_fgcolor)
+        self.butModUser.configure(font="-family {Consolas} -size 10")
+        self.butModUser.configure(text='''Modificar contraseña''',anchor='center')
+
+        self.buttDelUser = tk.Button(self.navigator_t4)
+        self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=147)
+        self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
+        self.buttDelUser.configure(font="-family {Consolas} -size 10")
+        self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
+        
         self.cuadroInicial = tk.Frame(self.navigator_t1)
-        self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51
-                , relwidth=0.97)
-        self.cuadroInicial.configure(relief='groove')
-        self.cuadroInicial.configure(borderwidth="2")
-        self.cuadroInicial.configure(relief="groove")
-        self.cuadroInicial.configure(background="#d9d9d9")
-        self.cuadroInicial.configure(highlightbackground="#d9d9d9")
-        self.cuadroInicial.configure(highlightcolor="#000000")
+        self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
+        self.cuadroInicial.configure(relief='groove',borderwidth="2",background=colorDef)
 
         self.textEstado = tk.Label(self.cuadroInicial)
         self.textEstado.place(relx=0.023, rely=0.163, height=21, width=150)
-        self.textEstado.configure(activebackground="#d9d9d9")
-        self.textEstado.configure(activeforeground="black")
-        self.textEstado.configure(anchor='w')
-        self.textEstado.configure(background="#d9d9d9")
-        self.textEstado.configure(compound='left')
-        self.textEstado.configure(disabledforeground="#a3a3a3")
+        self.textEstado.configure(**title_config)
         self.textEstado.configure(font="-family {Courier New} -size 12 -weight bold")
-        self.textEstado.configure(foreground="#000000")
-        self.textEstado.configure(highlightbackground="#d9d9d9")
-        self.textEstado.configure(highlightcolor="#000000")
         self.textEstado.configure(text='''Estado actual:''')
 
         self.statusService = tk.Label(self.cuadroInicial)
         self.statusService.place(relx=0.219, rely=0.154, height=21, width=72)
-        self.statusService.configure(activebackground="#d9d9d9")
-        self.statusService.configure(activeforeground="black")
-        self.statusService.configure(anchor='w')
-        self.statusService.configure(background="#d9d9d9")
-        self.statusService.configure(compound='left')
-        self.statusService.configure(disabledforeground="#a3a3a3")
+        self.statusService.configure(**title_config)
         self.statusService.configure(font="-family {Consolas} -size 11")
-        self.statusService.configure(foreground="#000000")
-        self.statusService.configure(highlightbackground="#d9d9d9")
-        self.statusService.configure(highlightcolor="#000000")
         self.statusService.configure(text='''Inactivo''')
 
         self.textLaterConfig = tk.Label(self.cuadroInicial)
         self.textLaterConfig.place(relx=0.023, rely=0.246, height=20, width=220)
-        self.textLaterConfig.configure(activebackground="#d9d9d9")
-        self.textLaterConfig.configure(activeforeground="black")
-        self.textLaterConfig.configure(anchor='w')
-        self.textLaterConfig.configure(background="#d9d9d9")
-        self.textLaterConfig.configure(compound='left')
-        self.textLaterConfig.configure(disabledforeground="#a3a3a3")
+        self.textLaterConfig.configure(**title_config)
         self.textLaterConfig.configure(font="-family {Courier New} -size 12 -weight bold")
-        self.textLaterConfig.configure(foreground="#000000")
-        self.textLaterConfig.configure(highlightbackground="#d9d9d9")
-        self.textLaterConfig.configure(highlightcolor="#000000")
         self.textLaterConfig.configure(text='''Después de configurar:''')
 
         self.estadoActual = tk.Checkbutton(self.cuadroInicial)
-        self.estadoActual.place(relx=0.046, rely=0.338, relheight=0.092
-                , relwidth=0.21)
-        self.estadoActual.configure(activebackground="#d9d9d9")
-        self.estadoActual.configure(activeforeground="black")
-        self.estadoActual.configure(anchor='w')
-        self.estadoActual.configure(background="#d9d9d9")
-        self.estadoActual.configure(compound='left')
-        self.estadoActual.configure(disabledforeground="#a3a3a3")
+        self.estadoActual.place(relx=0.046, rely=0.338, relheight=0.092, relwidth=0.23)
+        self.estadoActual.configure(**title_config, activebackground="#d9d9d9")
         self.estadoActual.configure(font="-family {Consolas} -size 10")
-        self.estadoActual.configure(foreground="#000000")
-        self.estadoActual.configure(highlightbackground="#d9d9d9")
-        self.estadoActual.configure(highlightcolor="#000000")
-        self.estadoActual.configure(justify='left')
         self.estadoActual.configure(text='''Mantener estado actual''')
         self.estadoActual.configure(variable=self.che63)
 
         self.startServiceCheck = tk.Checkbutton(self.cuadroInicial)
-        self.startServiceCheck.place(relx=0.046, rely=0.521, relheight=0.096
-                , relwidth=0.105)
-        self.startServiceCheck.configure(activebackground="#d9d9d9")
-        self.startServiceCheck.configure(activeforeground="black")
-        self.startServiceCheck.configure(anchor='w')
-        self.startServiceCheck.configure(background="#d9d9d9")
-        self.startServiceCheck.configure(compound='left')
-        self.startServiceCheck.configure(disabledforeground="#a3a3a3")
+        self.startServiceCheck.place(relx=0.046, rely=0.521, relheight=0.096, relwidth=0.105)
+        self.startServiceCheck.configure(**title_config, activebackground="#d9d9d9")
         self.startServiceCheck.configure(font="-family {Consolas} -size 10")
-        self.startServiceCheck.configure(foreground="#000000")
-        self.startServiceCheck.configure(highlightbackground="#d9d9d9")
-        self.startServiceCheck.configure(highlightcolor="#000000")
-        self.startServiceCheck.configure(justify='left')
         self.startServiceCheck.configure(text='''¿Iniciar?''')
         self.startServiceCheck.configure(variable=self.che69)
 
         self.Label1 = tk.Label(self.cuadroInicial)
         self.Label1.place(relx=0.023, rely=0.45, height=18, width=209)
-        self.Label1.configure(activebackground="#d9d9d9")
-        self.Label1.configure(activeforeground="black")
-        self.Label1.configure(anchor='w')
-        self.Label1.configure(background="#d9d9d9")
-        self.Label1.configure(compound='left')
-        self.Label1.configure(disabledforeground="#a3a3a3")
+        self.Label1.configure(**title_config)
         self.Label1.configure(font="-family {Courier New} -size 12 -weight bold")
-        self.Label1.configure(foreground="#000000")
-        self.Label1.configure(highlightbackground="#d9d9d9")
-        self.Label1.configure(highlightcolor="#000000")
         self.Label1.configure(text='''Después de reiniciar:''')
 
         self.tituloInicio = tk.Label(self.cuadroInicial)
         self.tituloInicio.place(relx=0.313, rely=0.042, height=21, width=316)
-        self.tituloInicio.configure(activebackground="#d9d9d9")
-        self.tituloInicio.configure(activeforeground="black")
-        self.tituloInicio.configure(anchor='w')
-        self.tituloInicio.configure(background="#d9d9d9")
-        self.tituloInicio.configure(compound='left')
-        self.tituloInicio.configure(disabledforeground="#a3a3a3")
-        self.tituloInicio.configure(font="-family {Courier New} -size 15 -weight bold")
-        self.tituloInicio.configure(foreground="#000000")
-        self.tituloInicio.configure(highlightbackground="#d9d9d9")
-        self.tituloInicio.configure(highlightcolor="#000000")
+        self.tituloInicio.configure(**title_config)
         self.tituloInicio.configure(text='''Configuración del Servicio''')
 
         self.restart = tk.Checkbutton(self.cuadroInicial)
-        self.restart.place(relx=0.278, rely=0.338, relheight=0.092
-                , relwidth=0.185)
-        self.restart.configure(activebackground="#d9d9d9")
-        self.restart.configure(activeforeground="black")
-        self.restart.configure(anchor='w')
-        self.restart.configure(background="#d9d9d9")
-        self.restart.configure(compound='left')
-        self.restart.configure(disabledforeground="#a3a3a3")
+        self.restart.place(relx=0.278, rely=0.338, relheight=0.092, relwidth=0.185)
+        self.restart.configure(**title_config, activebackground="#d9d9d9")
         self.restart.configure(font="-family {Consolas} -size 10")
-        self.restart.configure(foreground="#000000")
-        self.restart.configure(highlightbackground="#d9d9d9")
-        self.restart.configure(highlightcolor="#000000")
-        self.restart.configure(justify='left')
         self.restart.configure(text='''Reiniciar servicio''')
         self.restart.configure(variable=self.che64)
 
         self.botonAdd = tk.Button(self.navigator_t2)
         self.botonAdd.place(relx=0.023, rely=0.433, height=26, width=57)
-        self.botonAdd.configure(activebackground="#d9d9d9")
-        self.botonAdd.configure(activeforeground="black")
-        self.botonAdd.configure(background="#d9d9d9")
-        self.botonAdd.configure(disabledforeground="#a3a3a3")
+        self.botonAdd.configure(**title_config,activebackground=_fgcolor)
         self.botonAdd.configure(font="-family {Consolas} -size 10")
-        self.botonAdd.configure(foreground="#000000")
-        self.botonAdd.configure(highlightbackground="#d9d9d9")
-        self.botonAdd.configure(highlightcolor="#000000")
-        self.botonAdd.configure(text='''Agregar''')
+        self.botonAdd.configure(text='''Agregar''',anchor='center')
+        self.botonAdd.configure(command=lambda: open_new_resource_window(self))
+        
+        def open_new_resource_window(self):
+            new_window = tk.Toplevel(self.top)
+            new_resource_window = newResource(top=new_window, parent=self)
 
+        self.listActual = ScrolledListBox(self.navigator_t2)
+        self.listActual.place(relx=0.023, rely=0.062, relheight=0.348, relwidth=0.938)
+        self.listActual.configure(background="white")
+        self.listActual.configure(cursor="xterm")
+        self.listActual.configure(font="TkFixedFont")
+        self.listActual.configure(foreground="black")
+        self.listActual.configure(selectbackground="#feffda")
+        self.listActual.configure(selectforeground="black")
+        load_shared_resources(self.listActual)
+        
         self.botonEdit = tk.Button(self.navigator_t2)
         self.botonEdit.place(relx=0.101, rely=0.433, height=26, width=57)
-        self.botonEdit.configure(activebackground="#d9d9d9")
-        self.botonEdit.configure(activeforeground="black")
-        self.botonEdit.configure(background="#d9d9d9")
-        self.botonEdit.configure(disabledforeground="#a3a3a3")
+        self.botonEdit.configure(**title_config,activebackground=_fgcolor)
         self.botonEdit.configure(font="-family {Consolas} -size 10")
-        self.botonEdit.configure(foreground="#000000")
-        self.botonEdit.configure(highlightbackground="#d9d9d9")
-        self.botonEdit.configure(highlightcolor="#000000")
-        self.botonEdit.configure(text='''Editar''')
+        self.botonEdit.configure(text='''Editar''',anchor="center")
+        self.botonEdit.configure(command=lambda: edit(self, self.show_windows_callback))
 
         self.botonDel = tk.Button(self.navigator_t2)
         self.botonDel.place(relx=0.18, rely=0.433, height=26, width=57)
-        self.botonDel.configure(activebackground="#d9d9d9")
-        self.botonDel.configure(activeforeground="black")
-        self.botonDel.configure(background="#d9d9d9")
-        self.botonDel.configure(disabledforeground="#a3a3a3")
+        self.botonDel.configure(**title_config, activebackground=_fgcolor)
         self.botonDel.configure(font="-family {Consolas} -size 10")
-        self.botonDel.configure(foreground="#000000")
-        self.botonDel.configure(highlightbackground="#d9d9d9")
-        self.botonDel.configure(highlightcolor="#000000")
-        self.botonDel.configure(text='''Quitar''')
+        self.botonDel.configure(text='''Quitar''',anchor='center')
+        self.botonDel.configure(command=self.remove_selected_item)
 
         self.Label2 = tk.Label(self.navigator_t2)
         self.Label2.place(relx=0.023, rely=0.021, height=18, width=248)
-        self.Label2.configure(activebackground="#d9d9d9")
-        self.Label2.configure(activeforeground="black")
-        self.Label2.configure(anchor='w')
-        self.Label2.configure(background="#d9d9d9")
-        self.Label2.configure(compound='left')
-        self.Label2.configure(disabledforeground="#a3a3a3")
-        self.Label2.configure(font="-family {Courier New} -size 15 -weight bold")
-        self.Label2.configure(foreground="#000000")
-        self.Label2.configure(highlightbackground="#d9d9d9")
-        self.Label2.configure(highlightcolor="#000000")
-        self.Label2.configure(text='''Recursos compartidos''')
-
-        self.listActual = ScrolledListBox(self.navigator_t2)
-        self.listActual.place(relx=0.023, rely=0.062, relheight=0.348
-                , relwidth=0.938)
-        self.listActual.configure(background="white")
-        self.listActual.configure(cursor="xterm")
-        self.listActual.configure(disabledforeground="#a3a3a3")
-        self.listActual.configure(font="TkFixedFont")
-        self.listActual.configure(foreground="black")
-        self.listActual.configure(highlightbackground="#d9d9d9")
-        self.listActual.configure(highlightcolor="#d9d9d9")
-        self.listActual.configure(selectbackground="#d9d9d9")
-        self.listActual.configure(selectforeground="black")
-
+        self.Label2.configure(**title_config)
+        self.Label2.configure(text='''Recursos compartidos''')       
+        
         self.frameWorkGroup = tk.Frame(self.navigator_t3)
-        self.frameWorkGroup.place(relx=0.022, rely=0.102, relheight=0.399
-                , relwidth=0.926)
-        self.frameWorkGroup.configure(relief='groove')
-        self.frameWorkGroup.configure(borderwidth="2")
-        self.frameWorkGroup.configure(relief="groove")
-        self.frameWorkGroup.configure(background="#d9d9d9")
-        self.frameWorkGroup.configure(highlightbackground="#d9d9d9")
-        self.frameWorkGroup.configure(highlightcolor="#000000")
+        self.frameWorkGroup.place(relx=0.022, rely=0.102, relheight=0.399, relwidth=0.926)
+        self.frameWorkGroup.configure(relief='groove',borderwidth="2",background=colorDef)
 
         self.labelWorkgroup = tk.Label(self.frameWorkGroup)
         self.labelWorkgroup.place(relx=0.012, rely=0.053, height=20, width=159)
-        self.labelWorkgroup.configure(activebackground="#d9d9d9")
-        self.labelWorkgroup.configure(activeforeground="black")
-        self.labelWorkgroup.configure(anchor='w')
-        self.labelWorkgroup.configure(background="#d9d9d9")
-        self.labelWorkgroup.configure(compound='left')
-        self.labelWorkgroup.configure(disabledforeground="#a3a3a3")
+        self.labelWorkgroup.configure(**title_config)
         self.labelWorkgroup.configure(font="-family {Consolas} -size 11")
-        self.labelWorkgroup.configure(foreground="#000000")
-        self.labelWorkgroup.configure(highlightbackground="#d9d9d9")
-        self.labelWorkgroup.configure(highlightcolor="#000000")
-        self.labelWorkgroup.configure(text='''Nombre de WorkGroup''')
+        self.labelWorkgroup.configure(text='''Nombre de WorkGroup:''')
 
         self.entryWorkGroup = tk.Entry(self.frameWorkGroup)
-        self.entryWorkGroup.place(relx=0.012, rely=0.186, height=20
-                , relwidth=0.452)
+        self.entryWorkGroup.place(relx=0.012, rely=0.186, height=20 , relwidth=0.452)
         self.entryWorkGroup.configure(background="white")
-        self.entryWorkGroup.configure(disabledforeground="#a3a3a3")
         self.entryWorkGroup.configure(font="-family {Consolas} -size 11")
-        self.entryWorkGroup.configure(foreground="#000000")
-        self.entryWorkGroup.configure(highlightbackground="#d9d9d9")
-        self.entryWorkGroup.configure(highlightcolor="#000000")
-        self.entryWorkGroup.configure(insertbackground="#000000")
-        self.entryWorkGroup.configure(selectbackground="#d9d9d9")
-        self.entryWorkGroup.configure(selectforeground="black")
+        self.entryWorkGroup.configure(foreground="#000000",insertbackground="#000000")
+        self.entryWorkGroup.configure(selectbackground="#d9d9d9", selectforeground="black")
 
         self.Label3 = tk.Label(self.navigator_t3)
         self.Label3.place(relx=0.348, rely=0.04, height=21, width=248)
-        self.Label3.configure(activebackground="#d9d9d9")
-        self.Label3.configure(activeforeground="black")
-        self.Label3.configure(anchor='w')
-        self.Label3.configure(background="#d9d9d9")
-        self.Label3.configure(compound='left')
-        self.Label3.configure(disabledforeground="#a3a3a3")
-        self.Label3.configure(font="-family {Courier New} -size 15 -weight bold")
-        self.Label3.configure(foreground="#000000")
-        self.Label3.configure(highlightbackground="#d9d9d9")
-        self.Label3.configure(highlightcolor="#000000")
+        self.Label3.configure(**title_config)
         self.Label3.configure(text='''Configuración básica''')
 
         self.botonCancel = tk.Button(self.top)
         self.botonCancel.place(relx=0.812, rely=0.905, height=26, width=67)
-        self.botonCancel.configure(activebackground="#d9d9d9")
-        self.botonCancel.configure(activeforeground="black")
-        self.botonCancel.configure(background="#d9d9d9")
-        self.botonCancel.configure(disabledforeground="#a3a3a3")
+        self.botonCancel.configure(**title_config,activebackground=_fgcolor)
         self.botonCancel.configure(font="-family {Consolas} -size 10")
-        self.botonCancel.configure(foreground="#000000")
-        self.botonCancel.configure(highlightbackground="#d9d9d9")
-        self.botonCancel.configure(highlightcolor="#000000")
-        self.botonCancel.configure(text='''Cancelar''')
+        self.botonCancel.configure(text='''Cancelar''',anchor='center')
+        self.botonCancel.configure(command=self.navigate_callback)
 
         self.botonAccept = tk.Button(self.top)
         self.botonAccept.place(relx=0.897, rely=0.905, height=26, width=67)
-        self.botonAccept.configure(activebackground="#d9d9d9")
-        self.botonAccept.configure(activeforeground="black")
-        self.botonAccept.configure(background="#b3af46")
-        self.botonAccept.configure(disabledforeground="#a3a3a3")
+        self.botonAccept.configure(**title_config)
+        self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
-        self.botonAccept.configure(foreground="#000000")
-        self.botonAccept.configure(highlightbackground="#d9d9d9")
-        self.botonAccept.configure(highlightcolor="#000000")
-        self.botonAccept.configure(text='''Aceptar''')
+        self.botonAccept.configure(text='''Aceptar''',anchor='center')
+    
+    def add_new_resource(self, resource):
+            formatted_line = "{:<20} {:<13} {:<27} {:<20}".format(
+                resource["read only"],
+                resource["Nombre"],
+                resource["path"],
+                resource["comment"]
+            )
+            self.listActual.insert(tk.END, formatted_line)
+            # agregar el recurso a una lista global
+            resources.append(resource)
+    
+    def remove_selected_item(self):
+        selected_index = self.listActual.curselection()
+        if selected_index:
+            self.listActual.delete(selected_index)            
+
+
+class newResource:
+    def __init__(self, top=None, parent=None):
+        top.geometry("328x312+850+202")
+        top.minsize(120, 1)
+        top.maxsize(1924, 1061)
+        top.resizable(1,  1)
+        top.title("Add new Resource")
+        top.configure(background="#d9d9d9")
+
+        self.top = top
+        self.parent = parent
+        self.che67 = tk.IntVar()
+
+        self.acceptNR = tk.Button(self.top)
+        self.acceptNR.place(relx=0.762, rely=0.859, height=26, width=57)
+        self.acceptNR.configure(activebackground=_fgcolor,background="#b3af46")
+        self.acceptNR.configure(font="-family {Comic Sans MS} -size 9")
+        self.acceptNR.configure(foreground="#000000",text='''Aceptar''',command=lambda: on_accept(self))
+        
+        self.cancelNR = tk.Button(self.top)
+        self.cancelNR.place(relx=0.549, rely=0.859, height=26, width=57)
+        self.cancelNR.configure(activebackground=_fgcolor,**title_config)
+        self.cancelNR.configure(font="-family {Comic Sans MS} -size 9")
+        self.cancelNR.configure(text='''Cancelar''',command=self.top.destroy)
+
+        self.entryPathNR = tk.Entry(self.top)
+        self.entryPathNR.place(relx=0.183, rely=0.628, height=20, relwidth=0.591)
+
+        self.entryPathNR.configure(background="white",foreground="#000000")
+        self.entryPathNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
+        self.entryPathNR.configure(insertbackground="#000000",selectbackground="#d9d9d9")
+
+        self.labelPathNR = tk.Label(self.top)
+        self.labelPathNR.place(relx=0.396, rely=0.529, height=24, width=42)
+        self.labelPathNR.configure(anchor='w',background="#d9d9d9")
+        self.labelPathNR.configure(compound='left',text='''Path''',foreground="#000000")
+        self.labelPathNR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+
+        self.entryCommentNR = tk.Entry(self.top)
+        self.entryCommentNR.place(relx=0.183, rely=0.429, height=20, relwidth=0.591)
+        self.entryCommentNR.configure(background="white",foreground="#000000")
+        self.entryCommentNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
+        self.entryCommentNR.configure(insertbackground="#000000",selectbackground="#d9d9d9")
+
+        self.labelComment = tk.Label(self.top)
+        self.labelComment.place(relx=0.366, rely=0.33, height=25, width=72)
+        self.labelComment.configure(anchor='w',background="#d9d9d9",compound='left')
+        self.labelComment.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+        self.labelComment.configure(foreground="#000000",text='''Comment''')
+
+        self.entryNameNR = tk.Entry(self.top)
+        self.entryNameNR.place(relx=0.183, rely=0.231, height=20, relwidth=0.591)
+
+        self.entryNameNR.configure(background="white",foreground="#000000")
+        self.entryNameNR.configure(font="-family {Comic Sans MS} -size 10 -slant italic")
+        self.entryNameNR.configure(insertbackground="#000000",selectbackground="#d9d9d9")
+
+        self.labelNameNR = tk.Label(self.top)
+        self.labelNameNR.place(relx=0.396, rely=0.163, height=14, width=52)
+        self.labelNameNR.configure(anchor='w',background="#d9d9d9",compound='left')
+        self.labelNameNR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+        self.labelNameNR.configure(foreground="#000000",text='''Name''')
+
+        self.chechRO_NR = tk.Checkbutton(self.top)
+        self.chechRO_NR.place(relx=0.305, rely=0.728, relheight=0.09, relwidth=0.338)
+        self.chechRO_NR.configure(anchor='w',background="#d9d9d9",compound='left')
+        self.chechRO_NR.configure(font="-family {Comic Sans MS} -size 11 -weight bold")
+        self.chechRO_NR.configure(foreground="#000000",justify='left')
+        self.chechRO_NR.configure(text='''Read Only''',variable=self.che67)
+
+        self.labelNR = tk.Label(self.top)
+        self.labelNR.place(relx=0.152, rely=0.032, height=25, width=224)
+        self.labelNR.configure(anchor='w',background="#d9d9d9",compound='left')
+        self.labelNR.configure(font="-family {Comic Sans MS} -size 13 -weight bold -slant italic")
+        self.labelNR.configure(foreground="#000000",text='''Nuevo recurso compartido''')
+        def on_accept(self):
+            new_resource = {
+                "Nombre": self.entryNameNR.get(),
+                "path": self.entryPathNR.get(),
+                "comment": self.entryCommentNR.get(),
+                "read only": "Yes" if self.che67.get() else "No"
+            }
+            self.parent.add_new_resource(new_resource)
+            self.top.destroy()
+
+def read_smb_conf(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+            lines = [line.strip() for line in lines]
+        return lines
+    except FileNotFoundError:
+        print(f"Error: The file at {file_path} was not found.")
+        return []
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return []
+
+def extract_shared_resources(lines):
+    resources = []
+    current_resource = {}
+    for line in lines:
+        line = line.strip()
+        if line.startswith("[") and line.endswith("]"):
+            if current_resource:
+                resources.append(current_resource)
+                current_resource = {}
+            current_resource["Nombre"] = line[1:-1]
+        elif "=" in line:
+            key, value = line.split("=", 1)
+            current_resource[key.strip()] = value.strip()
+    if current_resource:
+        resources.append(current_resource)
+    return resources
+
+file_path = "C:/Users/GASPAR/Desktop/Aso-proyecto/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
+lines = read_smb_conf(file_path)
+resources = extract_shared_resources(lines)
+
+def load_shared_resources(self):
+            for resource in resources:
+                nombre = resource.get("Nombre", "No especificado")
+                if nombre.lower() == "global": #no deberia aparecer [global]
+                    continue
+                
+                read_only = resource.get("read only", "No especificado")
+                path = resource.get("path", "No especificado")
+                comentario = resource.get("comment", "No especificado")
+                
+                formatted_line = "{:<20} {:<13} {:<27} {:<20}".format(
+                    read_only,
+                    nombre,
+                    path,
+                    comentario
+                )
+                self.insert(tk.END, formatted_line)
+
+def edit(self, show_windows_callback):
+    selected_index = self.listActual.curselection()
+    if selected_index:
+        index = selected_index[0]  # Obtener el índice del recurso seleccionado
+        selected_resource = resources[index+1]  # Obtener el recurso completo usando el índice
+        print(selected_resource)
+        show_windows_callback(selected_resource)
+            
 
 class AutoScroll(object):
     '''Configure the scrollbars for a widget.'''
@@ -435,16 +482,8 @@ def _on_shiftmouse(event, widget):
         elif event.num == 5:
             widget.xview_scroll(1, 'units')
 
-def start_up_Interface():
-    '''Main entry point for the application.'''
-    global root
-    root = tk.Tk()
-    root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
-    # Creates a toplevel widget.
-    global _top1, _w1
-    _top1 = root
-    _w1 = Toplevel1(_top1)
-    root.mainloop()
+def start_up_Interface(parent=None, navigate_callback=None, show_windows_callback=None):
+    _w1 = Toplevel1(parent, navigate_callback, show_windows_callback)
 
 if __name__ == '__main__':
     start_up_Interface()

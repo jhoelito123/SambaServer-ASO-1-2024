@@ -1,37 +1,43 @@
 import tkinter as tk
-from Interface.home import intro
-from Interface.firstInterface import Toplevel1
+from Interface.home import start_up as start_home
+from Interface.firstInterface import start_up_Interface as start_interface
+from Interface.windows import start_up_windows
 
-class App(tk.Tk):
-    def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
-        self.title("Mi Aplicación")
-        
-        # Crear las instancias de las interfaces
-        self.home = intro(self)
-        self.first_interface = Toplevel1(self)
-        
-        # Mostrar la interfaz de inicio al inicio
-        self.show_home_interface()
+class App:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.withdraw()
+        self.current_window = None
+        self.root.protocol('WM_DELETE_WINDOW', self.on_closing)
+        self.show_home()
+                            
+    def show_home(self):
+        if self.current_window:
+            self.current_window.destroy()
+        self.current_window = tk.Toplevel(self.root)
+        self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        start_home(self.current_window, self.show_interface)
+
+    def show_interface(self):
+        if self.current_window:
+            self.current_window.destroy()
+        self.current_window = tk.Toplevel(self.root)
+        self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        start_interface(self.current_window, self.show_home, self.show_windows)
+
     
-    def show_home_interface(self):
-        # Ocultar la interfaz actual (si hay alguna)
-        if hasattr(self, "current_interface"):
-            self.current_interface.pack_forget()
-        
-        # Mostrar la interfaz de inicio
-        self.home.pack(fill=tk.BOTH, expand=True)
-        self.current_interface = self.home
+    def show_windows(self, resource):
+        if self.current_window:
+            self.current_window.destroy()
+        self.current_window = tk.Toplevel(self.root)
+        self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        start_up_windows(self.current_window, resource, self.show_interface)
     
-    def show_first_interface(self):
-        # Ocultar la interfaz actual (si hay alguna)
-        if hasattr(self, "current_interface"):
-            self.current_interface.pack_forget()
-        
-        # Mostrar la primera interfaz
-        self.first_interface.pack(fill=tk.BOTH, expand=True)
-        self.current_interface = self.first_interface
+    def on_closing(self):
+        if self.current_window:
+            self.current_window.destroy()
+        self.root.destroy()
 
 if __name__ == "__main__":
     app = App()
-    app.mainloop()
+    app.root.mainloop()

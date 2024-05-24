@@ -10,3 +10,8 @@ forResource:
       compartido, con sus datos determinados y en caso de editar los existentes (solo lo necesario)
     - Ventana Check para los permisos del Create Mask de un recurso compartido
     - Extra ventana en caso de agregar un nuevo recurso compartido desde la firstInterface
+
+For repair:
+- La ventana de windows no detecta el caso "read only"
+- Nos permite editar los nombres de recurso, nos deberia directo poner de titulo (modificar name resource)
+- En la ventana de fisrtInterface nos permite modificar [Global] cuando no deberia aparecer en el listado
