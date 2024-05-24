@@ -114,7 +114,8 @@ class Toplevel1:
         selected_index = self.Listbox1.curselection()
         if selected_index:
             selected_item_text = self.Listbox1.get(selected_index[0])
-            variable = selected_item_text.split()[0]
+            item_text = selected_item_text.strip().split(":") ##Dividimos en 2 partes, la primero es la clave y la segunda el valor 
+            variable = item_text[0]
             # Verificar si la clave está en la lista global
             if variable in allElements:
                 self.Listbox1.delete(selected_index[0])
