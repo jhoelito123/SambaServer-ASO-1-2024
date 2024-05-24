@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 from tkinter.constants import *
 import os.path
 _location = os.path.dirname(__file__)
+from tkinter import messagebox
 
 colorDef = '#d9d9d9'
 _fgcolor = '#feffda'
@@ -204,14 +205,18 @@ class Toplevel1:
         self.botonCancel.configure(**title_config,activebackground=_fgcolor)
         self.botonCancel.configure(font="-family {Consolas} -size 10")
         self.botonCancel.configure(text='''Cancelar''',anchor='center')
-        self.botonCancel.configure(command=self.navigate_callback)
+        self.botonCancel.configure(command=self.cancel_and_navigate)
 
         self.botonAccept = tk.Button(self.top)
         self.botonAccept.place(relx=0.897, rely=0.905, height=26, width=67)
         self.botonAccept.configure(**title_config)
         self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
-        self.botonAccept.configure(text='''Aceptar''',anchor='center')
+        self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
+    
+    def cancel_and_navigate(self):
+        self.cancel_changes()
+        self.navigate_callback()
     
     def add_new_resource(self, resource):
             formatted_line = "{:<20} {:<13} {:<27} {:<20}".format(
@@ -233,11 +238,9 @@ class Toplevel1:
     def update_workgroup(self):
         # Obtener el valor actual del Entry
         new_workgroup = self.entryWorkGroup.get()
-
         for resource in resources:
             if resource['Nombre'] == 'global':
                 resource['workgroup'] = new_workgroup
-                print('se ha cambiado')
                 break
         else:
             print("No se encontró el recurso global.")
@@ -252,6 +255,30 @@ class Toplevel1:
         self.entryWorkGroup.delete(0, tk.END)  # Limpiar el Entry
         self.entryWorkGroup.insert(0, current_workgroup) #Llenarlo
 
+    def save_changes(self):
+        global resources
+        write_smb_conf(file_path,resources)
+        messagebox.showinfo("Info", "Los cambios se han guardado correctamente.")
+
+    def cancel_changes(self):
+        global resources,initial_conf
+        resources = initial_conf
+        messagebox.showinfo("Info", "Los cambios han sido cancelados.")
+
+def write_smb_conf(file_path, resources):
+    with open(file_path, 'w') as file:
+        file.write("# smb.conf is the main Samba configuration file. You find a full commented\n")
+        file.write("# version at /usr/share/doc/packages/samba/examples/smb.conf.SUSE if the\n")
+        file.write("# samba-doc package is installed.\n")
+        
+        for resource in resources:
+            file.write(f"[{resource['Nombre']}]\n")
+            for key, value in resource.items():
+                if key != 'Nombre':
+                    file.write(f"\t{key} = {value}\n")
+            #file.write("\n")
+
+   
 class newResource:
     def __init__(self, top=None, parent=None):
         top.geometry("328x312+850+202")
@@ -370,7 +397,7 @@ def extract_shared_resources(lines):
 file_path = "D:/ASO/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
 lines = read_smb_conf(file_path)
 resources = extract_shared_resources(lines)
-
+initial_conf = extract_shared_resources(lines) #rescatamos el original
 def load_shared_resources(self):
             for resource in resources:
                 nombre = resource.get("Nombre", "No especificado")

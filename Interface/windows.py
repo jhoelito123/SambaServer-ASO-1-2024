@@ -127,7 +127,6 @@ class Toplevel1:
         if selected_index:
             selected_item_text = self.Listbox1.get(selected_index[0])
             variable = selected_item_text.split(":")[0].strip()
-            print(variable)
             # Verificar si la clave está en la lista global
             if variable in allElements:
                 self.Listbox1.delete(selected_index[0])
@@ -137,7 +136,6 @@ class Toplevel1:
             else:
                 print(allElements)
                 print(f"El elemento {variable} no se puede eliminar.")
-
         else:
             print("No se ha seleccionado ningún elemento para eliminar.")
     
@@ -214,29 +212,24 @@ def analiceEdit(listbox,self):
             current_comment = item_text[1].strip()  # Obtener el comentario actual
             self.edit_comment_window = tk.Toplevel(self.top)
             top_comment_instance = topComment(self.edit_comment_window, initial_comment=current_comment, listbox=listbox)
-            print("Editar comentario")
         elif variable == "path":
             current_path = item_text[1].strip()
             self.edit_path_window = tk.Toplevel(self.top)
             top_path_instance = topPath(self.edit_path_window,initial_path = current_path, listbox=listbox)
-            print("Editar ruta")
         elif variable == 'read only':
             current_ro = item_text[1].strip()
             self.edit_ro = tk.Toplevel(self.top)
             top_ro_instance = topRO(self.edit_ro,initial_ro=current_ro, listbox=listbox)
-            print("Editar permisos de lectura/escritura")
         elif variable == 'inherit acls':
             current_inherit = item_text[1].strip()
             self.edit_Inherit = tk.Toplevel(self.top)
             top_inherit_instance = topInherit(self.edit_Inherit,initial_Inherit=current_inherit, listbox=listbox)
-            print("Editar inherit")
         elif variable == "create mask":
-            print("Editar otra la mask")
             currentMask = item_text[1].strip()
             self.editMask = tk.Toplevel(self.top)
             top_mask = topUmask(self.editMask,initialMask=currentMask, listbox=listbox)    
         else:
-            print("Caso aparte")
+            print("Editando caso aparte")
             current = item_text[1].strip()
             self.editOther = tk.Toplevel(self.top)
             top_mask = other(self.editOther,initial_date=current, listbox=listbox,name=variable)
