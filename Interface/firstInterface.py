@@ -256,9 +256,10 @@ class Toplevel1:
         self.entryWorkGroup.insert(0, current_workgroup) #Llenarlo
 
     def save_changes(self):
-        global resources
+        global resources,lines
         write_smb_conf(file_path,resources)
         messagebox.showinfo("Guardando...", "Los cambios se han guardado correctamente.")
+        lines = read_smb_conf(file_path)
 
     def cancel_changes(self):
         global resources,initial_conf
@@ -392,7 +393,8 @@ def extract_shared_resources(lines):
         resources.append(current_resource)
     return resources
 
-file_path = "/etc/samba/smb.conf"
+#file_path = "/etc/samba/smb.conf"
+file_path = "D:/ASO/SambaServer-ASO-1-2024/Interface/smb.conf"
 lines = read_smb_conf(file_path)
 resources = extract_shared_resources(lines)
 initial_conf = extract_shared_resources(lines) #rescatamos el original
