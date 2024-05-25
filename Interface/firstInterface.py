@@ -232,20 +232,15 @@ class Toplevel1:
                 
     def delete_samba_user(self, username):
         try:
-            print(f"Simulando la eliminación del usuario Samba: {username}")
-            # Conectarse al servidor Samba y eliminar el usuario
-            """ ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect('samba_server_ip', username='your_username', password='your_password')
-            
-            # Comando para eliminar el usuario de Samba
+            print(f"Eliminando usuario Samba: {username}")
+            # Ejecutar comandos para eliminar el usuario localmente
             delete_samba_cmd = f'sudo smbpasswd -x {username}'
-
-            stdin, stdout, stderr = ssh.exec_command(delete_samba_cmd)
-            print(stdout.read().decode(), stderr.read().decode())
-            
-            ssh.close() """
-            print(f"Usuario Samba {username} eliminado (simulado).")
+            result = subprocess.run(delete_samba_cmd, shell=True, capture_output=True, text=True)
+            if result.returncode == 0:
+                self.listUsers.delete(tk.ACTIVE)
+                messagebox.showinfo("Éxito", f"Usuario {username} eliminado correctamente.")
+            else:
+                messagebox.showerror("Error", f"No se pudo eliminar el usuario Samba: {result.stderr}")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo eliminar el usuario Samba: {e}")
             
@@ -593,7 +588,7 @@ def start_up_Interface(parent=None, navigate_callback=None, show_windows_callbac
 if __name__ == '__main__':
     start_up_Interface()
 
-
+import subprocess
 import paramiko
 
 class AddUserDialog:
@@ -635,39 +630,26 @@ class AddUserDialog:
         username = self.username_entry.get()
         password = self.password_entry.get()
         if username and password:
-            # Guardar usuario en la lista local
-            self.listbox.insert(tk.END, username)
-            # Intentar guardar el usuario en el sistema Samba
             self.save_user(username, password)
+            self.listbox.insert(tk.END, username)
             self.dialog.destroy()
         else:
             messagebox.showwarning("Campos incompletos", "Por favor, complete todos los campos.")
-            
+
     def save_user(self, username, password):
         try:
-            print(f"Simulando la adición del usuario: {username} con la contraseña: {password}")
-            # Código para conectarse al servidor Samba y agregar el usuario
-            """ ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect('samba_server_ip', username='your_username', password='your_password')
-            
-            # Comandos para agregar un usuario en Samba
+            print(f"Agregando usuario: {username}")
+            # Ejecutar comandos para agregar el usuario localmente
             add_user_cmd = f'sudo useradd -m {username}'
             set_password_cmd = f'echo "{username}:{password}" | sudo chpasswd'
             add_samba_cmd = f'sudo smbpasswd -a {username}'
 
-            stdin, stdout, stderr = ssh.exec_command(add_user_cmd)
-            print(stdout.read().decode(), stderr.read().decode())
-            
-            stdin, stdout, stderr = ssh.exec_command(set_password_cmd)
-            print(stdout.read().decode(), stderr.read().decode())
-            
-            stdin, stdout, stderr = ssh.exec_command(add_samba_cmd)
-            print(stdout.read().decode(), stderr.read().decode())
-            
-            ssh.close() """
-            print(f"Usuario {username} añadido en el sistema Samba (simulado).")
-        except Exception as e:
+            subprocess.run(add_user_cmd, shell=True, check=True)
+            subprocess.run(set_password_cmd, shell=True, check=True)
+            subprocess.run(add_samba_cmd, shell=True, check=True)
+
+            print(f"Usuario {username} añadido en el sistema Samba.")
+        except subprocess.CalledProcessError as e:
             messagebox.showerror("Error", f"No se pudo agregar el usuario: {e}")
 
 if __name__ == '__main__':
