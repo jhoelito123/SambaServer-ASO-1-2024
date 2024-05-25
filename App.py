@@ -21,7 +21,6 @@ class App:
     def show_interface(self, client):
         if self.current_window:
             self.current_window.destroy()
-            print("destruyo la ventanita")
         self.client = client
         self.current_window = tk.Toplevel(self.root)
         self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -32,7 +31,6 @@ class App:
             self.current_window.destroy()
         self.current_window = tk.Toplevel(self.root)
         self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
-        print("entro a la ventana windows")       
         start_up_windows(self.current_window, self.show_interface, resource, self.client)
     
     def on_closing(self):

@@ -290,7 +290,7 @@ class Toplevel1:
         self.entryWorkGroup.insert(0, current_workgroup) #Llenarlo
 
     def save_changes(self):
-        global resources
+        global resources,lines,initial_conf
         write_smb_conf(file_path,resources)
         self.save_start_conf()
         
@@ -299,10 +299,14 @@ class Toplevel1:
         elif self.selected_option.get() == "Detener":
             self.stop_service()
         
-        self.load_service_status()
+        self.load_service_status() #Actualiza el status
+        lines = read_smb_conf(file_path)
+        resources = extract_shared_resources(lines)
+        initial_conf = extract_shared_resources(lines)
+        load_shared_resources(self.listActual)
             
         messagebox.showinfo("Info", "Los cambios se han guardado correctamente.")
-        
+    
 
     def cancel_changes(self):
         global resources,initial_conf
@@ -515,6 +519,7 @@ resources = extract_shared_resources(lines)
 initial_conf = extract_shared_resources(lines) #rescatamos el original
 
 def load_shared_resources(self):
+            self.delete(0, tk.END)
             for resource in resources:
                 nombre = resource.get("Nombre", "No especificado")
                 if nombre.lower() == "global": #no deberia aparecer [global]

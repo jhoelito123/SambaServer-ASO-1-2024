@@ -115,7 +115,7 @@ class intro:
         self.Button1.configure(text='''Enter''')
         self.Button1.configure(command=lambda: self.login_user(self.entryPass.get()))
 
-    #Para usar paramiko se debe reinicar en ssh
+    #Para usar paramiko se debe reinicar ssh
     def login_user(self,password):
         command = "service sshd restart"
         process = subprocess.Popen(['sudo', '-S'] + command.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
