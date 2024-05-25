@@ -18,25 +18,26 @@ class App:
         self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
         start_home(self.current_window, self.show_interface)
 
-    def show_interface(self):
+    def show_interface(self, client):
         if self.current_window:
             self.current_window.destroy()
+        self.client = client
         self.current_window = tk.Toplevel(self.root)
         self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
-        start_interface(self.current_window, self.show_home, self.show_windows)
+        start_interface(self.current_window, self.show_home, self.show_windows, self.client)
     
     def show_windows(self, resource):
         if self.current_window:
             self.current_window.destroy()
         self.current_window = tk.Toplevel(self.root)
-        self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)       
-        start_up_windows(self.current_window, resource, self.show_interface)
+        self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        start_up_windows(self.current_window, self.show_interface, resource, self.client)
     
     def on_closing(self):
         if self.current_window:
             self.current_window.destroy()
         self.root.destroy()
-
+        
 if __name__ == "__main__":
     app = App()
     app.root.mainloop()

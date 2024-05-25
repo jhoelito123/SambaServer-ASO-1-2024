@@ -1,8 +1,11 @@
 import sys
 import tkinter as tk
 import tkinter.ttk as ttk
+from tkinter import messagebox
 from tkinter.constants import *
 import os.path
+import subprocess
+import paramiko
 
 _location = os.path.dirname(__file__)
 colorLight = "#feffda"
@@ -55,13 +58,13 @@ class intro:
         self.cruz.configure(font="-family {Segoe UI} -size 36 -weight bold")
         self.cruz.configure(text='''X''')
 
-        self.LogoPyC = tk.Label(self.top)
-        self.LogoPyC.place(relx=0.059, rely=0.847, height=81, width=76)
-        self.LogoPyC.configure(**label_config)
-        photo_location = os.path.join(_location,"src/pyc little.png")
-        global _img2
-        """_img2 = tk.PhotoImage(file=photo_location)
-        self.LogoPyC.configure(image=_img2)""" # problemas en el OpenSUSE
+        # self.LogoPyC = tk.Label(self.top)
+        # self.LogoPyC.place(relx=0.059, rely=0.847, height=81, width=76)
+        # self.LogoPyC.configure(**label_config)
+        # photo_location = os.path.join(_location,"src/pyc little.png")
+        # global _img2
+        # _img2 = tk.PhotoImage(file=photo_location)
+        # self.LogoPyC.configure(image=_img2)
 
         self.adam = tk.Label(self.top)
         self.adam.place(relx=0.176, rely=0.862, height=21, width=164)
@@ -110,7 +113,22 @@ class intro:
         self.Button1.configure(font="-family {Comic Sans MS} -size 14 -weight bold")
         self.Button1.configure(foreground="black")
         self.Button1.configure(text='''Enter''')
-        self.Button1.configure(command=self.navigate_callback)
+        self.Button1.configure(command=lambda: self.login_user(self.entryPass.get()))
+
+    #Para usar paramiko se debe reinicar ssh
+    def login_user(self,password):
+        command = "service sshd restart"
+        process = subprocess.Popen(['sudo', '-S'] + command.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate(input=password.encode() + b'\n')
+        
+        HOST = 'localhost'
+        try:
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy( paramiko.AutoAddPolicy() )
+            client.connect(HOST, username='root', password=password)
+            self.navigate_callback(client)
+        except paramiko.ssh_exception.AuthenticationException as e:
+            messagebox.showerror("Login", "Credenciales incorrectas")
 
 #PA QUE TANTAS VENTANAS y el otro bucle (igual me estoy equivocando :v)
 def start_up(parent=None,navigate_callback=None):
