@@ -4,6 +4,7 @@ import tkinter.ttk as ttk
 from tkinter.constants import *
 import os.path
 _location = os.path.dirname(__file__)
+from tkinter import messagebox
 
 colorDef = '#d9d9d9'
 _fgcolor = '#feffda'
@@ -53,7 +54,7 @@ class Toplevel1:
         self.navigator.add(self.navigator_t4, padding=3)
         self.navigator.tab(3, text='''Usuarios''', compound="left" ,underline='''-1''', )
         self.navigator_t4.configure(background=colorDef)
-
+#========================================================
         #for new navigator Users
         self.labelUsers = tk.Label(self.navigator_t4)
         self.labelUsers.place(relx=0.046, rely=0.02, height=31, width=294)
@@ -67,18 +68,22 @@ class Toplevel1:
         self.listUsers.configure(foreground="#000000")
         self.listUsers.configure(selectbackground="#feffda")
         self.listUsers.configure(selectforeground="black")
+        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.list_samba_users())
 
         self.butModUser = tk.Button(self.navigator_t4)
         self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
         self.butModUser.configure(**title_config,activebackground=_fgcolor)
         self.butModUser.configure(font="-family {Consolas} -size 10")
-        self.butModUser.configure(text='''Modificar contraseña''',anchor='center')
+        self.butModUser.configure(text='''Agregar usuario''',anchor='center')
+        self.butModUser.configure(command=self.add_user)
+        
 
         self.buttDelUser = tk.Button(self.navigator_t4)
         self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
         self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
+        self.buttDelUser.configure(command=self.delete_user)
         
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
@@ -204,14 +209,71 @@ class Toplevel1:
         self.botonCancel.configure(**title_config,activebackground=_fgcolor)
         self.botonCancel.configure(font="-family {Consolas} -size 10")
         self.botonCancel.configure(text='''Cancelar''',anchor='center')
-        self.botonCancel.configure(command=self.navigate_callback)
+        self.botonCancel.configure(command=self.cancel_and_navigate)
 
         self.botonAccept = tk.Button(self.top)
         self.botonAccept.place(relx=0.897, rely=0.905, height=26, width=67)
         self.botonAccept.configure(**title_config)
         self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
-        self.botonAccept.configure(text='''Aceptar''',anchor='center')
+        self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
+        
+    def add_user(self):
+        add_user_dialog = AddUserDialog(self.top, self.listUsers)
+
+    def delete_user(self):
+        selected_user = self.listUsers.get(tk.ACTIVE)
+        if selected_user:
+            answer = messagebox.askyesno("Confirmar eliminación", f"¿Está seguro de que desea eliminar el usuario {selected_user}?")
+            if answer:
+                self.listUsers.delete(tk.ACTIVE)
+                self.delete_samba_user(selected_user)
+                self.list_samba_users()
+                
+    def delete_samba_user(self, username):
+        try:
+            print(f"Simulando la eliminación del usuario Samba: {username}")
+            # Conectarse al servidor Samba y eliminar el usuario
+            """ ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect('samba_server_ip', username='your_username', password='your_password')
+            
+            # Comando para eliminar el usuario de Samba
+            delete_samba_cmd = f'sudo smbpasswd -x {username}'
+
+            stdin, stdout, stderr = ssh.exec_command(delete_samba_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            ssh.close() """
+            print(f"Usuario Samba {username} eliminado (simulado).")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar el usuario Samba: {e}")
+            
+    def list_samba_users(self):
+        try:
+            print("Listando usuarios de Samba...")
+            """ ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect('samba_server_ip', username='your_username', password='your_password')
+
+            # Comando para listar todos los usuarios de Samba
+            list_users_cmd = 'sudo pdbedit -L -v'
+
+            stdin, stdout, stderr = ssh.exec_command(list_users_cmd)
+            samba_users = stdout.read().decode()
+
+            # Imprimir la lista de usuarios de Samba
+            print(samba_users)
+
+            ssh.close() """
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudieron listar los usuarios de Samba: {e}")
+
+
+    
+    def cancel_and_navigate(self):
+        self.cancel_changes()
+        self.navigate_callback()
     
     def add_new_resource(self, resource):
             formatted_line = "{:<20} {:<13} {:<27} {:<20}".format(
@@ -233,11 +295,9 @@ class Toplevel1:
     def update_workgroup(self):
         # Obtener el valor actual del Entry
         new_workgroup = self.entryWorkGroup.get()
-
         for resource in resources:
             if resource['Nombre'] == 'global':
                 resource['workgroup'] = new_workgroup
-                print('se ha cambiado')
                 break
         else:
             print("No se encontró el recurso global.")
@@ -252,6 +312,28 @@ class Toplevel1:
         self.entryWorkGroup.delete(0, tk.END)  # Limpiar el Entry
         self.entryWorkGroup.insert(0, current_workgroup) #Llenarlo
 
+    def save_changes(self):
+        global resources
+        write_smb_conf(file_path,resources)
+        messagebox.showinfo("Guardando...", "Los cambios se han guardado correctamente.")
+
+    def cancel_changes(self):
+        global resources,initial_conf
+        resources = initial_conf
+        messagebox.showinfo("Cancelando...", "Los cambios han sido cancelados.")
+
+def write_smb_conf(file_path, resources):
+    with open(file_path, 'w') as file:
+        file.write("# smb.conf is the main Samba configuration file. You find a full commented\n")
+        file.write("# version at /usr/share/doc/packages/samba/examples/smb.conf.SUSE if the\n")
+        file.write("# samba-doc package is installed.\n")
+        
+        for resource in resources:
+            file.write(f"[{resource['Nombre']}]\n")
+            for key, value in resource.items():
+                if key != 'Nombre':
+                    file.write(f"\t{key} = {value}\n")
+   
 class newResource:
     def __init__(self, top=None, parent=None):
         top.geometry("328x312+850+202")
@@ -367,9 +449,10 @@ def extract_shared_resources(lines):
         resources.append(current_resource)
     return resources
 
-file_path = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
+file_path = "/etc/samba/smb.conf"
 lines = read_smb_conf(file_path)
 resources = extract_shared_resources(lines)
+initial_conf = extract_shared_resources(lines) #rescatamos el original
 
 def load_shared_resources(self):
             for resource in resources:
@@ -394,14 +477,10 @@ def edit(self, show_windows_callback):
     if selected_index:
         index = selected_index[0]  # Obtener el índice del recurso seleccionado
         selected_resource = resources[index+1]  # Obtener el recurso completo usando el índice
-        print("el recurso seleccionado para editar es: ", selected_resource)
-        show_windows_callback(selected_resource)
-            
+        show_windows_callback(selected_resource)        
 
 class AutoScroll(object):
-    '''Configure the scrollbars for a widget.'''
     def __init__(self, master):
-
         try:
             vsb = ttk.Scrollbar(master, orient='vertical', command=self.yview)
         except:
@@ -429,7 +508,6 @@ class AutoScroll(object):
 
     @staticmethod
     def _autoscroll(sbar):
-        '''Hide and show scrollbar as needed.'''
         def wrapped(first, last):
             first, last = float(first), float(last)
             if first <= 0 and last >= 1:
@@ -443,8 +521,6 @@ class AutoScroll(object):
         return str(self.master)
 
 def _create_container(func):
-    '''Creates a ttk Frame with a given master, and use this new frame to
-    place the scrollbars and the widget.'''
     def wrapped(cls, master, **kw):
         container = ttk.Frame(master)
         container.bind('<Enter>', lambda e: _bound_to_mousewheel(e, container))
@@ -453,8 +529,6 @@ def _create_container(func):
     return wrapped
 
 class ScrolledListBox(AutoScroll, tk.Listbox):
-    '''A standard Tkinter Listbox widget with scrollbars that will
-    automatically show/hide as needed.'''
     @_create_container
     def __init__(self, master, **kw):
         tk.Listbox.__init__(self, master, **kw)
@@ -512,3 +586,70 @@ def start_up_Interface(parent=None, navigate_callback=None, show_windows_callbac
 
 if __name__ == '__main__':
     start_up_Interface()
+    
+    
+import paramiko
+class AddUserDialog:
+    def __init__(self, parent, listbox):
+        self.parent = parent
+        self.listbox = listbox
+        self.dialog = tk.Toplevel(parent)
+        self.dialog.title("Agregar Usuario")
+        self.dialog.geometry("300x200")
+
+        tk.Label(self.dialog, text="Nombre de usuario:").pack(pady=5)
+        self.username_entry = tk.Entry(self.dialog)
+        self.username_entry.pack(pady=5)
+
+        tk.Label(self.dialog, text="Contraseña:").pack(pady=5)
+        self.password_entry = tk.Entry(self.dialog, show='*')
+        self.password_entry.pack(pady=5)
+
+        tk.Button(self.dialog, text="Aceptar", command=self.add_user).pack(pady=5)
+        tk.Button(self.dialog, text="Cancelar", command=self.dialog.destroy).pack(pady=5)
+
+    def add_user(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        if username and password:
+            # Guardar usuario en la lista local
+            self.listbox.insert(tk.END, username)
+            # Intentar guardar el usuario en el sistema Samba
+            self.save_user(username, password)
+            self.dialog.destroy()
+        else:
+            messagebox.showwarning("Campos incompletos", "Por favor, complete todos los campos.")
+            
+            
+    def save_user(self, username, password):
+        try:
+            print(f"Simulando la adición del usuario: {username} con la contraseña: {password}")
+            # Código para conectarse al servidor Samba y agregar el usuario
+            """ ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect('samba_server_ip', username='your_username', password='your_password')
+            
+            # Comandos para agregar un usuario en Samba
+            add_user_cmd = f'sudo useradd -m {username}'
+            set_password_cmd = f'echo "{username}:{password}" | sudo chpasswd'
+            add_samba_cmd = f'sudo smbpasswd -a {username}'
+
+            stdin, stdout, stderr = ssh.exec_command(add_user_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            stdin, stdout, stderr = ssh.exec_command(set_password_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            stdin, stdout, stderr = ssh.exec_command(add_samba_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            ssh.close() """
+            print(f"Usuario {username} añadido en el sistema Samba (simulado).")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo agregar el usuario: {e}")
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    app = Toplevel1(root)
+    root.mainloop()
