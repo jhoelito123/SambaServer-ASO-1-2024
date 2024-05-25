@@ -1,6 +1,7 @@
 import sys
 import tkinter as tk
 import tkinter.ttk as ttk
+import subprocess
 from tkinter.constants import *
 import os.path
 _location = os.path.dirname(__file__)
@@ -219,54 +220,60 @@ class Toplevel1:
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
         
+    """ def add_user(self):
+        add_user_dialog = AddUserDialog(self.root, self.listUsers) """
+     
     def add_user(self):
-        add_user_dialog = AddUserDialog(self.root, self.listUsers)
-                
-    def delete_samba_user(self):
+        username = self.username_entry.get().strip()
+        password = self.password_entry.get().strip()
+        password_confirm = self.password_confirm_entry.get().strip()
+        if not username or not password or not password_confirm:
+            messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
+            return
+        if password != password_confirm:
+            messagebox.showwarning("Advertencia", "Las contraseñas no coinciden.")
+            return
         try:
-            selected_user = self.listUsers.get(tk.ACTIVE)
-            if not selected_user:
-                messagebox.showerror("Error", "Seleccione un usuario para eliminar.")
-                return
-            
-            username = selected_user
-            print(f"Eliminando usuario Samba: {username}")
-            
-            # Comando para eliminar el usuario de Samba
-            delete_samba_cmd = f'sudo smbpasswd -x {username}'
-            result = subprocess.run(delete_samba_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            
-            if result.returncode == 0:
-                # Comando para eliminar el usuario del sistema
-                delete_user_cmd = f'sudo userdel {username}'
-                subprocess.run(delete_user_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-                
-                self.listUsers.delete(tk.ACTIVE)
-                messagebox.showinfo("Éxito", f"Usuario {username} eliminado correctamente.")
+            # Comando para agregar usuario a Samba
+            process = subprocess.Popen(['sudo', 'smbpasswd', '-a', username], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            process.communicate(input=f'{password}\n{password}\n'.encode())
+            if process.returncode == 0:
+                messagebox.showinfo("Éxito", f"Usuario {username} agregado con éxito.")
             else:
-                messagebox.showerror("Error", f"No se pudo eliminar el usuario Samba: {result.stderr}")
+                messagebox.showerror("Error", f"No se pudo agregar el usuario {username}.")
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo eliminar el usuario Samba: {e}")
-            
-    def listar_usuarios_samba(self):
+            messagebox.showerror("Error", f"No se pudo agregar el usuario {username}. Error: {e}")
+     
+                
+    def delete_user(self):
+        username = self.del_username_entry.get().strip()
+        if not username:
+            messagebox.showwarning("Advertencia", "Por favor, complete el campo de nombre de usuario.")
+            return
         try:
-            print("Listando usuarios Samba")
+            # Comando para eliminar usuario de Samba
+            process = subprocess.Popen(['sudo', 'smbpasswd', '-x', username], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            _, error = process.communicate()
+            if process.returncode == 0:
+                messagebox.showinfo("Éxito", f"Usuario {username} eliminado con éxito.")
+            else:
+                messagebox.showerror("Error", f"No se pudo eliminar el usuario {username}. Error: {error.decode()}")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar el usuario {username}. Error: {e}")
             
-            # Comando para listar los usuarios de Samba
-            list_users_cmd = 'sudo pdbedit -L'
-            result = subprocess.run(list_users_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            
-            if result.returncode == 0:
-                self.listUsers.delete(0, tk.END)
-                users = result.stdout.splitlines()
+    def list_users(self):
+        try:
+            process = subprocess.Popen(['sudo', 'pdbedit', '-L'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, _ = process.communicate()
+            if process.returncode == 0:
+                users = output.decode().strip().split('\n')
+                self.users_listbox.delete(0, tk.END)
                 for user in users:
-                    username = user.split(":")[0]
-                    self.listUsers.insert(tk.END, username)
+                    self.users_listbox.insert(tk.END, user)
             else:
-                messagebox.showerror("Error", f"No se pudo listar los usuarios de Samba: {result.stderr}")
-        
+                messagebox.showerror("Error", "No se pudieron listar los usuarios.")
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo listar los usuarios de Samba: {e}")
+            messagebox.showerror("Error", f"No se pudieron listar los usuarios. Error: {e}")
 
 
 
@@ -592,7 +599,7 @@ def start_up_Interface(parent=None, navigate_callback=None, show_windows_callbac
 
 if __name__ == '__main__':
     start_up_Interface()
-
+""" 
 import subprocess
 import paramiko
 
@@ -634,6 +641,7 @@ class AddUserDialog:
     def add_user(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
+        pasword_confirm = self.password_confirm_entry.get().strip()
         if username and password:
             self.save_user(username, password)
             self.listbox.insert(tk.END, username)
@@ -663,4 +671,4 @@ if __name__ == '__main__':
     listbox = tk.Listbox(root)
     listbox.pack()
     app = AddUserDialog(root, listbox)
-    root.mainloop()
+    root.mainloop() """
