@@ -68,7 +68,7 @@ class Toplevel1:
         self.listUsers.configure(foreground="#000000")
         self.listUsers.configure(selectbackground="#feffda")
         self.listUsers.configure(selectforeground="black")
-        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.list_samba_users())
+        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.list_samba_user())
 
         self.butModUser = tk.Button(self.navigator_t4)
         self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
@@ -83,7 +83,7 @@ class Toplevel1:
         self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
-        self.buttDelUser.configure(command=self.delete_user)
+        self.buttDelUser.configure(command=self.delete_samba_user)
         
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
@@ -220,22 +220,13 @@ class Toplevel1:
         
     def add_user(self):
         add_user_dialog = AddUserDialog(self.top, self.listUsers)
-
-    def delete_user(self):
-        selected_user = self.listUsers.get(tk.ACTIVE)
-        if selected_user:
-            answer = messagebox.askyesno("Confirmar eliminación", f"¿Está seguro de que desea eliminar el usuario {selected_user}?")
-            if answer:
-                self.listUsers.delete(tk.ACTIVE)
-                self.delete_samba_user(selected_user)
-                self.list_samba_users()
                 
     def delete_samba_user(self, username):
         try:
             print(f"Eliminando usuario Samba: {username}")
             # Ejecutar comandos para eliminar el usuario localmente
             delete_samba_cmd = f'sudo smbpasswd -x {username}'
-            result = subprocess.run(delete_samba_cmd, shell=True, capture_output=True, text=True)
+            result = subprocess.run(delete_samba_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             if result.returncode == 0:
                 self.listUsers.delete(tk.ACTIVE)
                 messagebox.showinfo("Éxito", f"Usuario {username} eliminado correctamente.")
@@ -244,25 +235,22 @@ class Toplevel1:
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo eliminar el usuario Samba: {e}")
             
-    def list_samba_users(self):
+    def listar_usuarios_samba(self):
         try:
-            print("Listando usuarios de Samba...")
-            """ ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect('samba_server_ip', username='your_username', password='your_password')
-
-            # Comando para listar todos los usuarios de Samba
-            list_users_cmd = 'sudo pdbedit -L -v'
-
-            stdin, stdout, stderr = ssh.exec_command(list_users_cmd)
-            samba_users = stdout.read().decode()
-
-            # Imprimir la lista de usuarios de Samba
-            print(samba_users)
-
-            ssh.close() """
+            print("Listando usuarios Samba")
+            # Ejecutar comando para listar usuarios de Samba
+            list_users_cmd = 'sudo pdbedit -L'
+            result = subprocess.run(list_users_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if result.returncode == 0:
+                self.listUsers.delete(0, tk.END)
+                users = result.stdout.splitlines()
+                for user in users:
+                    username = user.split(":")[0]
+                    self.listUsers.insert(tk.END, username)
+            else:
+                messagebox.showerror("Error", f"No se pudo listar los usuarios de Samba: {result.stderr}")
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudieron listar los usuarios de Samba: {e}")
+            messagebox.showerror("Error", f"No se pudo listar los usuarios de Samba: {e}")
 
 
     
