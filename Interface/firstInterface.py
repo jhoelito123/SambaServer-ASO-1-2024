@@ -331,18 +331,7 @@ class Toplevel1:
         if session.active:
             command = 'service smb restart'
             session.exec_command(command)
-            stdout = ''
-            while True:
-                if session.recv_ready():
-                    stdout += session.recv(1024).decode()
-                else:
-                    if session.exit_status_ready():
-                        break
-            stderr = session.recv_stderr(1024).decode()
-            if stderr:
-                print("Error:", stderr)
-                return 
-            print(stdout)
+            time.sleep(1)
             session.close()
             
     def stop_service(self):
@@ -350,6 +339,7 @@ class Toplevel1:
         if session.active:
             command = 'service smb stop'
             session.exec_command(command)
+            time.sleep(1)
             session.close()
             
     def start_service(self):
@@ -358,6 +348,7 @@ class Toplevel1:
         if session.active:
             command = 'service smb start'
             session.exec_command(command)
+            time.sleep(1)
             session.close()
 
 def read_start_conf(path_conf):
@@ -503,7 +494,9 @@ def extract_shared_resources(lines):
 
 # file_path = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/Interface/smb.conf" 
 
-file_path = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/Interface/smb.conf"
+# file_path = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/Interface/smb.conf"
+
+file_path = "/etc/samba/smb.conf"
 
 #error al leer directo en src/smb.conf, copiar ruta completa
 lines = read_smb_conf(file_path)
