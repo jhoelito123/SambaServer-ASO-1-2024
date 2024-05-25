@@ -68,7 +68,7 @@ class Toplevel1:
         self.listUsers.configure(foreground="#000000")
         self.listUsers.configure(selectbackground="#feffda")
         self.listUsers.configure(selectforeground="black")
-        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.list_samba_user())
+        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.listar_usuarios_samba())
 
         self.butModUser = tk.Button(self.navigator_t4)
         self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
@@ -267,6 +267,7 @@ class Toplevel1:
         
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo listar los usuarios de Samba: {e}")
+
 
 
     
