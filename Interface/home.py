@@ -34,7 +34,7 @@ class intro:
         self.titleApp.configure(text='''Configuración de Servicio Samba''')
         
         self.logoSUSE = tk.Label(self.top)
-        self.logoSUSE.place(relx=0.044, rely=0.208, height=201, width=273)
+        self.logoSUSE.place(relx=0.044, rely=0.198, height=201, width=273)
         self.logoSUSE.configure(**label_config)
         photo_location = os.path.join(_location,"src/suseLogo.png")
         global _img0
@@ -60,8 +60,8 @@ class intro:
         self.LogoPyC.configure(**label_config)
         photo_location = os.path.join(_location,"src/pyc little.png")
         global _img2
-        _img2 = tk.PhotoImage(file=photo_location)
-        self.LogoPyC.configure(image=_img2)
+        """_img2 = tk.PhotoImage(file=photo_location)
+        self.LogoPyC.configure(image=_img2)""" # problemas en el OpenSUSE
 
         self.adam = tk.Label(self.top)
         self.adam.place(relx=0.176, rely=0.862, height=21, width=164)
@@ -98,22 +98,10 @@ class intro:
         self.entryPass.configure(selectforeground="black")
         self.entryPass.configure(show="*")
 
-        """self.entryUser = tk.Entry(self.top)
-        self.entryUser.place(relx=0.264, rely=0.624, height=20, relwidth=0.52)
-        self.entryUser.configure(background="white")
-        self.entryUser.configure(font="-family {Comic Sans MS} -size 10")
-        self.entryUser.configure(foreground="black")
-        self.entryUser.configure(selectforeground="black")"""
-
         self.labelPass = tk.Label(self.top)
         self.labelPass.place(relx=0.103, rely=0.684, height=21, width=84)
         self.labelPass.configure(**label_config)
         self.labelPass.configure(text='''Password:''')
-
-        """self.labelUser = tk.Label(self.top)
-        self.labelUser.place(relx=0.117, rely=0.624, height=21, width=64)
-        self.labelUser.configure(**label_config)
-        self.labelUser.configure(text='''User:''')"""
 
         self.Button1 = tk.Button(self.top)
         self.Button1.place(relx=0.47, rely=0.743, height=36, width=77)

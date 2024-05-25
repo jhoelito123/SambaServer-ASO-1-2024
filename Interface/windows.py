@@ -32,7 +32,6 @@ resourceConfig = {
 
 class Toplevel1:
     def __init__(self, top=None, resource=None, navigate_callback=None, update_resource_callback=None):
-        #VENTANA DE ESTA INTERFAZ
         top.geometry("667x528+564+92")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -205,11 +204,12 @@ def analiceEdit(listbox,self):
     selected_index = listbox.curselection()
     if selected_index:
         selected_item_text = listbox.get(selected_index[0])
-        item_text = selected_item_text.strip().split(":") ##Dividimos en 2 partes, la primero es la clave y la segunda el valor 
+        #Dividimos en 2 partes, la primera es clave y la segunda es valor
+        item_text = selected_item_text.strip().split(":") 
         variable = item_text[0]
                 
         if variable == "comment":            
-            current_comment = item_text[1].strip()  # Obtener el comentario actual
+            current_comment = item_text[1].strip() 
             self.edit_comment_window = tk.Toplevel(self.top)
             top_comment_instance = topComment(self.edit_comment_window, initial_comment=current_comment, listbox=listbox)
         elif variable == "path":
@@ -254,7 +254,6 @@ class topRO:
                         ro_status = "Yes"
                 else:
                         ro_status = "No"
-                # Aquí puedes agregar la lógica para guardar el estado actualizado
                 print("Read Only actualizado:", ro_status)
                 resourceConfig['read only'] = ro_status
                 updateListBox(self.listbox)
@@ -302,7 +301,6 @@ class topInherit:
                         ro_status = "Yes"
                 else:
                         ro_status = "No"
-                # Aquí puedes agregar la lógica para guardar el estado actualizado
                 print("Inherit ACL actualizado:", ro_status)
                 resourceConfig['inherit acls'] = ro_status
                 updateListBox(self.listbox)
@@ -351,7 +349,6 @@ class topComment:
         
         def update_comment(self):
                 new_comment = self.entryComment.get()
-                # Aquí puedes agregar la lógica para guardar el comentario actualizado
                 print("Comentario actualizado:", new_comment)
                 resourceConfig['comment'] = new_comment
                 updateListBox(self.listbox)
@@ -396,7 +393,6 @@ class topPath:
 
         def update_path(self):
             new_path = self.entryPath.get()
-            # Aquí puedes agregar la lógica para guardar el comentario actualizado
             print("Comentario actualizado:", new_path)
             resourceConfig['path'] = new_path
             updateListBox(self.listbox)
@@ -429,7 +425,7 @@ class topPath:
 
 class topUmask:
     def __init__(self, top=None,initialMask="", listbox=None):
-        if initialMask:  # Verificar si initialMask no está vacío
+        if initialMask:  # Verificar si initialMask no está vacío (recien creado)
             firstDigit = int(int(initialMask) / 100)
             secondDigit = int((int(initialMask) / 10) % 10)
             threeDigit = int(int(initialMask) % 10)
@@ -457,8 +453,6 @@ class topUmask:
         self.cheUR = tk.BooleanVar()
         self.cheUW = tk.BooleanVar()
         self.cheUX = tk.BooleanVar()
-        
-        #Creo que se estan manjenado mal xd
         
         if firstDigit >= 4:
             self.cheUR.set(True)
@@ -645,7 +639,6 @@ class other:
         
         def update_comment(self):
                 new_comment = self.entryComment.get()
-                # Aquí puedes agregar la lógica para guardar el comentario actualizado
                 print("Dato actualizado:", new_comment)
                 resourceConfig[name] = new_comment
                 updateListBox(self.listbox)
@@ -678,7 +671,6 @@ class other:
         self.cancelComment.configure(command=self.top.destroy)    
 
 def start_up_windows(parent=None,navigate_callback=None, update_resource_callback=None):
-    
     _w1 = Toplevel1(parent,navigate_callback,update_resource_callback)
 
 if __name__ == '__main__':

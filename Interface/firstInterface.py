@@ -258,12 +258,12 @@ class Toplevel1:
     def save_changes(self):
         global resources
         write_smb_conf(file_path,resources)
-        messagebox.showinfo("Info", "Los cambios se han guardado correctamente.")
+        messagebox.showinfo("Guardando...", "Los cambios se han guardado correctamente.")
 
     def cancel_changes(self):
         global resources,initial_conf
         resources = initial_conf
-        messagebox.showinfo("Info", "Los cambios han sido cancelados.")
+        messagebox.showinfo("Cancelando...", "Los cambios han sido cancelados.")
 
 def write_smb_conf(file_path, resources):
     with open(file_path, 'w') as file:
@@ -276,8 +276,6 @@ def write_smb_conf(file_path, resources):
             for key, value in resource.items():
                 if key != 'Nombre':
                     file.write(f"\t{key} = {value}\n")
-            #file.write("\n")
-
    
 class newResource:
     def __init__(self, top=None, parent=None):
@@ -394,10 +392,11 @@ def extract_shared_resources(lines):
         resources.append(current_resource)
     return resources
 
-file_path = "D:/ASO/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
+file_path = "/etc/samba/smb.conf"
 lines = read_smb_conf(file_path)
 resources = extract_shared_resources(lines)
 initial_conf = extract_shared_resources(lines) #rescatamos el original
+
 def load_shared_resources(self):
             for resource in resources:
                 nombre = resource.get("Nombre", "No especificado")
@@ -424,9 +423,7 @@ def edit(self, show_windows_callback):
         show_windows_callback(selected_resource)        
 
 class AutoScroll(object):
-    '''Configure the scrollbars for a widget.'''
     def __init__(self, master):
-
         try:
             vsb = ttk.Scrollbar(master, orient='vertical', command=self.yview)
         except:
@@ -454,7 +451,6 @@ class AutoScroll(object):
 
     @staticmethod
     def _autoscroll(sbar):
-        '''Hide and show scrollbar as needed.'''
         def wrapped(first, last):
             first, last = float(first), float(last)
             if first <= 0 and last >= 1:
@@ -468,8 +464,6 @@ class AutoScroll(object):
         return str(self.master)
 
 def _create_container(func):
-    '''Creates a ttk Frame with a given master, and use this new frame to
-    place the scrollbars and the widget.'''
     def wrapped(cls, master, **kw):
         container = ttk.Frame(master)
         container.bind('<Enter>', lambda e: _bound_to_mousewheel(e, container))
@@ -478,8 +472,6 @@ def _create_container(func):
     return wrapped
 
 class ScrolledListBox(AutoScroll, tk.Listbox):
-    '''A standard Tkinter Listbox widget with scrollbars that will
-    automatically show/hide as needed.'''
     @_create_container
     def __init__(self, master, **kw):
         tk.Listbox.__init__(self, master, **kw)
