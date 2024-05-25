@@ -256,15 +256,19 @@ class Toplevel1:
         self.entryWorkGroup.insert(0, current_workgroup) #Llenarlo
 
     def save_changes(self):
-        global resources,lines
+        global resources,lines,initial_conf
         write_smb_conf(file_path,resources)
-        messagebox.showinfo("Guardando...", "Los cambios se han guardado correctamente.")
+        #vuelve a leer para actualizarse
         lines = read_smb_conf(file_path)
+        resources = extract_shared_resources(lines)
+        initial_conf = extract_shared_resources(lines)
+        load_shared_resources(self.listActual)
+        messagebox.showinfo("Guardando...", "Los cambios se han guardado correctamente.")
 
     def cancel_changes(self):
         global resources,initial_conf
         resources = initial_conf
-        messagebox.showinfo("Cancelando...", "Los cambios han sido cancelados.")
+        messagebox.showinfo("Cancelando y saliendo...", "Los cambios han sido cancelados.")
 
 def write_smb_conf(file_path, resources):
     with open(file_path, 'w') as file:
@@ -393,13 +397,13 @@ def extract_shared_resources(lines):
         resources.append(current_resource)
     return resources
 
-#file_path = "/etc/samba/smb.conf"
-file_path = "D:/ASO/SambaServer-ASO-1-2024/Interface/smb.conf"
+file_path = "/etc/samba/smb.conf"
 lines = read_smb_conf(file_path)
 resources = extract_shared_resources(lines)
 initial_conf = extract_shared_resources(lines) #rescatamos el original
 
 def load_shared_resources(self):
+            self.delete(0, tk.END)
             for resource in resources:
                 nombre = resource.get("Nombre", "No especificado")
                 if nombre.lower() == "global": #no deberia aparecer [global]
