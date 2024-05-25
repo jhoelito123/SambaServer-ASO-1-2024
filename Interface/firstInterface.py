@@ -33,7 +33,7 @@ class Toplevel1:
         self.che63 = tk.IntVar()
         self.cheStart = tk.BooleanVar()
         self.che64 = tk.IntVar()
-        
+                
         #Valores leidos de la configuracion anterior
         self.afterConfig = lines_start_conf[0]
         self.afterConfigValue = self.afterConfig.split("=")[1]
@@ -127,9 +127,8 @@ class Toplevel1:
 
         options = ["Reiniciar Servicio", "Detener", "Mantener estado actual", "Recargar"]
 
-        self.estadoActual = tk.OptionMenu(self.cuadroInicial, self.selected_option, *options)
+        self.estadoActual = tk.OptionMenu(self.cuadroInicial, self.selected_option, *options, command=self.updateLaterConfig)
         self.estadoActual.place(relx=0.046, rely=0.338, relheight=0.092, relwidth=0.23)
-        self.estadoActual.configure(font="-family {Consolas} -size 10")
         
         #INICIAR ? 
         self.startServiceCheck = tk.Checkbutton(self.cuadroInicial)
@@ -138,6 +137,7 @@ class Toplevel1:
         self.startServiceCheck.configure(font="-family {Consolas} -size 10")
         self.startServiceCheck.configure(text='''¿Iniciar?''')
         self.startServiceCheck.configure(variable=self.cheStart)
+        self.startServiceCheck.configure(command=self.updateStartServiceCheck)
         if self.afterRebootValue == "True": self.startServiceCheck.select()
 
         self.Label1 = tk.Label(self.cuadroInicial)
@@ -235,6 +235,18 @@ class Toplevel1:
         self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
+        
+    def updateLaterConfig(self, *args):
+        global lines_start_conf
+        afterConfig = lines_start_conf[0]
+        afterConfigKey = afterConfig.split("=")[0]
+        lines_start_conf[0] =  f"{afterConfigKey}={self.selected_option.get()}"
+        
+    def updateStartServiceCheck(self):
+        global lines_start_conf
+        afterReboot = lines_start_conf[1]
+        afterRebootKey = afterReboot.split("=")[0]
+        lines_start_conf[1] =  f"{afterRebootKey}={self.cheStart.get()}"        
     
     def cancel_and_navigate(self):
         self.cancel_changes()
@@ -362,6 +374,7 @@ def read_start_conf(path_conf):
 path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
 
 lines_start_conf = read_start_conf(path_start_conf)
+lines_start_conf_static = []        
         
 def write_smb_conf(file_path, resources):
     with open(file_path, 'w') as file:
@@ -374,8 +387,6 @@ def write_smb_conf(file_path, resources):
             for key, value in resource.items():
                 if key != 'Nombre':
                     file.write(f"\t{key} = {value}\n")
-            #file.write("\n")
-
    
 class newResource:
     def __init__(self, top=None, parent=None):
@@ -529,9 +540,7 @@ def edit(self, show_windows_callback):
         show_windows_callback(selected_resource)        
 
 class AutoScroll(object):
-    '''Configure the scrollbars for a widget.'''
     def __init__(self, master):
-
         try:
             vsb = ttk.Scrollbar(master, orient='vertical', command=self.yview)
         except:
@@ -559,7 +568,6 @@ class AutoScroll(object):
 
     @staticmethod
     def _autoscroll(sbar):
-        '''Hide and show scrollbar as needed.'''
         def wrapped(first, last):
             first, last = float(first), float(last)
             if first <= 0 and last >= 1:
@@ -573,8 +581,6 @@ class AutoScroll(object):
         return str(self.master)
 
 def _create_container(func):
-    '''Creates a ttk Frame with a given master, and use this new frame to
-    place the scrollbars and the widget.'''
     def wrapped(cls, master, **kw):
         container = ttk.Frame(master)
         container.bind('<Enter>', lambda e: _bound_to_mousewheel(e, container))
@@ -583,8 +589,6 @@ def _create_container(func):
     return wrapped
 
 class ScrolledListBox(AutoScroll, tk.Listbox):
-    '''A standard Tkinter Listbox widget with scrollbars that will
-    automatically show/hide as needed.'''
     @_create_container
     def __init__(self, master, **kw):
         tk.Listbox.__init__(self, master, **kw)
