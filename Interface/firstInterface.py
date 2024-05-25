@@ -76,6 +76,7 @@ class Toplevel1:
         self.butModUser.configure(font="-family {Consolas} -size 10")
         self.butModUser.configure(text='''Agregar usuario''',anchor='center')
         self.butModUser.configure(command=self.add_user)
+        self.listar_usuarios_samba()
         
 
         self.buttDelUser = tk.Button(self.navigator_t4)
@@ -219,15 +220,27 @@ class Toplevel1:
         self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
         
     def add_user(self):
-        add_user_dialog = AddUserDialog(self.top, self.listUsers)
+        add_user_dialog = AddUserDialog(self.root, self.listUsers)
                 
-    def delete_samba_user(self, username):
+    def delete_samba_user(self):
         try:
+            selected_user = self.listUsers.get(tk.ACTIVE)
+            if not selected_user:
+                messagebox.showerror("Error", "Seleccione un usuario para eliminar.")
+                return
+            
+            username = selected_user
             print(f"Eliminando usuario Samba: {username}")
-            # Ejecutar comandos para eliminar el usuario localmente
+            
+            # Comando para eliminar el usuario de Samba
             delete_samba_cmd = f'sudo smbpasswd -x {username}'
             result = subprocess.run(delete_samba_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            
             if result.returncode == 0:
+                # Comando para eliminar el usuario del sistema
+                delete_user_cmd = f'sudo userdel {username}'
+                subprocess.run(delete_user_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                
                 self.listUsers.delete(tk.ACTIVE)
                 messagebox.showinfo("Éxito", f"Usuario {username} eliminado correctamente.")
             else:
@@ -238,9 +251,11 @@ class Toplevel1:
     def listar_usuarios_samba(self):
         try:
             print("Listando usuarios Samba")
-            # Ejecutar comando para listar usuarios de Samba
+            
+            # Comando para listar los usuarios de Samba
             list_users_cmd = 'sudo pdbedit -L'
             result = subprocess.run(list_users_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            
             if result.returncode == 0:
                 self.listUsers.delete(0, tk.END)
                 users = result.stdout.splitlines()
@@ -249,6 +264,7 @@ class Toplevel1:
                     self.listUsers.insert(tk.END, username)
             else:
                 messagebox.showerror("Error", f"No se pudo listar los usuarios de Samba: {result.stderr}")
+        
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo listar los usuarios de Samba: {e}")
 
