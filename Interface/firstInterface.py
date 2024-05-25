@@ -3,7 +3,9 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.constants import *
 import os.path
+import time
 _location = os.path.dirname(__file__)
+from tkinter import messagebox
 
 colorDef = '#d9d9d9'
 _fgcolor = '#feffda'
@@ -15,7 +17,7 @@ title_config = {
 }
 
 class Toplevel1:
-    def __init__(self, top=None, navigate_callback=None,show_windows_callback=None):
+    def __init__(self, top=None, navigate_callback=None,show_windows_callback=None, client=None):
         top.geometry("915x581+402+99")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -23,13 +25,24 @@ class Toplevel1:
         top.title("Configuración servicio Samba")
         top.configure(background=colorDef)
 
+        self.client = client
         self.top = top
         self.navigate_callback = navigate_callback
         self.show_windows_callback = show_windows_callback
         
         self.che63 = tk.IntVar()
-        self.che69 = tk.IntVar()
+        self.cheStart = tk.BooleanVar()
         self.che64 = tk.IntVar()
+        
+        #Valores leidos de la configuracion anterior
+        self.afterConfig = lines_start_conf[0]
+        self.afterConfigValue = self.afterConfig.split("=")[1]
+        self.afterReboot = lines_start_conf[1]
+        self.afterRebootValue = self.afterReboot.split("=")[1]
+        
+        #Reinica el servicio si se estaba configurado
+        if(self.afterRebootValue == "True"): 
+            self.start_service()
 
         self.menubar = tk.Menu(top,font="-family {Consolas}",bg=_fgcolor,fg=_fgcolor)
         top.configure(menu = self.menubar)
@@ -72,7 +85,7 @@ class Toplevel1:
         self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
         self.butModUser.configure(**title_config,activebackground=_fgcolor)
         self.butModUser.configure(font="-family {Consolas} -size 10")
-        self.butModUser.configure(text='''Modificar contraseña''',anchor='center')
+        self.butModUser.configure(text='''Agregar usuario''',anchor='center')
 
         self.buttDelUser = tk.Button(self.navigator_t4)
         self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
@@ -80,6 +93,8 @@ class Toplevel1:
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
         
+          
+        #Configuracion usuario
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
         self.cuadroInicial.configure(relief='groove',borderwidth="2",background=colorDef)
@@ -94,7 +109,8 @@ class Toplevel1:
         self.statusService.place(relx=0.219, rely=0.154, height=21, width=82)
         self.statusService.configure(**title_config)
         self.statusService.configure(font="-family {Consolas} -size 11")
-        self.statusService.configure(text='''Inactivo''')
+        #Estado del servicio
+        self.load_service_status()
 
         self.textLaterConfig = tk.Label(self.cuadroInicial)
         self.textLaterConfig.place(relx=0.023, rely=0.246, height=20, width=220)
@@ -103,21 +119,26 @@ class Toplevel1:
         self.textLaterConfig.configure(text='''Después de configurar:''')
 
         self.selected_option = tk.StringVar(self.cuadroInicial)
-        self.selected_option.set("Seleccione una opción")  # Establece un valor predeterminado
+        if self.afterConfigValue: 
+            self.selected_option.set(self.afterConfigValue)
+        else:
+            self.selected_option.set("Seleccione una opción")
+          # Establece un valor predeterminado
 
-        options = ["Reiniciar Servicio", "Detener", "Mantener estado actual", "Bloque 4"]
+        options = ["Reiniciar Servicio", "Detener", "Mantener estado actual", "Recargar"]
 
         self.estadoActual = tk.OptionMenu(self.cuadroInicial, self.selected_option, *options)
         self.estadoActual.place(relx=0.046, rely=0.338, relheight=0.092, relwidth=0.23)
         self.estadoActual.configure(font="-family {Consolas} -size 10")
-
-
+        
+        #INICIAR ? 
         self.startServiceCheck = tk.Checkbutton(self.cuadroInicial)
         self.startServiceCheck.place(relx=0.046, rely=0.521, relheight=0.096, relwidth=0.105)
         self.startServiceCheck.configure(**title_config, activebackground="#d9d9d9")
         self.startServiceCheck.configure(font="-family {Consolas} -size 10")
         self.startServiceCheck.configure(text='''¿Iniciar?''')
-        self.startServiceCheck.configure(variable=self.che69)
+        self.startServiceCheck.configure(variable=self.cheStart)
+        if self.afterRebootValue == "True": self.startServiceCheck.select()
 
         self.Label1 = tk.Label(self.cuadroInicial)
         self.Label1.place(relx=0.023, rely=0.45, height=18, width=209)
@@ -129,6 +150,7 @@ class Toplevel1:
         self.tituloInicio.place(relx=0.313, rely=0.042, height=21, width=316)
         self.tituloInicio.configure(**title_config)
         self.tituloInicio.configure(text='''Configuración del Servicio''')
+        ###############################3
 
         self.botonAdd = tk.Button(self.navigator_t2)
         self.botonAdd.place(relx=0.023, rely=0.433, height=26, width=57)
@@ -136,6 +158,7 @@ class Toplevel1:
         self.botonAdd.configure(font="-family {Consolas} -size 10")
         self.botonAdd.configure(text='''Agregar''',anchor='center')
         self.botonAdd.configure(command=lambda: open_new_resource_window(self))
+        
         
         def open_new_resource_window(self):
             new_window = tk.Toplevel(self.top)
@@ -204,14 +227,18 @@ class Toplevel1:
         self.botonCancel.configure(**title_config,activebackground=_fgcolor)
         self.botonCancel.configure(font="-family {Consolas} -size 10")
         self.botonCancel.configure(text='''Cancelar''',anchor='center')
-        self.botonCancel.configure(command=self.navigate_callback)
+        self.botonCancel.configure(command=self.cancel_and_navigate)
 
         self.botonAccept = tk.Button(self.top)
         self.botonAccept.place(relx=0.897, rely=0.905, height=26, width=67)
         self.botonAccept.configure(**title_config)
         self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
-        self.botonAccept.configure(text='''Aceptar''',anchor='center')
+        self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
+    
+    def cancel_and_navigate(self):
+        self.cancel_changes()
+        self.navigate_callback()
     
     def add_new_resource(self, resource):
             formatted_line = "{:<20} {:<13} {:<27} {:<20}".format(
@@ -233,27 +260,132 @@ class Toplevel1:
     def update_workgroup(self):
         # Obtener el valor actual del Entry
         new_workgroup = self.entryWorkGroup.get()
-
         for resource in resources:
             if resource['Nombre'] == 'global':
                 resource['workgroup'] = new_workgroup
-                print('se ha cambiado')
                 break
         else:
             print("No se encontró el recurso global.")
+
     def fill_entry_with_current_workgroup(self):
-        # Buscar el valor actual del workgroup en los recursos
         current_workgroup = None
         for resource in resources:
             if resource['Nombre'] == 'global':
                 current_workgroup = resource.get('workgroup', '')
                 break
 
-        # Establecer el valor actual del workgroup en el Entry
         self.entryWorkGroup.delete(0, tk.END)  # Limpiar el Entry
-        self.entryWorkGroup.insert(0, current_workgroup)
+        self.entryWorkGroup.insert(0, current_workgroup) #Llenarlo
 
+    def save_changes(self):
+        global resources
+        write_smb_conf(file_path,resources)
+        self.save_start_conf()
+        
+        if self.selected_option.get() == "Reiniciar Servicio":
+            self.reboot_service()
+        elif self.selected_option.get() == "Detener":
+            self.stop_service()
+        
+        self.load_service_status()
+            
+        messagebox.showinfo("Info", "Los cambios se han guardado correctamente.")
+        
 
+    def cancel_changes(self):
+        global resources,initial_conf
+        resources = initial_conf
+        messagebox.showinfo("Info", "Los cambios han sido cancelados.")
+        
+    def save_start_conf(self):
+        with open("config_start.conf", "w") as file:
+            file.write(f"after config={self.selected_option.get()}\n")
+            file.write(f"after reboot={self.cheStart.get()}")
+            
+    def load_service_status(self):
+        session = self.client.get_transport().open_session()
+        if session.active:
+            command = 'service smb status'
+            session.exec_command(command)
+            stdout = ''
+            time.sleep(2)
+            while True:
+                if session.recv_ready():
+                    stdout += session.recv(1024).decode()
+                else:
+                    if session.exit_status_ready():
+                        break
+            stderr = session.recv_stderr(1024).decode()
+            if stderr:
+                print("Error:", stderr)
+                return 
+            print(stdout)
+            state = "Activo" if stdout.find('(running)') != -1 else "Inactivo"
+            self.statusService.configure(text=state)
+            session.close()
+        else:
+            print("La sesión no está activa")
+        
+    def reboot_service(self):
+        session = self.client.get_transport().open_session()
+        if session.active:
+            command = 'service smb restart'
+            session.exec_command(command)
+            stdout = ''
+            while True:
+                if session.recv_ready():
+                    stdout += session.recv(1024).decode()
+                else:
+                    if session.exit_status_ready():
+                        break
+            stderr = session.recv_stderr(1024).decode()
+            if stderr:
+                print("Error:", stderr)
+                return 
+            print(stdout)
+            session.close()
+            
+    def stop_service(self):
+        session = self.client.get_transport().open_session()
+        if session.active:
+            command = 'service smb stop'
+            session.exec_command(command)
+            session.close()
+            
+    def start_service(self):
+        session = self.client.get_transport().open_session()
+        print("start entro xd")
+        if session.active:
+            command = 'service smb start'
+            session.exec_command(command)
+            session.close()
+
+def read_start_conf(path_conf):
+    with open(path_conf, "r") as file:
+        lines = file.readlines()
+        lines = [line.strip() for line in lines]
+        return lines
+            
+# path_start_conf = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/config_start.conf"
+
+path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
+
+lines_start_conf = read_start_conf(path_start_conf)
+        
+def write_smb_conf(file_path, resources):
+    with open(file_path, 'w') as file:
+        file.write("# smb.conf is the main Samba configuration file. You find a full commented\n")
+        file.write("# version at /usr/share/doc/packages/samba/examples/smb.conf.SUSE if the\n")
+        file.write("# samba-doc package is installed.\n")
+        
+        for resource in resources:
+            file.write(f"[{resource['Nombre']}]\n")
+            for key, value in resource.items():
+                if key != 'Nombre':
+                    file.write(f"\t{key} = {value}\n")
+            #file.write("\n")
+
+   
 class newResource:
     def __init__(self, top=None, parent=None):
         top.geometry("328x312+850+202")
@@ -369,9 +501,14 @@ def extract_shared_resources(lines):
         resources.append(current_resource)
     return resources
 
-file_path = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/Interface/smb.conf" #error al leer directo en src/smb.conf, copiar ruta completa
+# file_path = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/Interface/smb.conf" 
+
+file_path = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/Interface/smb.conf"
+
+#error al leer directo en src/smb.conf, copiar ruta completa
 lines = read_smb_conf(file_path)
 resources = extract_shared_resources(lines)
+initial_conf = extract_shared_resources(lines) #rescatamos el original
 
 def load_shared_resources(self):
             for resource in resources:
@@ -396,9 +533,7 @@ def edit(self, show_windows_callback):
     if selected_index:
         index = selected_index[0]  # Obtener el índice del recurso seleccionado
         selected_resource = resources[index+1]  # Obtener el recurso completo usando el índice
-        print("el recurso seleccionado para editar es: ", selected_resource)
-        show_windows_callback(selected_resource)
-            
+        show_windows_callback(selected_resource)        
 
 class AutoScroll(object):
     '''Configure the scrollbars for a widget.'''
@@ -509,8 +644,8 @@ def _on_shiftmouse(event, widget):
         elif event.num == 5:
             widget.xview_scroll(1, 'units')
 
-def start_up_Interface(parent=None, navigate_callback=None, show_windows_callback=None):
-    _w1 = Toplevel1(parent, navigate_callback, show_windows_callback)
+def start_up_Interface(parent=None, navigate_callback=None, show_windows_callback=None, client=None):
+    _w1 = Toplevel1(parent, navigate_callback, show_windows_callback, client)
 
 if __name__ == '__main__':
     start_up_Interface()
