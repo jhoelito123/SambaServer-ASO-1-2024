@@ -313,14 +313,19 @@ class Toplevel1:
         self.entryWorkGroup.insert(0, current_workgroup) #Llenarlo
 
     def save_changes(self):
-        global resources
+        global resources,lines,initial_conf
         write_smb_conf(file_path,resources)
+        #vuelve a leer para actualizarse
+        lines = read_smb_conf(file_path)
+        resources = extract_shared_resources(lines)
+        initial_conf = extract_shared_resources(lines)
+        load_shared_resources(self.listActual)
         messagebox.showinfo("Guardando...", "Los cambios se han guardado correctamente.")
 
     def cancel_changes(self):
         global resources,initial_conf
         resources = initial_conf
-        messagebox.showinfo("Cancelando...", "Los cambios han sido cancelados.")
+        messagebox.showinfo("Cancelando y saliendo...", "Los cambios han sido cancelados.")
 
 def write_smb_conf(file_path, resources):
     with open(file_path, 'w') as file:
@@ -455,6 +460,7 @@ resources = extract_shared_resources(lines)
 initial_conf = extract_shared_resources(lines) #rescatamos el original
 
 def load_shared_resources(self):
+            self.delete(0, tk.END)
             for resource in resources:
                 nombre = resource.get("Nombre", "No especificado")
                 if nombre.lower() == "global": #no deberia aparecer [global]
@@ -586,27 +592,44 @@ def start_up_Interface(parent=None, navigate_callback=None, show_windows_callbac
 
 if __name__ == '__main__':
     start_up_Interface()
-    
-    
+
+
 import paramiko
+
 class AddUserDialog:
     def __init__(self, parent, listbox):
         self.parent = parent
         self.listbox = listbox
         self.dialog = tk.Toplevel(parent)
         self.dialog.title("Agregar Usuario")
-        self.dialog.geometry("300x200")
+        self.dialog.geometry("300x250")
+        self.dialog.configure(bg='grey')
 
-        tk.Label(self.dialog, text="Nombre de usuario:").pack(pady=5)
-        self.username_entry = tk.Entry(self.dialog)
+        # Estilos
+        label_bg_color = 'DarkOliveGreen1'
+        label_fg_color = 'white'
+        button_bg_color_accept = 'green'
+        button_fg_color = 'white'
+        button_bg_color_cancel = 'red'
+        entry_bg_color = 'white'
+        entry_fg_color = 'black'
+
+        # Labels
+        tk.Label(self.dialog, text="Nombre de usuario:", bg=label_bg_color, fg=label_fg_color).pack(pady=5)
+        self.username_entry = tk.Entry(self.dialog, bg=entry_bg_color, fg=entry_fg_color)
         self.username_entry.pack(pady=5)
 
-        tk.Label(self.dialog, text="Contraseña:").pack(pady=5)
-        self.password_entry = tk.Entry(self.dialog, show='*')
+        tk.Label(self.dialog, text="Contraseña:", bg=label_bg_color, fg=label_fg_color).pack(pady=5)
+        self.password_entry = tk.Entry(self.dialog, show='*', bg=entry_bg_color, fg=entry_fg_color)
         self.password_entry.pack(pady=5)
 
-        tk.Button(self.dialog, text="Aceptar", command=self.add_user).pack(pady=5)
-        tk.Button(self.dialog, text="Cancelar", command=self.dialog.destroy).pack(pady=5)
+        # Frame para los botones
+        button_frame = tk.Frame(self.dialog, bg='grey')
+        button_frame.pack(pady=10)
+
+        # Botones
+        tk.Button(button_frame, text="Aceptar", command=self.add_user, bg=button_bg_color_accept, fg=button_fg_color).pack(side=tk.LEFT, padx=5)
+        tk.Button(button_frame, text="Cancelar", command=self.dialog.destroy, bg=button_bg_color_cancel, fg=button_fg_color).pack(side=tk.LEFT, padx=5)
 
     def add_user(self):
         username = self.username_entry.get()
@@ -619,7 +642,6 @@ class AddUserDialog:
             self.dialog.destroy()
         else:
             messagebox.showwarning("Campos incompletos", "Por favor, complete todos los campos.")
-            
             
     def save_user(self, username, password):
         try:
@@ -648,8 +670,10 @@ class AddUserDialog:
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo agregar el usuario: {e}")
 
-
 if __name__ == '__main__':
     root = tk.Tk()
-    app = Toplevel1(root)
+    root.configure(bg='lightblue')
+    listbox = tk.Listbox(root)
+    listbox.pack()
+    app = AddUserDialog(root, listbox)
     root.mainloop()
