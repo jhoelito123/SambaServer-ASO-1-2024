@@ -54,7 +54,7 @@ class Toplevel1:
         self.navigator.add(self.navigator_t4, padding=3)
         self.navigator.tab(3, text='''Usuarios''', compound="left" ,underline='''-1''', )
         self.navigator_t4.configure(background=colorDef)
-
+#========================================================
         #for new navigator Users
         self.labelUsers = tk.Label(self.navigator_t4)
         self.labelUsers.place(relx=0.046, rely=0.02, height=31, width=294)
@@ -68,18 +68,22 @@ class Toplevel1:
         self.listUsers.configure(foreground="#000000")
         self.listUsers.configure(selectbackground="#feffda")
         self.listUsers.configure(selectforeground="black")
+        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.list_samba_users())
 
         self.butModUser = tk.Button(self.navigator_t4)
         self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
         self.butModUser.configure(**title_config,activebackground=_fgcolor)
         self.butModUser.configure(font="-family {Consolas} -size 10")
         self.butModUser.configure(text='''Agregar usuario''',anchor='center')
+        self.butModUser.configure(command=self.add_user)
+        
 
         self.buttDelUser = tk.Button(self.navigator_t4)
         self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
         self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
+        self.buttDelUser.configure(command=self.delete_user)
         
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
@@ -213,6 +217,59 @@ class Toplevel1:
         self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
+        
+    def add_user(self):
+        add_user_dialog = AddUserDialog(self.top, self.listUsers)
+
+    def delete_user(self):
+        selected_user = self.listUsers.get(tk.ACTIVE)
+        if selected_user:
+            answer = messagebox.askyesno("Confirmar eliminación", f"¿Está seguro de que desea eliminar el usuario {selected_user}?")
+            if answer:
+                self.listUsers.delete(tk.ACTIVE)
+                self.delete_samba_user(selected_user)
+                self.list_samba_users()
+                
+    def delete_samba_user(self, username):
+        try:
+            print(f"Simulando la eliminación del usuario Samba: {username}")
+            # Conectarse al servidor Samba y eliminar el usuario
+            """ ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect('samba_server_ip', username='your_username', password='your_password')
+            
+            # Comando para eliminar el usuario de Samba
+            delete_samba_cmd = f'sudo smbpasswd -x {username}'
+
+            stdin, stdout, stderr = ssh.exec_command(delete_samba_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            ssh.close() """
+            print(f"Usuario Samba {username} eliminado (simulado).")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar el usuario Samba: {e}")
+            
+    def list_samba_users(self):
+        try:
+            print("Listando usuarios de Samba...")
+            """ ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect('samba_server_ip', username='your_username', password='your_password')
+
+            # Comando para listar todos los usuarios de Samba
+            list_users_cmd = 'sudo pdbedit -L -v'
+
+            stdin, stdout, stderr = ssh.exec_command(list_users_cmd)
+            samba_users = stdout.read().decode()
+
+            # Imprimir la lista de usuarios de Samba
+            print(samba_users)
+
+            ssh.close() """
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudieron listar los usuarios de Samba: {e}")
+
+
     
     def cancel_and_navigate(self):
         self.cancel_changes()
@@ -535,3 +592,70 @@ def start_up_Interface(parent=None, navigate_callback=None, show_windows_callbac
 
 if __name__ == '__main__':
     start_up_Interface()
+    
+    
+import paramiko
+class AddUserDialog:
+    def __init__(self, parent, listbox):
+        self.parent = parent
+        self.listbox = listbox
+        self.dialog = tk.Toplevel(parent)
+        self.dialog.title("Agregar Usuario")
+        self.dialog.geometry("300x200")
+
+        tk.Label(self.dialog, text="Nombre de usuario:").pack(pady=5)
+        self.username_entry = tk.Entry(self.dialog)
+        self.username_entry.pack(pady=5)
+
+        tk.Label(self.dialog, text="Contraseña:").pack(pady=5)
+        self.password_entry = tk.Entry(self.dialog, show='*')
+        self.password_entry.pack(pady=5)
+
+        tk.Button(self.dialog, text="Aceptar", command=self.add_user).pack(pady=5)
+        tk.Button(self.dialog, text="Cancelar", command=self.dialog.destroy).pack(pady=5)
+
+    def add_user(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        if username and password:
+            # Guardar usuario en la lista local
+            self.listbox.insert(tk.END, username)
+            # Intentar guardar el usuario en el sistema Samba
+            self.save_user(username, password)
+            self.dialog.destroy()
+        else:
+            messagebox.showwarning("Campos incompletos", "Por favor, complete todos los campos.")
+            
+            
+    def save_user(self, username, password):
+        try:
+            print(f"Simulando la adición del usuario: {username} con la contraseña: {password}")
+            # Código para conectarse al servidor Samba y agregar el usuario
+            """ ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect('samba_server_ip', username='your_username', password='your_password')
+            
+            # Comandos para agregar un usuario en Samba
+            add_user_cmd = f'sudo useradd -m {username}'
+            set_password_cmd = f'echo "{username}:{password}" | sudo chpasswd'
+            add_samba_cmd = f'sudo smbpasswd -a {username}'
+
+            stdin, stdout, stderr = ssh.exec_command(add_user_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            stdin, stdout, stderr = ssh.exec_command(set_password_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            stdin, stdout, stderr = ssh.exec_command(add_samba_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            ssh.close() """
+            print(f"Usuario {username} añadido en el sistema Samba (simulado).")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo agregar el usuario: {e}")
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    app = Toplevel1(root)
+    root.mainloop()

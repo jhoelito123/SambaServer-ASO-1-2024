@@ -29,7 +29,10 @@ class App:
         if self.current_window:
             self.current_window.destroy()
         self.current_window = tk.Toplevel(self.root)
-        self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)       
+        self.current_window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
+        print("el recurso es: ", resource)
+        
         start_up_windows(self.current_window, resource, self.show_interface)
     
     def on_closing(self):
