@@ -9,8 +9,6 @@ class SambaManagerApp:
         self.root.title("Samba User Manager")
         
         self.create_widgets()
-        
-        #tenr coidado
 
     def create_widgets(self):
         # Agregar usuario
@@ -57,19 +55,27 @@ class SambaManagerApp:
             return
         try:
             # Comando para agregar usuario a Samba
-            subprocess.run(['sudo', 'smbpasswd', '-a', username], input=f'{password}\n{password}\n', text=True, check=True)
-            messagebox.showinfo("Éxito", f"Usuario {username} agregado con éxito.")
-        except subprocess.CalledProcessError as e:
+            process = subprocess.Popen(['sudo', 'smbpasswd', '-a', username], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            process.communicate(input=f'{password}\n{password}\n'.encode())
+            if process.returncode == 0:
+                messagebox.showinfo("Éxito", f"Usuario {username} agregado con éxito.")
+            else:
+                messagebox.showerror("Error", f"No se pudo agregar el usuario {username}.")
+        except Exception as e:
             messagebox.showerror("Error", f"No se pudo agregar el usuario {username}. Error: {e}")
 
     def list_users(self):
         try:
-            result = subprocess.run(['sudo', 'pdbedit', '-L'], capture_output=True, text=True, check=True)
-            users = result.stdout.strip().split('\n')
-            self.users_listbox.delete(0, tk.END)
-            for user in users:
-                self.users_listbox.insert(tk.END, user)
-        except subprocess.CalledProcessError as e:
+            process = subprocess.Popen(['sudo', 'pdbedit', '-L'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, _ = process.communicate()
+            if process.returncode == 0:
+                users = output.decode().strip().split('\n')
+                self.users_listbox.delete(0, tk.END)
+                for user in users:
+                    self.users_listbox.insert(tk.END, user)
+            else:
+                messagebox.showerror("Error", "No se pudieron listar los usuarios.")
+        except Exception as e:
             messagebox.showerror("Error", f"No se pudieron listar los usuarios. Error: {e}")
 
     def delete_user(self):
@@ -79,9 +85,13 @@ class SambaManagerApp:
             return
         try:
             # Comando para eliminar usuario de Samba
-            subprocess.run(['sudo', 'smbpasswd', '-x', username], check=True)
-            messagebox.showinfo("Éxito", f"Usuario {username} eliminado con éxito.")
-        except subprocess.CalledProcessError as e:
+            process = subprocess.Popen(['sudo', 'smbpasswd', '-x', username], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            _, error = process.communicate()
+            if process.returncode == 0:
+                messagebox.showinfo("Éxito", f"Usuario {username} eliminado con éxito.")
+            else:
+                messagebox.showerror("Error", f"No se pudo eliminar el usuario {username}. Error: {error.decode()}")
+        except Exception as e:
             messagebox.showerror("Error", f"No se pudo eliminar el usuario {username}. Error: {e}")
 
 if __name__ == "__main__":
