@@ -23,8 +23,12 @@ class SambaManagerApp:
         self.password_entry = tk.Entry(self.add_user_frame, show='*')
         self.password_entry.grid(row=1, column=1)
 
+        tk.Label(self.add_user_frame, text="Repetir Contraseña:").grid(row=2, column=0)
+        self.password_confirm_entry = tk.Entry(self.add_user_frame, show='*')
+        self.password_confirm_entry.grid(row=2, column=1)
+
         self.add_user_button = tk.Button(self.add_user_frame, text="Agregar Usuario", command=self.add_user)
-        self.add_user_button.grid(row=2, columnspan=2, pady=5)
+        self.add_user_button.grid(row=3, columnspan=2, pady=5)
 
         # Listar usuarios
         self.list_users_frame = tk.LabelFrame(self.root, text="Lista de Usuarios")
@@ -50,8 +54,12 @@ class SambaManagerApp:
     def add_user(self):
         username = self.username_entry.get().strip()
         password = self.password_entry.get().strip()
-        if not username or not password:
+        password_confirm = self.password_confirm_entry.get().strip()
+        if not username or not password or not password_confirm:
             messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
+            return
+        if password != password_confirm:
+            messagebox.showwarning("Advertencia", "Las contraseñas no coinciden.")
             return
         try:
             # Comando para agregar usuario a Samba
