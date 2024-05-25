@@ -31,7 +31,8 @@ resourceConfig = {
 }
 
 class Toplevel1:
-    def __init__(self, top=None, resource=None, navigate_callback=None, update_resource_callback=None):
+    def __init__(self, top=None, navigate_callback=None, resource=None, client=None):
+        #VENTANA DE ESTA INTERFAZ
         top.geometry("667x528+564+92")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -40,10 +41,11 @@ class Toplevel1:
         top.configure(background="#d9d9d9")
 
         global resourceStatic, resourceConfig, allElements
+        self.client = client
         self.resource = resource  #recurso pasado
         self.top = top
         self.navigate_callback = navigate_callback
-        self.update_resource_callback = update_resource_callback
+        # self.update_resource_callback = update_resource_callback Lo comente ya que me daba problemas xd
         resourceStatic = self.resource.copy()
         resourceConfig = self.resource
         allElements = list(resource.keys()) #obtenemos todas las llaves del diccionario       
@@ -109,7 +111,7 @@ class Toplevel1:
     def save_and_navigate(self):
         # navegar de vuelta a la ventana anterior
         if self.navigate_callback:
-            self.navigate_callback()
+            self.navigate_callback(self.client)
     
     def revert_and_navigate(self): 
         global resourceStatic, resourceConfig
@@ -119,7 +121,7 @@ class Toplevel1:
         resourceConfig.clear()
         resourceConfig.update(resourceStatic)
         if self.navigate_callback:
-            self.navigate_callback()
+            self.navigate_callback(self.client)
     
     def remove_selected(self):
         selected_index = self.Listbox1.curselection()
@@ -670,8 +672,8 @@ class other:
         self.cancelComment.configure(background=_bgcolor)
         self.cancelComment.configure(command=self.top.destroy)    
 
-def start_up_windows(parent=None,navigate_callback=None, update_resource_callback=None):
-    _w1 = Toplevel1(parent,navigate_callback,update_resource_callback)
+def start_up_windows(parent=None,navigate_callback=None, resource = None, client=None):
+    _w1 = Toplevel1(parent,navigate_callback, resource=resource, client=client)
 
 if __name__ == '__main__':
     start_up_windows()

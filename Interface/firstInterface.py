@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.constants import *
 import os.path
+import time
 _location = os.path.dirname(__file__)
 from tkinter import messagebox
 
@@ -16,7 +17,7 @@ title_config = {
 }
 
 class Toplevel1:
-    def __init__(self, top=None, navigate_callback=None,show_windows_callback=None):
+    def __init__(self, top=None, navigate_callback=None,show_windows_callback=None, client=None):
         top.geometry("915x581+402+99")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
@@ -24,13 +25,24 @@ class Toplevel1:
         top.title("Configuración servicio Samba")
         top.configure(background=colorDef)
 
+        self.client = client
         self.top = top
         self.navigate_callback = navigate_callback
         self.show_windows_callback = show_windows_callback
         
         self.che63 = tk.IntVar()
-        self.che69 = tk.IntVar()
+        self.cheStart = tk.BooleanVar()
         self.che64 = tk.IntVar()
+                
+        #Valores leidos de la configuracion anterior
+        self.afterConfig = lines_start_conf[0]
+        self.afterConfigValue = self.afterConfig.split("=")[1]
+        self.afterReboot = lines_start_conf[1]
+        self.afterRebootValue = self.afterReboot.split("=")[1]
+        
+        #Reinica el servicio si se estaba configurado
+        if(self.afterRebootValue == "True"): 
+            self.start_service()
 
         self.menubar = tk.Menu(top,font="-family {Consolas}",bg=_fgcolor,fg=_fgcolor)
         top.configure(menu = self.menubar)
@@ -85,6 +97,8 @@ class Toplevel1:
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
         self.buttDelUser.configure(command=self.delete_user)
         
+          
+        #Configuracion usuario
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
         self.cuadroInicial.configure(relief='groove',borderwidth="2",background=colorDef)
@@ -99,7 +113,8 @@ class Toplevel1:
         self.statusService.place(relx=0.219, rely=0.154, height=21, width=82)
         self.statusService.configure(**title_config)
         self.statusService.configure(font="-family {Consolas} -size 11")
-        self.statusService.configure(text='''Inactivo''')
+        #Estado del servicio
+        self.load_service_status()
 
         self.textLaterConfig = tk.Label(self.cuadroInicial)
         self.textLaterConfig.place(relx=0.023, rely=0.246, height=20, width=220)
@@ -108,21 +123,26 @@ class Toplevel1:
         self.textLaterConfig.configure(text='''Después de configurar:''')
 
         self.selected_option = tk.StringVar(self.cuadroInicial)
-        self.selected_option.set("Seleccione una opción")  # Establece un valor predeterminado
+        if self.afterConfigValue: 
+            self.selected_option.set(self.afterConfigValue)
+        else:
+            self.selected_option.set("Seleccione una opción")
+          # Establece un valor predeterminado
 
-        options = ["Reiniciar Servicio", "Detener", "Mantener estado actual", "Bloque 4"]
+        options = ["Reiniciar Servicio", "Detener", "Mantener estado actual", "Recargar"]
 
-        self.estadoActual = tk.OptionMenu(self.cuadroInicial, self.selected_option, *options)
+        self.estadoActual = tk.OptionMenu(self.cuadroInicial, self.selected_option, *options, command=self.updateLaterConfig)
         self.estadoActual.place(relx=0.046, rely=0.338, relheight=0.092, relwidth=0.23)
-        self.estadoActual.configure(font="-family {Consolas} -size 10")
-
-
+        
+        #INICIAR ? 
         self.startServiceCheck = tk.Checkbutton(self.cuadroInicial)
         self.startServiceCheck.place(relx=0.046, rely=0.521, relheight=0.096, relwidth=0.105)
         self.startServiceCheck.configure(**title_config, activebackground="#d9d9d9")
         self.startServiceCheck.configure(font="-family {Consolas} -size 10")
         self.startServiceCheck.configure(text='''¿Iniciar?''')
-        self.startServiceCheck.configure(variable=self.che69)
+        self.startServiceCheck.configure(variable=self.cheStart)
+        self.startServiceCheck.configure(command=self.updateStartServiceCheck)
+        if self.afterRebootValue == "True": self.startServiceCheck.select()
 
         self.Label1 = tk.Label(self.cuadroInicial)
         self.Label1.place(relx=0.023, rely=0.45, height=18, width=209)
@@ -134,6 +154,7 @@ class Toplevel1:
         self.tituloInicio.place(relx=0.313, rely=0.042, height=21, width=316)
         self.tituloInicio.configure(**title_config)
         self.tituloInicio.configure(text='''Configuración del Servicio''')
+        ###############################3
 
         self.botonAdd = tk.Button(self.navigator_t2)
         self.botonAdd.place(relx=0.023, rely=0.433, height=26, width=57)
@@ -141,6 +162,7 @@ class Toplevel1:
         self.botonAdd.configure(font="-family {Consolas} -size 10")
         self.botonAdd.configure(text='''Agregar''',anchor='center')
         self.botonAdd.configure(command=lambda: open_new_resource_window(self))
+        
         
         def open_new_resource_window(self):
             new_window = tk.Toplevel(self.top)
@@ -218,58 +240,17 @@ class Toplevel1:
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
         
-    def add_user(self):
-        add_user_dialog = AddUserDialog(self.top, self.listUsers)
-
-    def delete_user(self):
-        selected_user = self.listUsers.get(tk.ACTIVE)
-        if selected_user:
-            answer = messagebox.askyesno("Confirmar eliminación", f"¿Está seguro de que desea eliminar el usuario {selected_user}?")
-            if answer:
-                self.listUsers.delete(tk.ACTIVE)
-                self.delete_samba_user(selected_user)
-                self.list_samba_users()
-                
-    def delete_samba_user(self, username):
-        try:
-            print(f"Simulando la eliminación del usuario Samba: {username}")
-            # Conectarse al servidor Samba y eliminar el usuario
-            """ ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect('samba_server_ip', username='your_username', password='your_password')
-            
-            # Comando para eliminar el usuario de Samba
-            delete_samba_cmd = f'sudo smbpasswd -x {username}'
-
-            stdin, stdout, stderr = ssh.exec_command(delete_samba_cmd)
-            print(stdout.read().decode(), stderr.read().decode())
-            
-            ssh.close() """
-            print(f"Usuario Samba {username} eliminado (simulado).")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo eliminar el usuario Samba: {e}")
-            
-    def list_samba_users(self):
-        try:
-            print("Listando usuarios de Samba...")
-            """ ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect('samba_server_ip', username='your_username', password='your_password')
-
-            # Comando para listar todos los usuarios de Samba
-            list_users_cmd = 'sudo pdbedit -L -v'
-
-            stdin, stdout, stderr = ssh.exec_command(list_users_cmd)
-            samba_users = stdout.read().decode()
-
-            # Imprimir la lista de usuarios de Samba
-            print(samba_users)
-
-            ssh.close() """
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudieron listar los usuarios de Samba: {e}")
-
-
+    def updateLaterConfig(self, *args):
+        global lines_start_conf
+        afterConfig = lines_start_conf[0]
+        afterConfigKey = afterConfig.split("=")[0]
+        lines_start_conf[0] =  f"{afterConfigKey}={self.selected_option.get()}"
+        
+    def updateStartServiceCheck(self):
+        global lines_start_conf
+        afterReboot = lines_start_conf[1]
+        afterRebootKey = afterReboot.split("=")[0]
+        lines_start_conf[1] =  f"{afterRebootKey}={self.cheStart.get()}"        
     
     def cancel_and_navigate(self):
         self.cancel_changes()
@@ -315,18 +296,94 @@ class Toplevel1:
     def save_changes(self):
         global resources,lines,initial_conf
         write_smb_conf(file_path,resources)
-        #vuelve a leer para actualizarse
+        self.save_start_conf()
+        
+        if self.selected_option.get() == "Reiniciar Servicio":
+            self.reboot_service()
+        elif self.selected_option.get() == "Detener":
+            self.stop_service()
+        
+        self.load_service_status() #Actualiza el status
         lines = read_smb_conf(file_path)
         resources = extract_shared_resources(lines)
         initial_conf = extract_shared_resources(lines)
         load_shared_resources(self.listActual)
-        messagebox.showinfo("Guardando...", "Los cambios se han guardado correctamente.")
+            
+        messagebox.showinfo("Info", "Los cambios se han guardado correctamente.")
+    
 
     def cancel_changes(self):
         global resources,initial_conf
         resources = initial_conf
-        messagebox.showinfo("Cancelando y saliendo...", "Los cambios han sido cancelados.")
+        messagebox.showinfo("Info", "Los cambios han sido cancelados.")
+        
+    def save_start_conf(self):
+        with open("config_start.conf", "w") as file:
+            file.write(f"after config={self.selected_option.get()}\n")
+            file.write(f"after reboot={self.cheStart.get()}")
+            
+    def load_service_status(self):
+        session = self.client.get_transport().open_session()
+        if session.active:
+            command = 'service smb status'
+            session.exec_command(command)
+            stdout = ''
+            time.sleep(2)
+            while True:
+                if session.recv_ready():
+                    stdout += session.recv(1024).decode()
+                else:
+                    if session.exit_status_ready():
+                        break
+            stderr = session.recv_stderr(1024).decode()
+            if stderr:
+                print("Error:", stderr)
+                return 
+            print(stdout)
+            state = "Activo" if stdout.find('(running)') != -1 else "Inactivo"
+            self.statusService.configure(text=state)
+            session.close()
+        else:
+            print("La sesión no está activa")
+        
+    def reboot_service(self):
+        session = self.client.get_transport().open_session()
+        if session.active:
+            command = 'service smb restart'
+            session.exec_command(command)
+            time.sleep(1)
+            session.close()
+            
+    def stop_service(self):
+        session = self.client.get_transport().open_session()
+        if session.active:
+            command = 'service smb stop'
+            session.exec_command(command)
+            time.sleep(1)
+            session.close()
+            
+    def start_service(self):
+        session = self.client.get_transport().open_session()
+        print("start entro xd")
+        if session.active:
+            command = 'service smb start'
+            session.exec_command(command)
+            time.sleep(1)
+            session.close()
 
+def read_start_conf(path_conf):
+    with open(path_conf, "r") as file:
+        lines = file.readlines()
+        lines = [line.strip() for line in lines]
+        return lines
+            
+# path_start_conf = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/config_start.conf"
+
+path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
+
+lines_start_conf = read_start_conf(path_start_conf)
+lines_start_conf_static = []        
+        
 def write_smb_conf(file_path, resources):
     with open(file_path, 'w') as file:
         file.write("# smb.conf is the main Samba configuration file. You find a full commented\n")
@@ -454,7 +511,13 @@ def extract_shared_resources(lines):
         resources.append(current_resource)
     return resources
 
+# file_path = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/Interface/smb.conf" 
+
+# file_path = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/Interface/smb.conf"
+
 file_path = "/etc/samba/smb.conf"
+
+#error al leer directo en src/smb.conf, copiar ruta completa
 lines = read_smb_conf(file_path)
 resources = extract_shared_resources(lines)
 initial_conf = extract_shared_resources(lines) #rescatamos el original
@@ -587,8 +650,8 @@ def _on_shiftmouse(event, widget):
         elif event.num == 5:
             widget.xview_scroll(1, 'units')
 
-def start_up_Interface(parent=None, navigate_callback=None, show_windows_callback=None):
-    _w1 = Toplevel1(parent, navigate_callback, show_windows_callback)
+def start_up_Interface(parent=None, navigate_callback=None, show_windows_callback=None, client=None):
+    _w1 = Toplevel1(parent, navigate_callback, show_windows_callback, client)
 
 if __name__ == '__main__':
     start_up_Interface()
