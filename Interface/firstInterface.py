@@ -356,7 +356,7 @@ class Toplevel1:
         messagebox.showinfo("Info", "Los cambios han sido cancelados.")
         
     def save_start_conf(self):
-        with open("config_start.conf", "w") as file:
+        with open(path_start_conf, "w") as file:
             file.write(f"after config={self.selected_option.get()}\n")
             file.write(f"after reboot={self.cheStart.get()}")
             
@@ -415,11 +415,11 @@ def read_start_conf(path_conf):
         return lines
             
 # path_start_conf = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/config_start.conf"
+# path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
 
-path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
+path_start_conf = "configs/config_start.conf"
 
 lines_start_conf = read_start_conf(path_start_conf)
-lines_start_conf_static = []        
         
 def write_smb_conf(file_path, resources):
     with open(file_path, 'w') as file:
