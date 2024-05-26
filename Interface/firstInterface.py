@@ -24,7 +24,6 @@ class Toplevel1:
         top.resizable(1,  1)
         top.title("Configuración servicio Samba")
         top.configure(background=colorDef)
-        self.list_users()
 
         self.top = top
         self.navigate_callback = navigate_callback
@@ -64,28 +63,29 @@ class Toplevel1:
         self.labelUsers.configure(text='''Usuarios Registrados''')
 
         self.listUsers = tk.Listbox(self.navigator_t4)
-
         self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
         self.listUsers.configure(background="white")
         self.listUsers.configure(font="TkFixedFont")
         self.listUsers.configure(foreground="#000000")
         self.listUsers.configure(selectbackground="#feffda")
         self.listUsers.configure(selectforeground="black")
+        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.listar_usuarios_samba())
 
-        self.butModUser = tk.Button(self.navigator_t4, command=self.open_add_user_window)
+        self.butModUser = tk.Button(self.navigator_t4)
         self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
         self.butModUser.configure(**title_config,activebackground=_fgcolor)
         self.butModUser.configure(font="-family {Consolas} -size 10")
         self.butModUser.configure(text='''Agregar usuario''',anchor='center')
+        self.butModUser.configure(command=self.add_user)
+        self.listar_usuarios_samba()
         
 
-        self.buttDelUser = tk.Button(self.navigator_t4, command=self.delete_user)
+        self.buttDelUser = tk.Button(self.navigator_t4)
         self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
         self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
-        
-        
+        self.buttDelUser.configure(command=self.delete_samba_user)
         
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
@@ -219,29 +219,8 @@ class Toplevel1:
         self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
-    
-    
-    def open_add_user_window(self):
-        self.add_user_window = tk.Toplevel(self.root)
-        self.add_user_window.title("Agregar Usuario")
-
-        tk.Label(self.add_user_window, text="Nombre de usuario:").grid(row=0, column=0, padx=10, pady=5)
-        self.username_entry = tk.Entry(self.add_user_window)
-        self.username_entry.grid(row=0, column=1, padx=10, pady=5)
         
-        tk.Label(self.add_user_window, text="Contraseña:").grid(row=1, column=0, padx=10, pady=5)
-        self.password_entry = tk.Entry(self.add_user_window, show='*')
-        self.password_entry.grid(row=1, column=1, padx=10, pady=5)
-
-        tk.Label(self.add_user_window, text="Repetir Contraseña:").grid(row=2, column=0, padx=10, pady=5)
-        self.password_confirm_entry = tk.Entry(self.add_user_window, show='*')
-        self.password_confirm_entry.grid(row=2, column=1, padx=10, pady=5)
-
-        self.accept_button = tk.Button(self.add_user_window, text="Aceptar", command=self.add_user)
-        self.accept_button.grid(row=3, column=0, padx=10, pady=5)
-        
-        self.cancel_button = tk.Button(self.add_user_window, text="Cancelar", command=self.add_user_window.destroy)
-        self.cancel_button.grid(row=3, column=1, padx=10, pady=5)  
+   
      
     def add_user(self):
         username = self.username_entry.get().strip()
@@ -273,7 +252,28 @@ class Toplevel1:
         except subprocess.CalledProcessError as e:
             messagebox.showerror("Error", f"No se pudo agregar el usuario {username}. Error: {e}")
 
-     
+    def open_add_user_window(self):
+        self.add_user_window = tk.Toplevel(self.root)
+        self.add_user_window.title("Agregar Usuario")
+
+        tk.Label(self.add_user_window, text="Nombre de usuario:").grid(row=0, column=0, padx=10, pady=5)
+        self.username_entry = tk.Entry(self.add_user_window)
+        self.username_entry.grid(row=0, column=1, padx=10, pady=5)
+        
+        tk.Label(self.add_user_window, text="Contraseña:").grid(row=1, column=0, padx=10, pady=5)
+        self.password_entry = tk.Entry(self.add_user_window, show='*')
+        self.password_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        tk.Label(self.add_user_window, text="Repetir Contraseña:").grid(row=2, column=0, padx=10, pady=5)
+        self.password_confirm_entry = tk.Entry(self.add_user_window, show='*')
+        self.password_confirm_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        self.accept_button = tk.Button(self.add_user_window, text="Aceptar", command=self.add_user)
+        self.accept_button.grid(row=3, column=0, padx=10, pady=5)
+        
+        self.cancel_button = tk.Button(self.add_user_window, text="Cancelar", command=self.add_user_window.destroy)
+        self.cancel_button.grid(row=3, column=1, padx=10, pady=5)
+
                 
     def delete_user(self):
         try:
