@@ -87,7 +87,7 @@ class Toplevel1:
         self.butModUser.configure(**title_config,activebackground=_fgcolor)
         self.butModUser.configure(font="-family {Consolas} -size 10")
         self.butModUser.configure(text='''Agregar usuario''',anchor='center')
-        self.butModUser.configure(command=self.add_user)
+        #self.butModUser.configure(command=self.add_user)
         
 
         self.buttDelUser = tk.Button(self.navigator_t4)
@@ -95,7 +95,7 @@ class Toplevel1:
         self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
-        self.buttDelUser.configure(command=self.delete_user)
+        #self.buttDelUser.configure(command=self.delete_user)
         
           
         #Configuracion usuario
@@ -379,7 +379,7 @@ def read_start_conf(path_conf):
             
 # path_start_conf = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/config_start.conf"
 
-path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
+path_start_conf = "config_start.conf"
 
 lines_start_conf = read_start_conf(path_start_conf)
 lines_start_conf_static = []        

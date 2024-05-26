@@ -11,7 +11,11 @@ Instrucciones de Uso:
   relacionadas a Tkinter, si no lo tiene puede ejecutar estos comandos:
    #sudo zypper install python3-tk
    #sudo zypper install python3-pillow
+   #sudo zypper in python3-paramiko
 - Para iniciar el programa debe ejecutar el comando:
    #python3 App.py
-   
+
+
 En caso de no contar con python u otra dependencia necesaria el programa no se inicializará
+Nota extra: cuando agregue los path de sus recursos recuerde tener la carpeta creada
+con sus respectivos permisos, sino deben crearla y ejecutar 'chmod ugo+rwx nombreCarpeta'
