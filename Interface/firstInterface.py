@@ -527,9 +527,10 @@ import os
 import subprocess
 
 class SambaManagerApp:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Samba User Manager")
+    def __init__(self, master):
+        #self.root = root
+        self.master = master
+        #self.root.title("Samba User Manager")
         
         self.create_widgets()
         self.list_users()  # Listar usuarios al iniciar la aplicación
