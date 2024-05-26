@@ -20,7 +20,11 @@ label_config = {
 
 class intro:
     def __init__(self, top=None, navigate_callback=None):
-        top.geometry("681x673+612+210")
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 681) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 673) // 2  # La altura de la ventana es 116
+        top.geometry(f"681x673+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
