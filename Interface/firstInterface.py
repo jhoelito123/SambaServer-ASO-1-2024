@@ -24,6 +24,7 @@ class Toplevel1:
         top.resizable(1,  1)
         top.title("Configuración servicio Samba")
         top.configure(background=colorDef)
+        self.list_users()
 
         self.top = top
         self.navigate_callback = navigate_callback
@@ -69,23 +70,20 @@ class Toplevel1:
         self.listUsers.configure(foreground="#000000")
         self.listUsers.configure(selectbackground="#feffda")
         self.listUsers.configure(selectforeground="black")
-        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.listar_usuarios_samba())
 
         self.butModUser = tk.Button(self.navigator_t4)
         self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
         self.butModUser.configure(**title_config,activebackground=_fgcolor)
         self.butModUser.configure(font="-family {Consolas} -size 10")
-        self.butModUser.configure(text='''Agregar usuario''',anchor='center')
-        self.butModUser.configure(command=self.add_user)
-        self.listar_usuarios_samba()
+        self.butModUser.configure(text='''Agregar usuario''',anchor='center', command=self.open_add_user_window)
         
 
         self.buttDelUser = tk.Button(self.navigator_t4)
         self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
         self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
-        self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
-        self.buttDelUser.configure(command=self.delete_samba_user)
+        self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center',  command=self.delete_user)
+        
         
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
