@@ -72,38 +72,6 @@ class Toplevel1:
         self.navigator.add(self.navigator_t4, padding=3)
         self.navigator.tab(3, text='''Usuarios''', compound="left" ,underline='''-1''', )
         self.navigator_t4.configure(background=colorDef)
-<<<<<<< HEAD
-#========================================================
-        #for new navigator Users
-        self.labelUsers = tk.Label(self.navigator_t4)
-        self.labelUsers.place(relx=0.046, rely=0.02, height=31, width=294)
-        self.labelUsers.configure(**title_config)
-        self.labelUsers.configure(text='''Usuarios Registrados''')
-
-        self.listUsers = tk.Listbox(self.navigator_t4)
-        self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
-        self.listUsers.configure(background="white")
-        self.listUsers.configure(font="TkFixedFont")
-        self.listUsers.configure(foreground="#000000")
-        self.listUsers.configure(selectbackground="#feffda")
-        self.listUsers.configure(selectforeground="black")
-        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.list_samba_users())
-
-        self.butModUser = tk.Button(self.navigator_t4)
-        self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
-        self.butModUser.configure(**title_config,activebackground=_fgcolor)
-        self.butModUser.configure(font="-family {Consolas} -size 10")
-        self.butModUser.configure(text='''Agregar usuario''',anchor='center')
-        #self.butModUser.configure(command=self.add_user)
-        
-
-        self.buttDelUser = tk.Button(self.navigator_t4)
-        self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
-        self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
-        self.buttDelUser.configure(font="-family {Consolas} -size 10")
-        self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
-        #self.buttDelUser.configure(command=self.delete_user)
-=======
 
         # #for new navigator Users
         # self.labelUsers = tk.Label(self.navigator_t4)
@@ -131,7 +99,6 @@ class Toplevel1:
         # self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         # self.buttDelUser.configure(font="-family {Consolas} -size 10")
         # self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
->>>>>>> 3b296ff7048868fff6b0667e7e02b6d527ddc4c9
         
         self.create_widgets()
         self.list_users()
@@ -559,14 +526,9 @@ def read_start_conf(path_conf):
         lines = [line.strip() for line in lines]
         return lines
             
-# path_start_conf = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/config_start.conf"
-# path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
 
-<<<<<<< HEAD
-path_start_conf = "config_start.conf"
-=======
+
 path_start_conf = "configs/config_start.conf"
->>>>>>> 3b296ff7048868fff6b0667e7e02b6d527ddc4c9
 
 lines_start_conf = read_start_conf(path_start_conf)
         
