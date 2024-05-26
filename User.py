@@ -16,20 +16,8 @@ class SambaManagerApp:
         self.add_user_frame = tk.LabelFrame(self.root, text="Agregar Usuario")
         self.add_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
 
-        tk.Label(self.add_user_frame, text="Nombre de usuario:").grid(row=0, column=0)
-        self.username_entry = tk.Entry(self.add_user_frame)
-        self.username_entry.grid(row=0, column=1)
-        
-        tk.Label(self.add_user_frame, text="Contraseña:").grid(row=1, column=0)
-        self.password_entry = tk.Entry(self.add_user_frame, show='*')
-        self.password_entry.grid(row=1, column=1)
-
-        tk.Label(self.add_user_frame, text="Repetir Contraseña:").grid(row=2, column=0)
-        self.password_confirm_entry = tk.Entry(self.add_user_frame, show='*')
-        self.password_confirm_entry.grid(row=2, column=1)
-
-        self.add_user_button = tk.Button(self.add_user_frame, text="Agregar Usuario", command=self.add_user)
-        self.add_user_button.grid(row=3, columnspan=2, pady=5)
+        self.add_user_button = tk.Button(self.add_user_frame, text="Agregar Usuario", command=self.open_add_user_window)
+        self.add_user_button.pack(pady=5)
 
         # Listar usuarios
         self.list_users_frame = tk.LabelFrame(self.root, text="Lista de Usuarios")
@@ -44,6 +32,28 @@ class SambaManagerApp:
 
         self.delete_user_button = tk.Button(self.delete_user_frame, text="Eliminar Usuario Seleccionado", command=self.delete_user)
         self.delete_user_button.pack(pady=5)
+
+    def open_add_user_window(self):
+        self.add_user_window = tk.Toplevel(self.root)
+        self.add_user_window.title("Agregar Usuario")
+
+        tk.Label(self.add_user_window, text="Nombre de usuario:").grid(row=0, column=0, padx=10, pady=5)
+        self.username_entry = tk.Entry(self.add_user_window)
+        self.username_entry.grid(row=0, column=1, padx=10, pady=5)
+        
+        tk.Label(self.add_user_window, text="Contraseña:").grid(row=1, column=0, padx=10, pady=5)
+        self.password_entry = tk.Entry(self.add_user_window, show='*')
+        self.password_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        tk.Label(self.add_user_window, text="Repetir Contraseña:").grid(row=2, column=0, padx=10, pady=5)
+        self.password_confirm_entry = tk.Entry(self.add_user_window, show='*')
+        self.password_confirm_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        self.accept_button = tk.Button(self.add_user_window, text="Aceptar", command=self.add_user)
+        self.accept_button.grid(row=3, column=0, padx=10, pady=5)
+        
+        self.cancel_button = tk.Button(self.add_user_window, text="Cancelar", command=self.add_user_window.destroy)
+        self.cancel_button.grid(row=3, column=1, padx=10, pady=5)
 
     def add_user(self):
         username = self.username_entry.get().strip()
@@ -69,6 +79,7 @@ class SambaManagerApp:
             if proc_smbpasswd.returncode == 0:
                 messagebox.showinfo("Éxito", f"Usuario {username} agregado con éxito.")
                 self.list_users()  # Actualizar la lista de usuarios
+                self.add_user_window.destroy()  # Cerrar la ventana de agregar usuario
             else:
                 raise subprocess.CalledProcessError(proc_smbpasswd.returncode, 'smbpasswd')
         except subprocess.CalledProcessError as e:
