@@ -532,8 +532,7 @@ def read_start_conf(path_conf):
         lines = [line.strip() for line in lines]
         return lines
             
-# path_start_conf = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/config_start.conf"
-# path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
+
 
 path_start_conf = "configs/config_start.conf"
 
@@ -816,3 +815,70 @@ def start_up_Interface(parent=None, navigate_callback=None, show_windows_callbac
 
 if __name__ == '__main__':
     start_up_Interface()
+    
+    
+import paramiko
+class AddUserDialog:
+    def __init__(self, parent, listbox):
+        self.parent = parent
+        self.listbox = listbox
+        self.dialog = tk.Toplevel(parent)
+        self.dialog.title("Agregar Usuario")
+        self.dialog.geometry("300x200")
+
+        tk.Label(self.dialog, text="Nombre de usuario:").pack(pady=5)
+        self.username_entry = tk.Entry(self.dialog)
+        self.username_entry.pack(pady=5)
+
+        tk.Label(self.dialog, text="Contraseña:").pack(pady=5)
+        self.password_entry = tk.Entry(self.dialog, show='*')
+        self.password_entry.pack(pady=5)
+
+        tk.Button(self.dialog, text="Aceptar", command=self.add_user).pack(pady=5)
+        tk.Button(self.dialog, text="Cancelar", command=self.dialog.destroy).pack(pady=5)
+
+    def add_user(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        if username and password:
+            # Guardar usuario en la lista local
+            self.listbox.insert(tk.END, username)
+            # Intentar guardar el usuario en el sistema Samba
+            self.save_user(username, password)
+            self.dialog.destroy()
+        else:
+            messagebox.showwarning("Campos incompletos", "Por favor, complete todos los campos.")
+            
+            
+    def save_user(self, username, password):
+        try:
+            print(f"Simulando la adición del usuario: {username} con la contraseña: {password}")
+            # Código para conectarse al servidor Samba y agregar el usuario
+            """ ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect('samba_server_ip', username='your_username', password='your_password')
+            
+            # Comandos para agregar un usuario en Samba
+            add_user_cmd = f'sudo useradd -m {username}'
+            set_password_cmd = f'echo "{username}:{password}" | sudo chpasswd'
+            add_samba_cmd = f'sudo smbpasswd -a {username}'
+
+            stdin, stdout, stderr = ssh.exec_command(add_user_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            stdin, stdout, stderr = ssh.exec_command(set_password_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            stdin, stdout, stderr = ssh.exec_command(add_samba_cmd)
+            print(stdout.read().decode(), stderr.read().decode())
+            
+            ssh.close() """
+            print(f"Usuario {username} añadido en el sistema Samba (simulado).")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo agregar el usuario: {e}")
+
+
+if __name__ == '__main__':
+    root = tk.Tk()
+    app = Toplevel1(root)
+    root.mainloop()
