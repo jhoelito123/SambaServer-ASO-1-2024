@@ -8,6 +8,7 @@ _location = os.path.dirname(__file__)
 from tkinter import messagebox
 
 colorDef = '#d9d9d9'
+colorGrey = '#F0F0F0'
 _fgcolor = '#feffda'
 title_config = {
     "background": colorDef,
@@ -18,7 +19,11 @@ title_config = {
 
 class Toplevel1:
     def __init__(self, top=None, navigate_callback=None,show_windows_callback=None, client=None):
-        top.geometry("915x581+402+99")
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 915) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 581) // 2  # La altura de la ventana es 116
+        top.geometry(f"915x581+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -41,7 +46,7 @@ class Toplevel1:
         self.afterRebootValue = self.afterReboot.split("=")[1]
         
         #Reinica el servicio si se estaba configurado
-        if(self.afterRebootValue == "True"): 
+        if((self.afterRebootValue == "True") & (len(lines_start_conf) != 3)): 
             self.start_service()
 
         self.menubar = tk.Menu(top,font="-family {Consolas}",bg=_fgcolor,fg=_fgcolor)
@@ -101,24 +106,27 @@ class Toplevel1:
         #Configuracion usuario
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
-        self.cuadroInicial.configure(relief='groove',borderwidth="2",background=colorDef)
+        self.cuadroInicial.configure(relief='groove',borderwidth="2",background=colorGrey)
 
         self.textEstado = tk.Label(self.cuadroInicial)
-        self.textEstado.place(relx=0.023, rely=0.163, height=21, width=150)
+        self.textEstado.place(relx=0.023, rely=0.168, height=21, width=150)
         self.textEstado.configure(**title_config)
+        self.textEstado.configure(background=colorGrey)
         self.textEstado.configure(font="-family {Courier New} -size 12 -weight bold")
         self.textEstado.configure(text='''Estado actual:''')
 
         self.statusService = tk.Label(self.cuadroInicial)
-        self.statusService.place(relx=0.219, rely=0.154, height=21, width=82)
+        self.statusService.place(relx=0.219, rely=0.159, height=21, width=82)
         self.statusService.configure(**title_config)
+        self.statusService.configure(background=colorGrey)
         self.statusService.configure(font="-family {Consolas} -size 11")
         #Estado del servicio
         self.load_service_status()
 
         self.textLaterConfig = tk.Label(self.cuadroInicial)
-        self.textLaterConfig.place(relx=0.023, rely=0.246, height=20, width=220)
+        self.textLaterConfig.place(relx=0.023, rely=0.262, height=20, width=220)
         self.textLaterConfig.configure(**title_config)
+        self.textLaterConfig.configure(background=colorGrey)
         self.textLaterConfig.configure(font="-family {Courier New} -size 12 -weight bold")
         self.textLaterConfig.configure(text='''Después de configurar:''')
 
@@ -132,27 +140,31 @@ class Toplevel1:
         options = ["Reiniciar Servicio", "Detener", "Mantener estado actual", "Recargar"]
 
         self.estadoActual = tk.OptionMenu(self.cuadroInicial, self.selected_option, *options, command=self.updateLaterConfig)
-        self.estadoActual.place(relx=0.046, rely=0.338, relheight=0.092, relwidth=0.23)
+        self.estadoActual.place(relx=0.046, rely=0.354, relheight=0.092, relwidth=0.23)
         
         #INICIAR ? 
+        self.Label1 = tk.Label(self.cuadroInicial)
+        self.Label1.place(relx=0.023, rely=0.47, height=18, width=209)
+        self.Label1.configure(**title_config)
+        self.Label1.configure(background=colorGrey)
+        self.Label1.configure(font="-family {Courier New} -size 12 -weight bold")
+        self.Label1.configure(text='''Después de reiniciar:''')
+        
         self.startServiceCheck = tk.Checkbutton(self.cuadroInicial)
-        self.startServiceCheck.place(relx=0.046, rely=0.521, relheight=0.096, relwidth=0.105)
+        self.startServiceCheck.place(relx=0.046, rely=0.55, relheight=0.096, relwidth=0.125)
         self.startServiceCheck.configure(**title_config, activebackground="#d9d9d9")
+        self.startServiceCheck.configure(background=colorGrey)
         self.startServiceCheck.configure(font="-family {Consolas} -size 10")
         self.startServiceCheck.configure(text='''¿Iniciar?''')
         self.startServiceCheck.configure(variable=self.cheStart)
         self.startServiceCheck.configure(command=self.updateStartServiceCheck)
         if self.afterRebootValue == "True": self.startServiceCheck.select()
 
-        self.Label1 = tk.Label(self.cuadroInicial)
-        self.Label1.place(relx=0.023, rely=0.45, height=18, width=209)
-        self.Label1.configure(**title_config)
-        self.Label1.configure(font="-family {Courier New} -size 12 -weight bold")
-        self.Label1.configure(text='''Después de reiniciar:''')
 
         self.tituloInicio = tk.Label(self.cuadroInicial)
-        self.tituloInicio.place(relx=0.313, rely=0.042, height=21, width=316)
+        self.tituloInicio.place(relx=0.313, rely=0.047, height=21, width=316)
         self.tituloInicio.configure(**title_config)
+        self.tituloInicio.configure(background=colorGrey)
         self.tituloInicio.configure(text='''Configuración del Servicio''')
         ###############################3
 
@@ -199,11 +211,12 @@ class Toplevel1:
         
         self.frameWorkGroup = tk.Frame(self.navigator_t3)
         self.frameWorkGroup.place(relx=0.022, rely=0.102, relheight=0.399, relwidth=0.926)
-        self.frameWorkGroup.configure(relief='groove',borderwidth="2",background=colorDef)
+        self.frameWorkGroup.configure(relief='groove',borderwidth="2",background=colorGrey)
 
         self.labelWorkgroup = tk.Label(self.frameWorkGroup)
         self.labelWorkgroup.place(relx=0.012, rely=0.053, height=20, width=209)
         self.labelWorkgroup.configure(**title_config)
+        self.labelWorkgroup.configure(background=colorGrey)
         self.labelWorkgroup.configure(font="-family {Consolas} -size 11")
         self.labelWorkgroup.configure(text='''Nombre de WorkGroup:''')
         
@@ -225,7 +238,7 @@ class Toplevel1:
         self.Label3.place(relx=0.348, rely=0.04, height=21, width=248)
         self.Label3.configure(**title_config)
         self.Label3.configure(text='''Configuración básica''')
-
+        
         self.botonCancel = tk.Button(self.top)
         self.botonCancel.place(relx=0.812, rely=0.905, height=26, width=67)
         self.botonCancel.configure(**title_config,activebackground=_fgcolor)
@@ -302,8 +315,7 @@ class Toplevel1:
             self.reboot_service()
         elif self.selected_option.get() == "Detener":
             self.stop_service()
-        
-        self.load_service_status() #Actualiza el status
+        self.load_service_status() #Actualiza el status 
         lines = read_smb_conf(file_path)
         resources = extract_shared_resources(lines)
         initial_conf = extract_shared_resources(lines)
@@ -364,7 +376,6 @@ class Toplevel1:
             
     def start_service(self):
         session = self.client.get_transport().open_session()
-        print("start entro xd")
         if session.active:
             command = 'service smb start'
             session.exec_command(command)
@@ -398,7 +409,11 @@ def write_smb_conf(file_path, resources):
    
 class newResource:
     def __init__(self, top=None, parent=None):
-        top.geometry("328x312+850+202")
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 328) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 312) // 2  # La altura de la ventana es 116
+        top.geometry(f"328x312+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -542,10 +557,12 @@ def load_shared_resources(self):
                 self.insert(tk.END, formatted_line)
 
 def edit(self, show_windows_callback):
+    global lines_start_conf
     selected_index = self.listActual.curselection()
     if selected_index:
         index = selected_index[0]  # Obtener el índice del recurso seleccionado
         selected_resource = resources[index+1]  # Obtener el recurso completo usando el índice
+        lines_start_conf.append("is_back")
         show_windows_callback(selected_resource)        
 
 class AutoScroll(object):
