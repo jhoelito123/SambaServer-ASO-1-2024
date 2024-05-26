@@ -435,7 +435,13 @@ class Toplevel1:
         self.delete_user_button.pack(pady=5)
 
     def open_add_user_window(self):
+        screen_width = self.top.winfo_screenwidth()
+        screen_height = self.top.winfo_screenheight()
+        x = (screen_width - 200) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 200) // 2  # La altura de la ventana es 116
+        
         self.add_user_window = tk.Toplevel(self.navigator_t4)
+        self.add_user_window.geometry(f"340x180+{x}+{y}")
         self.add_user_window.title("Agregar Usuario")
 
         tk.Label(self.add_user_window, text="Nombre de usuario:").grid(row=0, column=0, padx=10, pady=5)
