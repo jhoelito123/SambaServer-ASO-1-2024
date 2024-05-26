@@ -55,36 +55,10 @@ class Toplevel1:
         self.navigator.add(self.navigator_t4, padding=3)
         self.navigator.tab(3, text='''Usuarios''', compound="left" ,underline='''-1''', )
         self.navigator_t4.configure(background=colorDef)
+
+        self.open_samba_user_manager()
 #========================================================
         #for new navigator Users
-        self.labelUsers = tk.Label(self.navigator_t4)
-        self.labelUsers.place(relx=0.046, rely=0.02, height=31, width=294)
-        self.labelUsers.configure(**title_config)
-        self.labelUsers.configure(text='''Usuarios Registrados''')
-
-        self.listUsers = tk.Listbox(self.navigator_t4)
-        self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
-        self.listUsers.configure(background="white")
-        self.listUsers.configure(font="TkFixedFont")
-        self.listUsers.configure(foreground="#000000")
-        self.listUsers.configure(selectbackground="#feffda")
-        self.listUsers.configure(selectforeground="black")
-        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.list_samba_user())
-
-        self.butModUser = tk.Button(self.navigator_t4)
-        self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
-        self.butModUser.configure(**title_config,activebackground=_fgcolor)
-        self.butModUser.configure(font="-family {Consolas} -size 10")
-        self.butModUser.configure(text='''Agregar usuario''',anchor='center')
-        self.butModUser.configure(command=self.add_user)
-        
-
-        self.buttDelUser = tk.Button(self.navigator_t4)
-        self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
-        self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
-        self.buttDelUser.configure(font="-family {Consolas} -size 10")
-        self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
-        self.buttDelUser.configure(command=self.delete_samba_user)
         
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
@@ -218,44 +192,10 @@ class Toplevel1:
         self.botonAccept.configure(activebackground=_fgcolor,background="#b3af46")
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
-        
-    def add_user(self):
-        add_user_dialog = AddUserDialog(self.top, self.listUsers)
-                
-    def delete_samba_user(self, username):
-        try:
-            selected_user = self.users_listbox.get(tk.ACTIVE)
-            if not selected_user:
-                messagebox.showwarning("Advertencia", "Por favor, seleccione un usuario de la lista.")
-                return
-            # Comando para eliminar usuario de Samba
-            process = subprocess.Popen(['sudo', 'smbpasswd', '-x', selected_user], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            _, error = process.communicate()
-            if process.returncode == 0:
-                # Comando para eliminar usuario del sistema
-                subprocess.run(['sudo', 'userdel', '-r', selected_user], check=True)
-                messagebox.showinfo("Éxito", f"Usuario {selected_user} eliminado con éxito.")
-                self.list_users()  # Actualizar la lista de usuarios
-            else:
-                messagebox.showerror("Error", f"No se pudo eliminar el usuario {selected_user}. Error: {error.decode()}")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo eliminar el usuario {selected_user}. Error: {e}")
-            
-    def listar_usuarios_samba(self):
-        try:
-            process = subprocess.Popen(['sudo', 'pdbedit', '-L'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            output, _ = process.communicate()
-            if process.returncode == 0:
-                users = output.decode().strip().split('\n')
-                self.users_listbox.delete(0, tk.END)
-                for user in users:
-                    self.users_listbox.insert(tk.END, user.split(':')[0])  # Añadido solo el nombre de usuario
-            else:
-                messagebox.showerror("Error", "No se pudieron listar los usuarios.")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudieron listar los usuarios. Error: {e}")
 
-
+    def open_samba_user_manager(self):
+        samba_user_manager = SambaManagerApp(self.navigator_t4)
+        samba_user_manager.pack(fill="both", expand=True)
     
     def cancel_and_navigate(self):
         self.cancel_changes()
@@ -578,29 +518,45 @@ def start_up_Interface(parent=None, navigate_callback=None, show_windows_callbac
 
 if __name__ == '__main__':
     start_up_Interface()
-
+    
+    
+    
+import tkinter as tk
+from tkinter import messagebox
+import os
 import subprocess
-import paramiko
 
-class AddUserDialog:
-    def __init__(self, parent, listbox):
-        self.parent = parent
-        self.listbox = listbox
-        self.dialog = tk.Toplevel(parent)
-        self.dialog.title("Agregar Usuario")
-        self.dialog.geometry("300x250")
-        self.dialog.configure(bg='grey')
+class SambaManagerApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Samba User Manager")
+        
+        self.create_widgets()
+        self.list_users()  # Listar usuarios al iniciar la aplicación
 
-        # Estilos
-        label_bg_color = 'DarkOliveGreen1'
-        label_fg_color = 'white'
-        button_bg_color_accept = 'green'
-        button_fg_color = 'white'
-        button_bg_color_cancel = 'red'
-        entry_bg_color = 'white'
-        entry_fg_color = 'black'
+    def create_widgets(self):
+        # Agregar usuario
+        self.add_user_frame = tk.LabelFrame(self.root, text="Agregar Usuario")
+        self.add_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
 
-        # Labels
+        self.add_user_button = tk.Button(self.add_user_frame, text="Agregar Usuario", command=self.open_add_user_window)
+        self.add_user_button.pack(pady=5)
+
+        # Listar usuarios
+        self.list_users_frame = tk.LabelFrame(self.root, text="Lista de Usuarios")
+        self.list_users_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+
+        self.users_listbox = tk.Listbox(self.list_users_frame)
+        self.users_listbox.pack(fill="both", expand="yes", padx=5, pady=5)
+
+        # Eliminar usuario
+        self.delete_user_frame = tk.LabelFrame(self.root, text="Eliminar Usuario")
+        self.delete_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+
+        self.delete_user_button = tk.Button(self.delete_user_frame, text="Eliminar Usuario Seleccionado", command=self.delete_user)
+        self.delete_user_button.pack(pady=5)
+
+    def open_add_user_window(self):
         self.add_user_window = tk.Toplevel(self.root)
         self.add_user_window.title("Agregar Usuario")
 
@@ -621,7 +577,6 @@ class AddUserDialog:
         
         self.cancel_button = tk.Button(self.add_user_window, text="Cancelar", command=self.add_user_window.destroy)
         self.cancel_button.grid(row=3, column=1, padx=10, pady=5)
-
 
     def add_user(self):
         username = self.username_entry.get().strip()
@@ -653,11 +608,40 @@ class AddUserDialog:
         except subprocess.CalledProcessError as e:
             messagebox.showerror("Error", f"No se pudo agregar el usuario {username}. Error: {e}")
 
+    def list_users(self):
+        try:
+            process = subprocess.Popen(['sudo', 'pdbedit', '-L'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, _ = process.communicate()
+            if process.returncode == 0:
+                users = output.decode().strip().split('\n')
+                self.users_listbox.delete(0, tk.END)
+                for user in users:
+                    self.users_listbox.insert(tk.END, user.split(':')[0])  # Añadido solo el nombre de usuario
+            else:
+                messagebox.showerror("Error", "No se pudieron listar los usuarios.")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudieron listar los usuarios. Error: {e}")
 
-if __name__ == '__main__':
+    def delete_user(self):
+        try:
+            selected_user = self.users_listbox.get(tk.ACTIVE)
+            if not selected_user:
+                messagebox.showwarning("Advertencia", "Por favor, seleccione un usuario de la lista.")
+                return
+            # Comando para eliminar usuario de Samba
+            process = subprocess.Popen(['sudo', 'smbpasswd', '-x', selected_user], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            _, error = process.communicate()
+            if process.returncode == 0:
+                # Comando para eliminar usuario del sistema
+                subprocess.run(['sudo', 'userdel', '-r', selected_user], check=True)
+                messagebox.showinfo("Éxito", f"Usuario {selected_user} eliminado con éxito.")
+                self.list_users()  # Actualizar la lista de usuarios
+            else:
+                messagebox.showerror("Error", f"No se pudo eliminar el usuario {selected_user}. Error: {error.decode()}")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar el usuario {selected_user}. Error: {e}")
+
+if __name__ == "__main__":
     root = tk.Tk()
-    root.configure(bg='lightblue')
-    listbox = tk.Listbox(root)
-    listbox.pack()
-    app = AddUserDialog(root, listbox)
+    app = SambaManagerApp(root)
     root.mainloop()
