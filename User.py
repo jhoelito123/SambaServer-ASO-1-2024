@@ -12,26 +12,38 @@ class SambaManagerApp:
         self.list_users()  # Listar usuarios al iniciar la aplicación
 
     def create_widgets(self):
-        # Agregar usuario
-        self.add_user_frame = tk.LabelFrame(self.root, text="Agregar Usuario")
-        self.add_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+        # Navigator tab (self.navigator_t4 needs to be defined; for example, it can be a frame or a tab in a notebook)
+        self.navigator_t4 = tk.Frame(self.root)
+        self.navigator_t4.pack(fill="both", expand=True)
 
-        self.add_user_button = tk.Button(self.add_user_frame, text="Agregar Usuario", command=self.open_add_user_window)
-        self.add_user_button.pack(pady=5)
+        # Title configuration for consistency
+        title_config = {"font": ("Arial", 12, "bold")}
 
-        # Listar usuarios
-        self.list_users_frame = tk.LabelFrame(self.root, text="Lista de Usuarios")
-        self.list_users_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+        # For new navigator Users
+        self.labelUsers = tk.Label(self.navigator_t4)
+        self.labelUsers.place(relx=0.046, rely=0.02, height=31, width=294)
+        self.labelUsers.configure(**title_config)
+        self.labelUsers.configure(text='Usuarios Registrados')
 
-        self.users_listbox = tk.Listbox(self.list_users_frame)
-        self.users_listbox.pack(fill="both", expand="yes", padx=5, pady=5)
+        self.listUsers = tk.Listbox(self.navigator_t4)
+        self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
+        self.listUsers.configure(background="white")
+        self.listUsers.configure(font="TkFixedFont")
+        self.listUsers.configure(foreground="#000000")
+        self.listUsers.configure(selectbackground="#feffda")
+        self.listUsers.configure(selectforeground="black")
 
-        # Eliminar usuario
-        self.delete_user_frame = tk.LabelFrame(self.root, text="Eliminar Usuario")
-        self.delete_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+        self.butModUser = tk.Button(self.navigator_t4, command=self.open_add_user_window)
+        self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
+        self.butModUser.configure(**title_config, activebackground="#d9d9d9")
+        self.butModUser.configure(font="-family {Consolas} -size 10")
+        self.butModUser.configure(text='Agregar usuario', anchor='center')
 
-        self.delete_user_button = tk.Button(self.delete_user_frame, text="Eliminar Usuario Seleccionado", command=self.delete_user)
-        self.delete_user_button.pack(pady=5)
+        self.buttDelUser = tk.Button(self.navigator_t4, command=self.delete_user)
+        self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
+        self.buttDelUser.configure(**title_config, activebackground="#d9d9d9")
+        self.buttDelUser.configure(font="-family {Consolas} -size 10")
+        self.buttDelUser.configure(text='Eliminar usuario', anchor='center')
 
     def open_add_user_window(self):
         self.add_user_window = tk.Toplevel(self.root)
@@ -91,9 +103,9 @@ class SambaManagerApp:
             output, _ = process.communicate()
             if process.returncode == 0:
                 users = output.decode().strip().split('\n')
-                self.users_listbox.delete(0, tk.END)
+                self.listUsers.delete(0, tk.END)
                 for user in users:
-                    self.users_listbox.insert(tk.END, user.split(':')[0])  # Añadido solo el nombre de usuario
+                    self.listUsers.insert(tk.END, user.split(':')[0])  # Añadido solo el nombre de usuario
             else:
                 messagebox.showerror("Error", "No se pudieron listar los usuarios.")
         except Exception as e:
@@ -101,7 +113,7 @@ class SambaManagerApp:
 
     def delete_user(self):
         try:
-            selected_user = self.users_listbox.get(tk.ACTIVE)
+            selected_user = self.listUsers.get(tk.ACTIVE)
             if not selected_user:
                 messagebox.showwarning("Advertencia", "Por favor, seleccione un usuario de la lista.")
                 return

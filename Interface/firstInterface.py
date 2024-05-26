@@ -64,6 +64,7 @@ class Toplevel1:
         self.labelUsers.configure(text='''Usuarios Registrados''')
 
         self.listUsers = tk.Listbox(self.navigator_t4)
+
         self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
         self.listUsers.configure(background="white")
         self.listUsers.configure(font="TkFixedFont")
