@@ -23,7 +23,7 @@ class Toplevel1:
         top.resizable(1,  1)
         top.title("Configuración servicio Samba")
         top.configure(background=colorDef)
-        self.list_users()
+        
 
         self.top = top
         self.navigate_callback = navigate_callback
