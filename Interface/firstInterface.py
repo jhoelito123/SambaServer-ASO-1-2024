@@ -165,7 +165,7 @@ class Toplevel1:
         ###############################3
 
         self.botonAdd = tk.Button(self.navigator_t2)
-        self.botonAdd.place(relx=0.023, rely=0.433, height=26, width=57)
+        self.botonAdd.place(relx=0.023, rely=0.483, height=26, width=57)
         self.botonAdd.configure(**title_config,activebackground=_fgcolor)
         self.botonAdd.configure(font="-family {Consolas} -size 10")
         self.botonAdd.configure(text='''Agregar''',anchor='center')
@@ -177,7 +177,7 @@ class Toplevel1:
             new_resource_window = newResource(top=new_window, parent=self)
 
         self.listActual = ScrolledListBox(self.navigator_t2)
-        self.listActual.place(relx=0.023, rely=0.062, relheight=0.348, relwidth=0.938)
+        self.listActual.place(relx=0.023, rely=0.125, relheight=0.348, relwidth=0.938)
         self.listActual.configure(background="white")
         self.listActual.configure(cursor="xterm")
         self.listActual.configure(font="TkFixedFont")
@@ -187,14 +187,14 @@ class Toplevel1:
         load_shared_resources(self.listActual)
         
         self.botonEdit = tk.Button(self.navigator_t2)
-        self.botonEdit.place(relx=0.101, rely=0.433, height=26, width=57)
+        self.botonEdit.place(relx=0.101, rely=0.483, height=26, width=57)
         self.botonEdit.configure(**title_config,activebackground=_fgcolor)
         self.botonEdit.configure(font="-family {Consolas} -size 10")
         self.botonEdit.configure(text='''Editar''',anchor="center")
         self.botonEdit.configure(command=lambda: edit(self, self.show_windows_callback))
 
         self.botonDel = tk.Button(self.navigator_t2)
-        self.botonDel.place(relx=0.18, rely=0.433, height=26, width=57)
+        self.botonDel.place(relx=0.18, rely=0.483, height=26, width=57)
         self.botonDel.configure(**title_config, activebackground=_fgcolor)
         self.botonDel.configure(font="-family {Consolas} -size 10")
         self.botonDel.configure(text='''Quitar''',anchor='center')
@@ -203,8 +203,38 @@ class Toplevel1:
         self.Label2 = tk.Label(self.navigator_t2)
         self.Label2.place(relx=0.023, rely=0.021, height=18, width=248)
         self.Label2.configure(**title_config)
-        self.Label2.configure(text='''Recursos compartidos''')       
+        self.Label2.configure(text='''Recursos compartidos''')    
         
+        #Encabezado del ScrolledListBox
+        self.labelRo = tk.Label(self.navigator_t2)
+        self.labelRo.place(relx=0.023, rely=0.080, height=21, width=102)
+        self.labelRo.configure(**title_config)
+        self.labelRo.configure(background=colorDef)
+        self.labelRo.configure(font="-family {Consolas} -size 11")
+        self.labelRo.configure(text="Read-only")
+        
+        self.labelName = tk.Label(self.navigator_t2)
+        self.labelName.place(relx=0.190, rely=0.080, height=21, width=82)
+        self.labelName.configure(**title_config)
+        self.labelName.configure(background=colorDef)
+        self.labelName.configure(font="-family {Consolas} -size 11")
+        self.labelName.configure(text="Nombre")
+        
+        self.labelPath = tk.Label(self.navigator_t2)
+        self.labelPath.place(relx=0.310, rely=0.080, height=21, width=82)
+        self.labelPath.configure(**title_config)
+        self.labelPath.configure(background=colorDef)
+        self.labelPath.configure(font="-family {Consolas} -size 11")   
+        self.labelPath.configure(text="Path")
+
+        self.labelComment = tk.Label(self.navigator_t2)
+        self.labelComment.place(relx=0.530, rely=0.080, height=21, width=102)
+        self.labelComment.configure(**title_config)
+        self.labelComment.configure(background=colorDef)
+        self.labelComment.configure(font="-family {Consolas} -size 11")   
+        self.labelComment.configure(text="Comentario")
+        
+        #
         self.frameWorkGroup = tk.Frame(self.navigator_t3)
         self.frameWorkGroup.place(relx=0.022, rely=0.102, relheight=0.399, relwidth=0.926)
         self.frameWorkGroup.configure(relief='groove',borderwidth="2",background=colorGrey)
