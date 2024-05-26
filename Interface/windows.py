@@ -33,7 +33,11 @@ resourceConfig = {
 class Toplevel1:
     def __init__(self, top=None, navigate_callback=None, resource=None, client=None):
         #VENTANA DE ESTA INTERFAZ
-        top.geometry("667x528+564+92")
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 667) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 528) // 2  # La altura de la ventana es 116
+        top.geometry(f"667x528+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -240,7 +244,11 @@ def analiceEdit(listbox,self):
 
 class topRO:
     def __init__(self, top=None,initial_ro="", listbox=None):
-        top.geometry("331x116+850+202")
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 331) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 116) // 2  # La altura de la ventana es 116
+        top.geometry(f"331x116+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -287,7 +295,11 @@ class topRO:
 
 class topInherit:
     def __init__(self, top=None,initial_Inherit="", listbox=None):
-        top.geometry("331x116+850+202")
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 331) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 116) // 2  # La altura de la ventana es 116
+        top.geometry(f"331x116+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -384,7 +396,11 @@ class topComment:
 
 class topPath:
     def __init__(self, top=None,initial_path="", listbox=None):
-        top.geometry("241x116+312+348")
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 241) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 116) // 2  # La altura de la ventana es 116
+        top.geometry(f"241x116+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -427,15 +443,11 @@ class topPath:
 
 class topUmask:
     def __init__(self, top=None,initialMask="", listbox=None):
-        if initialMask:  # Verificar si initialMask no está vacío (recien creado)
-            firstDigit = int(int(initialMask) / 100)
-            secondDigit = int((int(initialMask) / 10) % 10)
-            threeDigit = int(int(initialMask) % 10)
-        else:
-            firstDigit = 0
-            secondDigit = 0
-            threeDigit = 0
-        top.geometry("340x226+312+348")
+        screen_width = top.winfo_screenwidth()
+        screen_height = top.winfo_screenheight()
+        x = (screen_width - 340) // 2  # El ancho de la ventana es 250
+        y = (screen_height - 116) // 2  # La altura de la ventana es 116
+        top.geometry(f"340x226+{x}+{y}")
         top.minsize(120, 1)
         top.maxsize(1924, 1061)
         top.resizable(1,  1)
@@ -444,6 +456,15 @@ class topUmask:
         top.configure(highlightbackground="#d9d9d9")
         top.configure(highlightcolor="#000000")
 
+        if initialMask:  # Verificar si initialMask no está vacío (recien creado)
+            firstDigit = int(int(initialMask) / 100)
+            secondDigit = int((int(initialMask) / 10) % 10)
+            threeDigit = int(int(initialMask) % 10)
+        else:
+            firstDigit = 0
+            secondDigit = 0
+            threeDigit = 0
+            
         self.top = top
         self.listbox = listbox
         self.cheOR = tk.BooleanVar()
