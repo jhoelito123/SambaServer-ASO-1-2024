@@ -42,12 +42,8 @@ class SambaManagerApp:
         self.delete_user_frame = tk.LabelFrame(self.root, text="Eliminar Usuario")
         self.delete_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
 
-        tk.Label(self.delete_user_frame, text="Nombre de usuario:").grid(row=0, column=0)
-        self.del_username_entry = tk.Entry(self.delete_user_frame)
-        self.del_username_entry.grid(row=0, column=1)
-
-        self.delete_user_button = tk.Button(self.delete_user_frame, text="Eliminar Usuario", command=self.delete_user)
-        self.delete_user_button.grid(row=1, columnspan=2, pady=5)
+        self.delete_user_button = tk.Button(self.delete_user_frame, text="Eliminar Usuario Seleccionado", command=self.delete_user)
+        self.delete_user_button.pack(pady=5)
 
     def add_user(self):
         username = self.username_entry.get().strip()
@@ -86,28 +82,30 @@ class SambaManagerApp:
                 users = output.decode().strip().split('\n')
                 self.users_listbox.delete(0, tk.END)
                 for user in users:
-                    self.users_listbox.insert(tk.END, user)
+                    self.users_listbox.insert(tk.END, user.split(':')[0])  # Añadido solo el nombre de usuario
             else:
                 messagebox.showerror("Error", "No se pudieron listar los usuarios.")
         except Exception as e:
             messagebox.showerror("Error", f"No se pudieron listar los usuarios. Error: {e}")
 
     def delete_user(self):
-        username = self.del_username_entry.get().strip()
-        if not username:
-            messagebox.showwarning("Advertencia", "Por favor, complete el campo de nombre de usuario.")
-            return
         try:
+            selected_user = self.users_listbox.get(tk.ACTIVE)
+            if not selected_user:
+                messagebox.showwarning("Advertencia", "Por favor, seleccione un usuario de la lista.")
+                return
             # Comando para eliminar usuario de Samba
-            process = subprocess.Popen(['sudo', 'smbpasswd', '-x', username], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(['sudo', 'smbpasswd', '-x', selected_user], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             _, error = process.communicate()
             if process.returncode == 0:
-                messagebox.showinfo("Éxito", f"Usuario {username} eliminado con éxito.")
+                # Comando para eliminar usuario del sistema
+                subprocess.run(['sudo', 'userdel', '-r', selected_user], check=True)
+                messagebox.showinfo("Éxito", f"Usuario {selected_user} eliminado con éxito.")
                 self.list_users()  # Actualizar la lista de usuarios
             else:
-                messagebox.showerror("Error", f"No se pudo eliminar el usuario {username}. Error: {error.decode()}")
+                messagebox.showerror("Error", f"No se pudo eliminar el usuario {selected_user}. Error: {error.decode()}")
         except Exception as e:
-            messagebox.showerror("Error", f"No se pudo eliminar el usuario {username}. Error: {e}")
+            messagebox.showerror("Error", f"No se pudo eliminar el usuario {selected_user}. Error: {e}")
 
 if __name__ == "__main__":
     root = tk.Tk()
