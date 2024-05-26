@@ -1,8 +1,10 @@
 # SambaServer-ASO-1-2024
+
 App grafica para configurar servicio de transferencia de archivos Samba
 Dirigido al sistema operativo OpenSUSE -Linux
 
 Instrucciones de Uso:
+
 - Clone la carpeta en un directorio que tenga los permisos de utilizar la interfaz gráfica
   en otras palabras, que la variable display esté configurada correctamente, de lo contrario el programa no se podrá iniciar (le recomendamos la carpeta /tmp)
 - Su archivo de configuracion debe existir en la ruta "/etc/samba/smb.conf", si no se encuentra el
@@ -15,7 +17,11 @@ Instrucciones de Uso:
 - Para iniciar el programa debe ejecutar el comando:
    #python3 App.py
 
-
 En caso de no contar con python u otra dependencia necesaria el programa no se inicializará
-Nota extra: cuando agregue los path de sus recursos recuerde tener la carpeta creada
-con sus respectivos permisos, sino deben crearla y ejecutar 'chmod ugo+rwx nombreCarpeta'
+
+Recomendaciones:
+- Cuando agregue los path de sus recursos recuerde tener la carpeta creada
+  con sus respectivos permisos, sino deben crearla y ejecutar 'chmod ugo+rwx nombreCarpeta' 
+- Pueden aparecer algunos avisos en la consola que no afectan en el funcionamiento de la aplicación como:
+  """"/usr/lib/python3.6/site-packages/paramiko/transport.py:32: CryptographyDeprecationWarning: Python 3.6 is no longer supported by the Python core team. Therefore, support for it is deprecated in cryptography. The next release of cryptography will remove support for Python 3.6.
+  from cryptography.hazmat.backends import default_backend""""

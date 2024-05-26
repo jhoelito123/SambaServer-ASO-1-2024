@@ -6,6 +6,7 @@ import os.path
 import time
 _location = os.path.dirname(__file__)
 from tkinter import messagebox
+import subprocess
 
 colorDef = '#d9d9d9'
 colorGrey = '#F0F0F0'
@@ -71,6 +72,7 @@ class Toplevel1:
         self.navigator.add(self.navigator_t4, padding=3)
         self.navigator.tab(3, text='''Usuarios''', compound="left" ,underline='''-1''', )
         self.navigator_t4.configure(background=colorDef)
+<<<<<<< HEAD
 #========================================================
         #for new navigator Users
         self.labelUsers = tk.Label(self.navigator_t4)
@@ -101,7 +103,38 @@ class Toplevel1:
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
         #self.buttDelUser.configure(command=self.delete_user)
+=======
+
+        # #for new navigator Users
+        # self.labelUsers = tk.Label(self.navigator_t4)
+        # self.labelUsers.place(relx=0.046, rely=0.02, height=31, width=294)
+        # self.labelUsers.configure(**title_config)
+        # self.labelUsers.configure(text='''Usuarios Registrados''')
+
+        # self.listUsers = tk.Listbox(self.navigator_t4)
+        # self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
+        # self.listUsers.configure(background="white")
+        # self.listUsers.configure(font="TkFixedFont")
+        # self.listUsers.configure(foreground="#000000")
+        # self.listUsers.configure(selectbackground="#feffda")
+        # self.listUsers.configure(selectforeground="black")
+
+        # self.butModUser = tk.Button(self.navigator_t4)
+        # self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
+        # self.butModUser.configure(**title_config,activebackground=_fgcolor)
+        # self.butModUser.configure(font="-family {Consolas} -size 10")
+        # self.butModUser.configure(text='''Agregar usuario''',anchor='center')
+        # self.butModUser.configure(command=self.add_user)
+
+        # self.buttDelUser = tk.Button(self.navigator_t4)
+        # self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
+        # self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
+        # self.buttDelUser.configure(font="-family {Consolas} -size 10")
+        # self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
+>>>>>>> 3b296ff7048868fff6b0667e7e02b6d527ddc4c9
         
+        self.create_widgets()
+        self.list_users()
           
         #Configuracion usuario
         self.cuadroInicial = tk.Frame(self.navigator_t1)
@@ -169,7 +202,7 @@ class Toplevel1:
         ###############################3
 
         self.botonAdd = tk.Button(self.navigator_t2)
-        self.botonAdd.place(relx=0.023, rely=0.433, height=26, width=57)
+        self.botonAdd.place(relx=0.023, rely=0.483, height=26, width=57)
         self.botonAdd.configure(**title_config,activebackground=_fgcolor)
         self.botonAdd.configure(font="-family {Consolas} -size 10")
         self.botonAdd.configure(text='''Agregar''',anchor='center')
@@ -181,7 +214,7 @@ class Toplevel1:
             new_resource_window = newResource(top=new_window, parent=self)
 
         self.listActual = ScrolledListBox(self.navigator_t2)
-        self.listActual.place(relx=0.023, rely=0.062, relheight=0.348, relwidth=0.938)
+        self.listActual.place(relx=0.023, rely=0.125, relheight=0.348, relwidth=0.938)
         self.listActual.configure(background="white")
         self.listActual.configure(cursor="xterm")
         self.listActual.configure(font="TkFixedFont")
@@ -191,14 +224,14 @@ class Toplevel1:
         load_shared_resources(self.listActual)
         
         self.botonEdit = tk.Button(self.navigator_t2)
-        self.botonEdit.place(relx=0.101, rely=0.433, height=26, width=57)
+        self.botonEdit.place(relx=0.101, rely=0.483, height=26, width=57)
         self.botonEdit.configure(**title_config,activebackground=_fgcolor)
         self.botonEdit.configure(font="-family {Consolas} -size 10")
         self.botonEdit.configure(text='''Editar''',anchor="center")
         self.botonEdit.configure(command=lambda: edit(self, self.show_windows_callback))
 
         self.botonDel = tk.Button(self.navigator_t2)
-        self.botonDel.place(relx=0.18, rely=0.433, height=26, width=57)
+        self.botonDel.place(relx=0.18, rely=0.483, height=26, width=57)
         self.botonDel.configure(**title_config, activebackground=_fgcolor)
         self.botonDel.configure(font="-family {Consolas} -size 10")
         self.botonDel.configure(text='''Quitar''',anchor='center')
@@ -207,8 +240,38 @@ class Toplevel1:
         self.Label2 = tk.Label(self.navigator_t2)
         self.Label2.place(relx=0.023, rely=0.021, height=18, width=248)
         self.Label2.configure(**title_config)
-        self.Label2.configure(text='''Recursos compartidos''')       
+        self.Label2.configure(text='''Recursos compartidos''')    
         
+        #Encabezado del ScrolledListBox
+        self.labelRo = tk.Label(self.navigator_t2)
+        self.labelRo.place(relx=0.023, rely=0.080, height=21, width=102)
+        self.labelRo.configure(**title_config)
+        self.labelRo.configure(background=colorDef)
+        self.labelRo.configure(font="-family {Consolas} -size 11")
+        self.labelRo.configure(text="Read-only")
+        
+        self.labelName = tk.Label(self.navigator_t2)
+        self.labelName.place(relx=0.190, rely=0.080, height=21, width=82)
+        self.labelName.configure(**title_config)
+        self.labelName.configure(background=colorDef)
+        self.labelName.configure(font="-family {Consolas} -size 11")
+        self.labelName.configure(text="Nombre")
+        
+        self.labelPath = tk.Label(self.navigator_t2)
+        self.labelPath.place(relx=0.310, rely=0.080, height=21, width=82)
+        self.labelPath.configure(**title_config)
+        self.labelPath.configure(background=colorDef)
+        self.labelPath.configure(font="-family {Consolas} -size 11")   
+        self.labelPath.configure(text="Path")
+
+        self.labelComment = tk.Label(self.navigator_t2)
+        self.labelComment.place(relx=0.530, rely=0.080, height=21, width=102)
+        self.labelComment.configure(**title_config)
+        self.labelComment.configure(background=colorDef)
+        self.labelComment.configure(font="-family {Consolas} -size 11")   
+        self.labelComment.configure(text="Comentario")
+        
+        #
         self.frameWorkGroup = tk.Frame(self.navigator_t3)
         self.frameWorkGroup.place(relx=0.022, rely=0.102, relheight=0.399, relwidth=0.926)
         self.frameWorkGroup.configure(relief='groove',borderwidth="2",background=colorGrey)
@@ -330,7 +393,7 @@ class Toplevel1:
         messagebox.showinfo("Info", "Los cambios han sido cancelados.")
         
     def save_start_conf(self):
-        with open("config_start.conf", "w") as file:
+        with open(path_start_conf, "w") as file:
             file.write(f"after config={self.selected_option.get()}\n")
             file.write(f"after reboot={self.cheStart.get()}")
             
@@ -381,6 +444,114 @@ class Toplevel1:
             session.exec_command(command)
             time.sleep(1)
             session.close()
+            
+    def create_widgets(self):
+        # Agregar usuario
+        self.add_user_frame = tk.LabelFrame(self.navigator_t4, text="Agregar Usuario")
+        self.add_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+
+        self.add_user_button = tk.Button(self.add_user_frame, text="Agregar Usuario", command=self.open_add_user_window)
+        self.add_user_button.pack(pady=5)
+
+        # Listar usuarios
+        self.list_users_frame = tk.LabelFrame(self.navigator_t4, text="Lista de Usuarios")
+        self.list_users_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+
+        self.users_listbox = tk.Listbox(self.list_users_frame)
+        self.users_listbox.pack(fill="both", expand="yes", padx=5, pady=5)
+
+        # Eliminar usuario
+        self.delete_user_frame = tk.LabelFrame(self.navigator_t4, text="Eliminar Usuario")
+        self.delete_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
+
+        self.delete_user_button = tk.Button(self.delete_user_frame, text="Eliminar Usuario Seleccionado", command=self.delete_user)
+        self.delete_user_button.pack(pady=5)
+
+    def open_add_user_window(self):
+        self.add_user_window = tk.Toplevel(self.navigator_t4)
+        self.add_user_window.title("Agregar Usuario")
+
+        tk.Label(self.add_user_window, text="Nombre de usuario:").grid(row=0, column=0, padx=10, pady=5)
+        self.username_entry = tk.Entry(self.add_user_window)
+        self.username_entry.grid(row=0, column=1, padx=10, pady=5)
+        
+        tk.Label(self.add_user_window, text="Contraseña:").grid(row=1, column=0, padx=10, pady=5)
+        self.password_entry = tk.Entry(self.add_user_window, show='*')
+        self.password_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        tk.Label(self.add_user_window, text="Repetir Contraseña:").grid(row=2, column=0, padx=10, pady=5)
+        self.password_confirm_entry = tk.Entry(self.add_user_window, show='*')
+        self.password_confirm_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        self.accept_button = tk.Button(self.add_user_window, text="Aceptar", command=self.add_user)
+        self.accept_button.grid(row=3, column=0, padx=10, pady=5)
+        
+        self.cancel_button = tk.Button(self.add_user_window, text="Cancelar", command=self.add_user_window.destroy)
+        self.cancel_button.grid(row=3, column=1, padx=10, pady=5)
+
+    def add_user(self):
+        username = self.username_entry.get().strip()
+        password = self.password_entry.get().strip()
+        password_confirm = self.password_confirm_entry.get().strip()
+        if not username or not password or not password_confirm:
+            messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
+            return
+        if password != password_confirm:
+            messagebox.showwarning("Advertencia", "Las contraseñas no coinciden.")
+            return
+        try:
+            # Comando para agregar usuario al sistema con directorio home
+            subprocess.run(['sudo', 'useradd', '-d', f'/home/{username}', '-m', username], check=True)
+            # Establecer la contraseña del usuario del sistema
+            proc_passwd = subprocess.Popen(['sudo', 'passwd', username], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc_passwd.communicate(input=f'{password}\n{password}\n'.encode())
+            if proc_passwd.returncode != 0:
+                raise subprocess.CalledProcessError(proc_passwd.returncode, 'passwd')
+            # Comando para agregar usuario a Samba
+            proc_smbpasswd = subprocess.Popen(['sudo', 'smbpasswd', '-a', username], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc_smbpasswd.communicate(input=f'{password}\n{password}\n'.encode())
+            if proc_smbpasswd.returncode == 0:
+                messagebox.showinfo("Éxito", f"Usuario {username} agregado con éxito.")
+                self.list_users()  # Actualizar la lista de usuarios
+                self.add_user_window.destroy()  # Cerrar la ventana de agregar usuario
+            else:
+                raise subprocess.CalledProcessError(proc_smbpasswd.returncode, 'smbpasswd')
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error", f"No se pudo agregar el usuario {username}. Error: {e}")
+
+    def list_users(self):
+        try:
+            process = subprocess.Popen(['sudo', 'pdbedit', '-L'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, _ = process.communicate()
+            if process.returncode == 0:
+                users = output.decode().strip().split('\n')
+                self.users_listbox.delete(0, tk.END)
+                for user in users:
+                    self.users_listbox.insert(tk.END, user.split(':')[0])  # Añadido solo el nombre de usuario
+            else:
+                messagebox.showerror("Error", "No se pudieron listar los usuarios.")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudieron listar los usuarios. Error: {e}")
+
+    def delete_user(self):
+        try:
+            selected_user = self.users_listbox.get(tk.ACTIVE)
+            if not selected_user:
+                messagebox.showwarning("Advertencia", "Por favor, seleccione un usuario de la lista.")
+                return
+            # Comando para eliminar usuario de Samba
+            process = subprocess.Popen(['sudo', 'smbpasswd', '-x', selected_user], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            _, error = process.communicate()
+            if process.returncode == 0:
+                # Comando para eliminar usuario del sistema
+                subprocess.run(['sudo', 'userdel', '-r', selected_user], check=True)
+                messagebox.showinfo("Éxito", f"Usuario {selected_user} eliminado con éxito.")
+                self.list_users()  # Actualizar la lista de usuarios
+            else:
+                messagebox.showerror("Error", f"No se pudo eliminar el usuario {selected_user}. Error: {error.decode()}")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo eliminar el usuario {selected_user}. Error: {e}")
+        
 
 def read_start_conf(path_conf):
     with open(path_conf, "r") as file:
@@ -389,11 +560,15 @@ def read_start_conf(path_conf):
         return lines
             
 # path_start_conf = "C:/Users/John/Desktop/Materias/materias5/Aplicacion SO/proyectoAso/segundo/SambaServer-ASO-1-2024/config_start.conf"
+# path_start_conf = "/home/link/Escritorio/ProyectoAso/SambaServer-ASO-1-2024/config_start.conf"
 
+<<<<<<< HEAD
 path_start_conf = "config_start.conf"
+=======
+path_start_conf = "configs/config_start.conf"
+>>>>>>> 3b296ff7048868fff6b0667e7e02b6d527ddc4c9
 
 lines_start_conf = read_start_conf(path_start_conf)
-lines_start_conf_static = []        
         
 def write_smb_conf(file_path, resources):
     with open(file_path, 'w') as file:
