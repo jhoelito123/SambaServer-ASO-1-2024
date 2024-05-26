@@ -24,6 +24,7 @@ class Toplevel1:
         top.resizable(1,  1)
         top.title("Configuración servicio Samba")
         top.configure(background=colorDef)
+        self.list_users()
 
         self.top = top
         self.navigate_callback = navigate_callback
@@ -62,45 +63,28 @@ class Toplevel1:
         self.labelUsers.configure(**title_config)
         self.labelUsers.configure(text='''Usuarios Registrados''')
 
-        """ self.listUsers = tk.Listbox(self.navigator_t4)
+        self.listUsers = tk.Listbox(self.navigator_t4)
         self.listUsers.place(relx=0.031, rely=0.099, relheight=0.675, relwidth=0.47)
         self.listUsers.configure(background="white")
         self.listUsers.configure(font="TkFixedFont")
         self.listUsers.configure(foreground="#000000")
         self.listUsers.configure(selectbackground="#feffda")
         self.listUsers.configure(selectforeground="black")
-        self.listUsers.bind("<ButtonRelease-1>", lambda event: self.listar_usuarios_samba()) """
-        self.list_users_frame = tk.LabelFrame(self.root, text="Lista de Usuarios")
-        self.list_users_frame.pack(fill="both", expand="yes", padx=10, pady=10)
 
-        self.users_listbox = tk.Listbox(self.list_users_frame)
-        self.users_listbox.pack(fill="both", expand="yes", padx=5, pady=5)
-
-        """ self.butModUser = tk.Button(self.navigator_t4)
+        self.butModUser = tk.Button(self.navigator_t4, command=self.open_add_user_window)
         self.butModUser.place(relx=0.526, rely=0.296, height=26, width=167)
         self.butModUser.configure(**title_config,activebackground=_fgcolor)
         self.butModUser.configure(font="-family {Consolas} -size 10")
         self.butModUser.configure(text='''Agregar usuario''',anchor='center')
-        self.butModUser.configure(command=self.add_user)
-        self.listar_usuarios_samba() """
-        self.add_user_frame = tk.LabelFrame(self.root, text="Agregar Usuario")
-        self.add_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
-
-        self.add_user_button = tk.Button(self.add_user_frame, text="Agregar Usuario", command=self.open_add_user_window)
-        self.add_user_button.pack(pady=5)
         
 
-        """ self.buttDelUser = tk.Button(self.navigator_t4)
+        self.buttDelUser = tk.Button(self.navigator_t4, command=self.delete_user)
         self.buttDelUser.place(relx=0.526, rely=0.375, height=26, width=167)
         self.buttDelUser.configure(**title_config,activebackground=_fgcolor)
         self.buttDelUser.configure(font="-family {Consolas} -size 10")
         self.buttDelUser.configure(text='''Eliminar usuario''',anchor='center')
-        self.buttDelUser.configure(command=self.delete_samba_user) """
-        self.delete_user_frame = tk.LabelFrame(self.root, text="Eliminar Usuario")
-        self.delete_user_frame.pack(fill="both", expand="yes", padx=10, pady=10)
-
-        self.delete_user_button = tk.Button(self.delete_user_frame, text="Eliminar Usuario Seleccionado", command=self.delete_user)
-        self.delete_user_button.pack(pady=5)
+        
+        
         
         self.cuadroInicial = tk.Frame(self.navigator_t1)
         self.cuadroInicial.place(relx=0.011, rely=0.04, relheight=0.51, relwidth=0.97)
@@ -235,7 +219,7 @@ class Toplevel1:
         self.botonAccept.configure(font="-family {Consolas} -size 10")
         self.botonAccept.configure(text='''Aceptar''',anchor='center',command=self.save_changes)
     
-    #Ventana para agregar usuarios
+    
     def open_add_user_window(self):
         self.add_user_window = tk.Toplevel(self.root)
         self.add_user_window.title("Agregar Usuario")
