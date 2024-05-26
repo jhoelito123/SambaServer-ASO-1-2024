@@ -234,14 +234,21 @@ class Toplevel1:
             messagebox.showwarning("Advertencia", "Las contraseñas no coinciden.")
             return
         try:
+            # Comando para agregar usuario al sistema con directorio home
+            subprocess.run(['sudo', 'useradd', '-d', f'/home/{username}', '-m', username], check=True)
+            # Establecer la contraseña del usuario del sistema
+            proc_passwd = subprocess.Popen(['sudo', 'passwd', username], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc_passwd.communicate(input=f'{password}\n{password}\n'.encode())
+            if proc_passwd.returncode != 0:
+                raise subprocess.CalledProcessError(proc_passwd.returncode, 'passwd')
             # Comando para agregar usuario a Samba
-            process = subprocess.Popen(['sudo', 'smbpasswd', '-a', username], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-            process.communicate(input=f'{password}\n{password}\n'.encode())
-            if process.returncode == 0:
+            proc_smbpasswd = subprocess.Popen(['sudo', 'smbpasswd', '-a', username], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc_smbpasswd.communicate(input=f'{password}\n{password}\n'.encode())
+            if proc_smbpasswd.returncode == 0:
                 messagebox.showinfo("Éxito", f"Usuario {username} agregado con éxito.")
             else:
-                messagebox.showerror("Error", f"No se pudo agregar el usuario {username}.")
-        except Exception as e:
+                raise subprocess.CalledProcessError(proc_smbpasswd.returncode, 'smbpasswd')
+        except subprocess.CalledProcessError as e:
             messagebox.showerror("Error", f"No se pudo agregar el usuario {username}. Error: {e}")
      
                 

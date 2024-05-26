@@ -9,6 +9,7 @@ class SambaManagerApp:
         self.root.title("Samba User Manager")
         
         self.create_widgets()
+        self.list_users()  # Listar usuarios al iniciar la aplicación
 
     def create_widgets(self):
         # Agregar usuario
@@ -36,9 +37,6 @@ class SambaManagerApp:
 
         self.users_listbox = tk.Listbox(self.list_users_frame)
         self.users_listbox.pack(fill="both", expand="yes", padx=5, pady=5)
-
-        self.refresh_button = tk.Button(self.list_users_frame, text="Actualizar Lista", command=self.list_users)
-        self.refresh_button.pack(pady=5)
 
         # Eliminar usuario
         self.delete_user_frame = tk.LabelFrame(self.root, text="Eliminar Usuario")
@@ -74,6 +72,7 @@ class SambaManagerApp:
             proc_smbpasswd.communicate(input=f'{password}\n{password}\n'.encode())
             if proc_smbpasswd.returncode == 0:
                 messagebox.showinfo("Éxito", f"Usuario {username} agregado con éxito.")
+                self.list_users()  # Actualizar la lista de usuarios
             else:
                 raise subprocess.CalledProcessError(proc_smbpasswd.returncode, 'smbpasswd')
         except subprocess.CalledProcessError as e:
@@ -104,6 +103,7 @@ class SambaManagerApp:
             _, error = process.communicate()
             if process.returncode == 0:
                 messagebox.showinfo("Éxito", f"Usuario {username} eliminado con éxito.")
+                self.list_users()  # Actualizar la lista de usuarios
             else:
                 messagebox.showerror("Error", f"No se pudo eliminar el usuario {username}. Error: {error.decode()}")
         except Exception as e:
